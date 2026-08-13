@@ -516,6 +516,302 @@ section { padding: 90px 5vw; position: relative; }
   gap: 20px;
   color: var(--text-muted);
 }
+
+/* ---------- Home Lab Info Sections (Merged) ---------- */
+.section-header { margin-bottom: 40px; }
+
+.section-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  color: #8E6CA2;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.section-eyebrow .line {
+  width: 30px;
+  height: 1px;
+  background: #C5B3D3;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3.5vw, 44px);
+  font-weight: 800;
+  color: #2B2B2B;
+  line-height: 1.15;
+}
+
+.hero-statement-card {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid var(--border-glass);
+  border-left: 3px solid #C5B3D3;
+  border-radius: 12px;
+  padding: 20px 24px;
+  backdrop-filter: blur(16px);
+  font-size: 15.5px;
+  color: var(--text-main);
+  line-height: 1.65;
+  margin-bottom: 32px;
+  max-width: 820px;
+}
+
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid var(--border-glass);
+  border-radius: 16px;
+  padding: 30px 26px;
+  backdrop-filter: blur(16px);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: #C5B3D3;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(197, 179, 211, 0.35);
+}
+
+.card-num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: #8E6CA2;
+  letter-spacing: 0.14em;
+  margin-bottom: 8px;
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 10px;
+}
+
+.card-desc {
+  font-size: 14.5px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.featured-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.area-pill {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid var(--border-glass);
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-main);
+  backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+}
+
+.area-pill:hover {
+  border-color: #C5B3D3;
+  background: rgba(255, 255, 255, 0.95);
+  color: #8E6CA2;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(197, 179, 211, 0.3);
+}
+
+/* ---------- Member Cards (Merged from Members Page) ---------- */
+.member-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.member-card {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid var(--border-glass);
+  border-radius: 18px;
+  padding: 24px;
+  backdrop-filter: blur(16px);
+  transition: all 0.35s ease;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.member-card:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: #C5B3D3;
+  transform: translateY(-6px);
+  box-shadow: 0 14px 36px rgba(197, 179, 211, 0.35);
+}
+
+.member-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 3px;
+  background: linear-gradient(90deg, #C5B3D3, #F5CBCB);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.member-card:hover::before { opacity: 1; }
+
+.member-avatar-box {
+  width: 100%;
+  height: 220px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(245, 203, 203, 0.25);
+  border: 1px solid var(--border-glass);
+  margin-bottom: 18px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.member-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.member-card:hover .member-img { transform: scale(1.06); }
+
+.avatar-placeholder-icon {
+  font-size: 56px;
+  opacity: 0.4;
+}
+
+.member-name {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: #2B2B2B;
+  margin-bottom: 4px;
+}
+
+.member-role {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: #8E6CA2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.member-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+}
+
+.meta-badge {
+  background: rgba(197, 179, 211, 0.2);
+  border: 1px solid rgba(197, 179, 211, 0.4);
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: #8E6CA2;
+}
+
+.member-desc {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin-bottom: 16px;
+  flex-grow: 1;
+}
+
+.member-contact-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid rgba(197, 179, 211, 0.2);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: #8E6CA2;
+}
+
+.member-contact-row a { transition: color 0.2s ease; }
+.member-contact-row a:hover {
+  color: #2B2B2B;
+  text-decoration: underline;
+}
+
+.head-card {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(245, 203, 203, 0.3) 100%);
+  border: 1px solid rgba(197, 179, 211, 0.35);
+  box-shadow: 0 10px 40px rgba(197, 179, 211, 0.3);
+}
+
+/* Quote Banner */
+.quote-banner {
+  background: linear-gradient(135deg, rgba(82, 115, 77, 0.8) 0%, rgba(145, 199, 136, 0.25) 100%);
+  border: 1px solid rgba(145, 199, 136, 0.3);
+  border-radius: 20px;
+  padding: 50px 40px;
+  text-align: center;
+  backdrop-filter: blur(20px);
+}
+
+.quote-banner blockquote {
+  font-family: var(--font-display);
+  font-size: clamp(20px, 2.5vw, 30px);
+  font-weight: 600;
+  color: #2B2B2B;
+  line-height: 1.45;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  background: #C5B3D3;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: 8px;
+  border: 1px solid rgba(197, 179, 211, 0.5);
+  box-shadow: 0 4px 20px rgba(197, 179, 211, 0.35);
+  transition: all 0.3s ease;
+  margin-top: 24px;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(245, 203, 203, 0.5);
+  background: #F5CBCB;
+  color: #2B2B2B;
+}
 </style>
 <link rel="stylesheet" href="css/xr-styles.css">
 </head>
@@ -540,8 +836,6 @@ section { padding: 90px 5vw; position: relative; }
       <nav class="navlinks" id="navlinks">
         <a href="index.html">Home</a>
         <a href="about.html" class="active">About Us</a>
-        <a href="member.html">Members</a>
-        <a href="work.html">Our Work</a>
         <a href="contact.html">Contact Us</a>
       </nav>
       <button class="navtoggle" id="navtoggle" aria-label="Toggle Navigation">
@@ -561,7 +855,119 @@ section { padding: 90px 5vw; position: relative; }
     </div>
   </header>
 
-  <!-- Section 1: Intro & Overview -->
+  <!-- ============================================================ -->
+  <!-- PART 1: LAB INFO (Merged from Home Page) -->
+  <!-- ============================================================ -->
+
+  <!-- What We Do (from Home) -->
+  <section class="reveal">
+    <div class="section-header">
+      <div class="section-eyebrow"><span class="line"></span><span>OUR PURPOSE</span></div>
+      <h2 class="section-title"><span class="w-white">What</span> <span class="w-coral">we do</span></h2>
+    </div>
+    <div class="hero-statement-card" style="max-width: 100%; font-size: 17px; line-height: 1.8;">
+      <p style="margin-bottom: 16px;"><strong>Technology is no longer confined to screens.</strong></p>
+      <p style="margin-bottom: 16px;">The future belongs to immersive environments where humans interact naturally with
+        digital spaces. At the AR/VR Research Lab, we prepare students to lead that transformation by providing an
+        ecosystem for experimentation, collaboration, and research.</p>
+      <p>From virtual simulations and interactive experiences to spatial interfaces and intelligent digital
+        environments, we encourage students to think beyond conventional software and engineer the next generation of
+        immersive computing.</p>
+    </div>
+  </section>
+
+  <!-- What You'll Discover (from Home) -->
+  <section class="reveal">
+    <div class="section-header">
+      <div class="section-eyebrow"><span class="line"></span><span>PLATFORM FOR GROWTH</span></div>
+      <h2 class="section-title"><span class="w-white">What You'll</span> <span class="w-cyan">Discover</span></h2>
+    </div>
+
+    <p style="color: var(--text-muted); font-size: 17px; margin-bottom: 30px;">
+      Instead of simply learning technology, you'll experience how it's imagined, designed, engineered, and refined. Our
+      lab serves as a platform for:
+    </p>
+
+    <div class="grid-cards">
+      <div class="glass-card">
+        <div class="card-num">01</div>
+        <div class="card-title">Emerging Tech Research</div>
+        <div class="card-desc">Scientific exploration and investigation into state-of-the-art immersive technologies.</div>
+      </div>
+      <div class="glass-card">
+        <div class="card-num">02</div>
+        <div class="card-title">VR &amp; AR Development</div>
+        <div class="card-desc">Engineering interactive Virtual and Augmented Reality solutions for real-world use cases.</div>
+      </div>
+      <div class="glass-card">
+        <div class="card-num">03</div>
+        <div class="card-title">Interactive App Design</div>
+        <div class="card-desc">Crafting human-centered, responsive spatial software applications.</div>
+      </div>
+      <div class="glass-card">
+        <div class="card-num">04</div>
+        <div class="card-title">XR Game Development</div>
+        <div class="card-desc">Building immersive 3D games using Unreal Engine, Unity, and modern spatial APIs.</div>
+      </div>
+      <div class="glass-card">
+        <div class="card-num">05</div>
+        <div class="card-title">Human-Centered Computing</div>
+        <div class="card-desc">Studying natural user interfaces, gesture control, and spatial cognitive ergonomics.</div>
+      </div>
+      <div class="glass-card">
+        <div class="card-num">06</div>
+        <div class="card-title">3D Content Creation</div>
+        <div class="card-desc">Modeling, texturing, animating, and rendering photorealistic assets and digital twin environments.</div>
+      </div>
+      <div class="glass-card">
+        <div class="card-num">07</div>
+        <div class="card-title">Spatial UI Design</div>
+        <div class="card-desc">Designing invisible, intuitive user interfaces tailored for 3D spatial computing.</div>
+      </div>
+      <div class="glass-card">
+        <div class="card-num">08</div>
+        <div class="card-title">Conference Publications</div>
+        <div class="card-desc">Authoring research papers, poster sessions, and presenting at national &amp; international venues.</div>
+      </div>
+      <div class="glass-card">
+        <div class="card-num">09</div>
+        <div class="card-title">Industry Collaborations</div>
+        <div class="card-desc">Partnering with technology organizations, research institutions, and academic experts.</div>
+      </div>
+      <div class="glass-card">
+        <div class="card-num">10</div>
+        <div class="card-title">Innovation Student Projects</div>
+        <div class="card-desc">Empowering student teams to transform creative concepts into functional prototypes.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Areas (from Home) -->
+  <section class="reveal">
+    <div class="section-header">
+      <div class="section-eyebrow"><span class="line"></span><span>DOMAINS OF EXCELLENCE</span></div>
+      <h2 class="section-title"><span class="w-white">Featured</span> <span class="w-purple">Areas</span></h2>
+    </div>
+
+    <div class="featured-grid">
+      <div class="area-pill">Virtual Reality</div>
+      <div class="area-pill">Augmented Reality</div>
+      <div class="area-pill">Extended Reality (XR)</div>
+      <div class="area-pill">Human-Computer Interaction</div>
+      <div class="area-pill">Immersive Games</div>
+      <div class="area-pill">Digital Heritage</div>
+      <div class="area-pill">Healthcare Simulation</div>
+      <div class="area-pill">Engineering Visualization</div>
+      <div class="area-pill">AI + XR</div>
+      <div class="area-pill">Metaverse Experiences</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- PART 2: ORIGINAL ABOUT US SECTIONS -->
+  <!-- ============================================================ -->
+
+  <!-- Center Overview -->
   <section class="reveal">
     <div class="section-label"><span class="dash"></span><span class="eyebrow">Center Overview</span></div>
     <h2 class="story-heading">
@@ -572,7 +978,7 @@ section { padding: 90px 5vw; position: relative; }
     </p>
   </section>
 
-  <!-- Section 2: Our Story -->
+  <!-- Our Story -->
   <section class="reveal">
     <div class="section-label"><span class="dash"></span><span class="eyebrow">Our Story</span></div>
     <h2 class="story-heading">
@@ -583,7 +989,7 @@ section { padding: 90px 5vw; position: relative; }
     </p>
   </section>
 
-  <!-- Section 3: Our Philosophy -->
+  <!-- Our Philosophy -->
   <section class="reveal">
     <div class="section-label"><span class="dash"></span><span class="eyebrow">Our Philosophy</span></div>
     <p style="color: var(--text-muted); font-size: 17px; max-width: 800px; margin-bottom: 20px;">
@@ -606,7 +1012,7 @@ section { padding: 90px 5vw; position: relative; }
     </div>
   </section>
 
-  <!-- Section 4: Vision & Mission -->
+  <!-- Vision & Mission -->
   <section class="reveal">
     <div class="vm-grid">
       <div class="vm-card">
@@ -629,7 +1035,7 @@ section { padding: 90px 5vw; position: relative; }
     </div>
   </section>
 
-  <!-- Section 5: Our Culture -->
+  <!-- Our Culture -->
   <section class="reveal">
     <div class="section-label"><span class="dash"></span><span class="eyebrow">Our Culture</span></div>
     <h2 class="story-heading">
@@ -640,7 +1046,7 @@ section { padding: 90px 5vw; position: relative; }
     </p>
   </section>
 
-  <!-- Section 6: Facilities -->
+  <!-- Facilities -->
   <section class="reveal">
     <div class="section-label"><span class="dash"></span><span class="eyebrow">Research Environment</span></div>
     <div class="section-header">
@@ -657,6 +1063,242 @@ section { padding: 90px 5vw; position: relative; }
       <div class="cell"><div class="num">07</div><h3>Prototype Development</h3></div>
       <div class="cell"><div class="num">08</div><h3>Technical Workshops</h3></div>
       <div class="cell"><div class="num">09</div><h3>Collaborative Research</h3></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- PART 3: MEMBERS (Merged from Members Page) -->
+  <!-- ============================================================ -->
+
+  <!-- Lab Leadership -->
+  <section class="reveal">
+    <div class="section-label"><span class="dash"></span><span class="eyebrow">Lab Leadership &amp; Mentorship</span></div>
+
+    <div class="member-grid">
+      <!-- LEAD RESEARCHER & HEAD CARD (MD AKIF) -->
+      <div class="member-card head-card">
+        <div class="member-name">MD Akif</div>
+        <div class="member-role">AR/VR Research Lab Lead Researcher &amp; Head</div>
+        <div class="member-meta">
+          <span class="meta-badge">Head of Lab</span>
+          <span class="meta-badge">Immersive Tech &amp; HCI Research</span>
+        </div>
+        <p class="member-desc">
+          Oversees overall lab direction, strategic research initiatives, interdisciplinary project teams, and global academic collaborations.
+        </p>
+        <div class="member-contact-row">
+          <span>EMAIL: <a href="mailto:xrresearchlab@gcet.edu.in">xrresearchlab@gcet.edu.in</a></span>
+          <span>PHONE: <a href="tel:8763688312">+91 8763688312</a></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team Members -->
+  <section class="reveal">
+    <div class="section-label"><span class="dash"></span><span class="eyebrow">Student Researchers &amp; Team Members</span></div>
+    <p style="color: var(--text-muted); font-size: 16.5px; max-width: 800px; margin-bottom: 24px;">
+      Coordinating lab activities, research initiatives, workshops, 3D design, and development projects.
+    </p>
+
+    <div class="member-grid">
+
+      <!-- TEAM MEMBER 1 -->
+      <div class="member-card">
+        <div class="member-avatar-box">
+          <span class="avatar-placeholder-icon">MEMBER</span>
+        </div>
+        <div class="member-name">Team Member Name 1</div>
+        <div class="member-role">XR Developer / Research Lead</div>
+        <div class="member-meta">
+          <span class="meta-badge">3rd Year</span>
+          <span class="meta-badge">CSE</span>
+        </div>
+        <p class="member-desc">Specializes in Unity VR development, spatial tracking, and interactive environment design.</p>
+        <div class="member-contact-row">
+          <span>EMAIL: <a href="mailto:member1@gcet.edu.in">member1@gcet.edu.in</a></span>
+          <span>PHONE: +91 XXXXX XXXXX</span>
+        </div>
+      </div>
+
+      <!-- TEAM MEMBER 2 -->
+      <div class="member-card">
+        <div class="member-avatar-box">
+          <span class="avatar-placeholder-icon">MEMBER</span>
+        </div>
+        <div class="member-name">Team Member Name 2</div>
+        <div class="member-role">AR Prototyping Lead</div>
+        <div class="member-meta">
+          <span class="meta-badge">3rd Year</span>
+          <span class="meta-badge">ECE</span>
+        </div>
+        <p class="member-desc">Focuses on AR optical overlays, sensor integration, and hardware test rigs.</p>
+        <div class="member-contact-row">
+          <span>EMAIL: <a href="mailto:member2@gcet.edu.in">member2@gcet.edu.in</a></span>
+          <span>PHONE: +91 XXXXX XXXXX</span>
+        </div>
+      </div>
+
+      <!-- TEAM MEMBER 3 -->
+      <div class="member-card">
+        <div class="member-avatar-box">
+          <span class="avatar-placeholder-icon">MEMBER</span>
+        </div>
+        <div class="member-name">Team Member Name 3</div>
+        <div class="member-role">Spatial UI/UX Designer</div>
+        <div class="member-meta">
+          <span class="meta-badge">2nd Year</span>
+          <span class="meta-badge">IT</span>
+        </div>
+        <p class="member-desc">Crafts intuitive 3D spatial user interfaces, visual design systems, and interaction models.</p>
+        <div class="member-contact-row">
+          <span>EMAIL: <a href="mailto:member3@gcet.edu.in">member3@gcet.edu.in</a></span>
+          <span>PHONE: +91 XXXXX XXXXX</span>
+        </div>
+      </div>
+
+      <!-- TEAM MEMBER 4 -->
+      <div class="member-card">
+        <div class="member-avatar-box">
+          <span class="avatar-placeholder-icon">MEMBER</span>
+        </div>
+        <div class="member-name">Team Member Name 4</div>
+        <div class="member-role">3D Graphics Specialist</div>
+        <div class="member-meta">
+          <span class="meta-badge">4th Year</span>
+          <span class="meta-badge">CSE</span>
+        </div>
+        <p class="member-desc">Develops photorealistic 3D assets, Blender shaders, and digital twin environments.</p>
+        <div class="member-contact-row">
+          <span>EMAIL: <a href="mailto:member4@gcet.edu.in">member4@gcet.edu.in</a></span>
+          <span>PHONE: +91 XXXXX XXXXX</span>
+        </div>
+      </div>
+
+      <!-- TEAM MEMBER 5 -->
+      <div class="member-card">
+        <div class="member-avatar-box">
+          <span class="avatar-placeholder-icon">MEMBER</span>
+        </div>
+        <div class="member-name">Team Member Name 5</div>
+        <div class="member-role">AI + XR Researcher</div>
+        <div class="member-meta">
+          <span class="meta-badge">3rd Year</span>
+          <span class="meta-badge">AIML</span>
+        </div>
+        <p class="member-desc">Investigates machine learning models for gesture recognition and intelligent VR avatars.</p>
+        <div class="member-contact-row">
+          <span>EMAIL: <a href="mailto:member5@gcet.edu.in">member5@gcet.edu.in</a></span>
+          <span>PHONE: +91 XXXXX XXXXX</span>
+        </div>
+      </div>
+
+      <!-- TEAM MEMBER 6 -->
+      <div class="member-card">
+        <div class="member-avatar-box">
+          <span class="avatar-placeholder-icon">MEMBER</span>
+        </div>
+        <div class="member-name">Team Member Name 6</div>
+        <div class="member-role">XR Game Engineer</div>
+        <div class="member-meta">
+          <span class="meta-badge">2nd Year</span>
+          <span class="meta-badge">EEE</span>
+        </div>
+        <p class="member-desc">Engineers interactive gameplay mechanics, physics simulations, and haptic feedback systems.</p>
+        <div class="member-contact-row">
+          <span>EMAIL: <a href="mailto:member6@gcet.edu.in">member6@gcet.edu.in</a></span>
+          <span>PHONE: +91 XXXXX XXXXX</span>
+        </div>
+      </div>
+
+      <!-- TEAM MEMBER 7 -->
+      <div class="member-card">
+        <div class="member-avatar-box">
+          <span class="avatar-placeholder-icon">MEMBER</span>
+        </div>
+        <div class="member-name">Team Member Name 7</div>
+        <div class="member-role">Industrial Simulation Lead</div>
+        <div class="member-meta">
+          <span class="meta-badge">3rd Year</span>
+          <span class="meta-badge">Mechanical</span>
+        </div>
+        <p class="member-desc">Builds CAD-to-VR visualization pipelines for engineering assembly training.</p>
+        <div class="member-contact-row">
+          <span>EMAIL: <a href="mailto:member7@gcet.edu.in">member7@gcet.edu.in</a></span>
+          <span>PHONE: +91 XXXXX XXXXX</span>
+        </div>
+      </div>
+
+      <!-- TEAM MEMBER 8 -->
+      <div class="member-card">
+        <div class="member-avatar-box">
+          <span class="avatar-placeholder-icon">MEMBER</span>
+        </div>
+        <div class="member-name">Team Member Name 8</div>
+        <div class="member-role">WebXR &amp; Frontend Dev</div>
+        <div class="member-meta">
+          <span class="meta-badge">2nd Year</span>
+          <span class="meta-badge">CSE</span>
+        </div>
+        <p class="member-desc">Develops browser-based 3D WebXR applications, Three.js canvases, and lab web tools.</p>
+        <div class="member-contact-row">
+          <span>EMAIL: <a href="mailto:member8@gcet.edu.in">member8@gcet.edu.in</a></span>
+          <span>PHONE: +91 XXXXX XXXXX</span>
+        </div>
+      </div>
+
+      <!-- TEAM MEMBER 9 -->
+      <div class="member-card">
+        <div class="member-avatar-box">
+          <span class="avatar-placeholder-icon">MEMBER</span>
+        </div>
+        <div class="member-name">Team Member Name 9</div>
+        <div class="member-role">Digital Heritage AR Dev</div>
+        <div class="member-meta">
+          <span class="meta-badge">3rd Year</span>
+          <span class="meta-badge">Civil</span>
+        </div>
+        <p class="member-desc">Leads mobile AR heritage walks, photogrammetry scanning, and architectural tours.</p>
+        <div class="member-contact-row">
+          <span>EMAIL: <a href="mailto:member9@gcet.edu.in">member9@gcet.edu.in</a></span>
+          <span>PHONE: +91 XXXXX XXXXX</span>
+        </div>
+      </div>
+
+      <!-- TEAM MEMBER 10 -->
+      <div class="member-card">
+        <div class="member-avatar-box">
+          <span class="avatar-placeholder-icon">MEMBER</span>
+        </div>
+        <div class="member-name">Team Member Name 10</div>
+        <div class="member-role">Research Publications Lead</div>
+        <div class="member-meta">
+          <span class="meta-badge">4th Year</span>
+          <span class="meta-badge">ECE</span>
+        </div>
+        <p class="member-desc">Coordinates user study testing sessions, paper writing, and conference submission files.</p>
+        <div class="member-contact-row">
+          <span>EMAIL: <a href="mailto:member10@gcet.edu.in">member10@gcet.edu.in</a></span>
+          <span>PHONE: +91 XXXXX XXXXX</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Join Our Community -->
+  <section class="reveal">
+    <div class="quote-banner">
+      <h2 style="font-family:var(--font-display); font-size:clamp(26px, 3.2vw, 42px); color:#FFF; margin-bottom:16px;">
+        Join Our Community
+      </h2>
+      <p style="color:var(--text-muted); font-size:17px; max-width:780px; margin:0 auto 20px; line-height:1.7;">
+        Whether you're a programmer, designer, researcher, storyteller, artist, or simply someone eager to explore the future of immersive technology, the AR/VR Research Lab welcomes curious minds ready to innovate.
+      </p>
+      <blockquote style="font-size:20px; color:var(--cyan-glow); margin-bottom:20px;">
+        "Innovation grows stronger when knowledge is shared."
+      </blockquote>
+      <a href="contact.html" class="btn-primary">Become a Member →</a>
     </div>
   </section>
 
