@@ -273,9 +273,9 @@ html {
 }
 
 .header-logo-bar .header-logo {
-  height: 72px;
+  height: 88px;
   width: auto;
-  max-width: 260px;
+  max-width: 320px;
   object-fit: contain;
   filter: none;
   mix-blend-mode: normal;
@@ -291,6 +291,7 @@ html {
   padding: 4px 5vw;
   gap: 16px;
   position: relative;
+  width: 100%;
 }
 
 .header-logo-wrap {
@@ -305,9 +306,9 @@ html {
 }
 
 .header-logo {
-  height: 64px;
+  height: 80px;
   width: auto;
-  max-width: 220px;
+  max-width: 280px;
   object-fit: contain;
   filter: none;
   mix-blend-mode: normal;
@@ -319,8 +320,10 @@ html {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 2px;
-  flex: 1;
+  margin: 0 auto;
+  width: 100%;
 }
 
 /* Theme toggle positioned to the right of the title */
@@ -1581,7 +1584,7 @@ body.dark-mode .ptag {
     padding: 8px 4vw 4px;
   }
   .header-logo-bar .header-logo {
-    height: 60px;
+    height: 76px;
   }
   .header-top {
     padding: 4px 4vw;
@@ -1619,23 +1622,33 @@ body.dark-mode .ptag {
     padding: 8px 3vw 4px;
   }
   .header-logo-bar .header-logo {
-    height: 50px !important;
-    max-width: 180px !important;
+    height: 68px !important;
+    max-width: 240px !important;
   }
 
   .header-top {
     padding: 4px 3vw;
-    gap: 6px;
+    position: relative;
+    width: 100%;
   }
 
   .header-top .theme-toggle-btn {
-    position: static;
-    transform: none;
+    position: absolute !important;
+    right: 3vw !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+  }
+
+  .header-heading {
+    margin: 0 auto !important;
+    width: 100% !important;
+    text-align: center !important;
   }
 
   .site-title {
-    font-size: 14px !important;
+    font-size: 15px !important;
     letter-spacing: 0.02em;
+    text-align: center !important;
   }
 
   .site-subtitle {
@@ -1774,8 +1787,8 @@ body.dark-mode .ptag {
     padding: 6px 2vw 2px;
   }
   .header-logo-bar .header-logo {
-    height: 42px !important;
-    max-width: 150px !important;
+    height: 56px !important;
+    max-width: 200px !important;
   }
 
   .header-top {
