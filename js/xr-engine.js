@@ -474,24 +474,6 @@
     const header = document.querySelector('.site-header');
     if (!header) return;
 
-    // Inject Audio Mute Toggle Button into header-bottom
-    const headerBottom = header.querySelector('.header-bottom');
-    if (headerBottom && !document.getElementById('audio-toggle-btn')) {
-      const audioBtn = document.createElement('button');
-      audioBtn.id = 'audio-toggle-btn';
-      audioBtn.className = 'audio-toggle-btn';
-      audioBtn.setAttribute('title', 'Toggle Spatial UI Audio');
-      audioBtn.innerHTML = '<span class="audio-lbl">AUDIO ON</span>';
-
-      audioBtn.addEventListener('click', () => {
-        const isMuted = xrSound.toggleMute();
-        audioBtn.innerHTML = isMuted ? '<span class="audio-lbl">AUDIO OFF</span>' : '<span class="audio-lbl">AUDIO ON</span>';
-        if (!isMuted) xrSound.playClick();
-      });
-
-      headerBottom.appendChild(audioBtn);
-    }
-
     // Shrink and blur on scroll
     window.addEventListener('scroll', () => {
       if (window.scrollY > 40) {
@@ -516,6 +498,19 @@
       backdrop = document.createElement('div');
       backdrop.className = 'nav-backdrop';
       document.body.appendChild(backdrop);
+    }
+
+    // Inject Close button into mobile drawer if missing
+    if (!navLinks.querySelector('.nav-close-btn')) {
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'nav-close-btn';
+      closeBtn.setAttribute('aria-label', 'Close Navigation Menu');
+      closeBtn.innerHTML = '✕';
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeMenu();
+      });
+      navLinks.insertBefore(closeBtn, navLinks.firstChild);
     }
 
     const openMenu = () => {
