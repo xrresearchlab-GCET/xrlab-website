@@ -1645,45 +1645,37 @@ body.dark-mode .ptag {
   .header-bottom {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     padding: 6px 3vw 8px;
-    gap: 8px;
     border-top: 1px solid rgba(197, 179, 211, 0.25);
   }
 
   .navtoggle {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    padding: 6px 10px;
-    border-radius: 8px;
-    background: rgba(197, 179, 211, 0.2);
-    border: 1px solid rgba(197, 179, 211, 0.35);
+    display: none !important;
   }
 
-  body.dark-mode .navtoggle {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
+  .nav-close-btn {
+    display: none !important;
   }
 
   /* Horizontal scrollable navigation tabs on mobile header */
   .navlinks {
     display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: flex-start;
+    gap: 8px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     padding: 4px 2px;
-    max-width: calc(100% - 48px);
+    width: 100%;
+    max-width: 100%;
     background: transparent;
     box-shadow: none;
     border: none;
     position: static;
     transform: none;
     height: auto;
-    width: auto;
   }
 
   .navlinks::-webkit-scrollbar {
@@ -1692,14 +1684,15 @@ body.dark-mode .ptag {
 
   .navlinks a {
     flex-shrink: 0;
-    font-size: 11.5px;
-    padding: 6px 12px;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    padding: 7px 16px;
     white-space: nowrap;
     border-radius: 20px;
-    background: rgba(197, 179, 211, 0.15);
-    border: 1px solid rgba(197, 179, 211, 0.3);
+    background: rgba(197, 179, 211, 0.18);
+    border: 1px solid rgba(197, 179, 211, 0.35);
     color: var(--text-main);
-    transition: all 0.2s ease;
+    transition: all 0.25s ease;
   }
 
   .navlinks a.active {
@@ -1707,7 +1700,7 @@ body.dark-mode .ptag {
     border-color: #C5B3D3;
     color: #2B2B2B;
     font-weight: 700;
-    box-shadow: 0 2px 10px rgba(197, 179, 211, 0.3);
+    box-shadow: 0 2px 12px rgba(197, 179, 211, 0.35);
   }
 
   body.dark-mode .navlinks a {
@@ -1721,87 +1714,6 @@ body.dark-mode .ptag {
     border-color: #C5B3D3;
     color: #FFFFFF;
     box-shadow: 0 0 14px rgba(197, 179, 211, 0.4);
-  }
-
-  /* Close button for mobile drawer */
-  .nav-close-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    align-self: flex-end;
-    background: rgba(197, 179, 211, 0.2);
-    border: 1px solid rgba(197, 179, 211, 0.4);
-    color: var(--text-main);
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    font-size: 16px;
-    cursor: pointer;
-    margin-bottom: 8px;
-    flex-shrink: 0;
-    transition: all 0.2s ease;
-  }
-
-  .nav-close-btn:hover {
-    background: rgba(197, 179, 211, 0.4);
-    transform: scale(1.05);
-  }
-
-  body.dark-mode .nav-close-btn {
-    color: #FFFFFF;
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.25);
-  }
-
-  /* Full mobile drawer overlay when toggled open */
-  .navlinks.open {
-    position: fixed !important;
-    top: 0 !important;
-    right: 0 !important;
-    width: 290px !important;
-    max-width: 85vw !important;
-    height: 100vh !important;
-    height: 100dvh !important;
-    background: rgba(251, 239, 239, 0.98) !important;
-    backdrop-filter: blur(25px) !important;
-    -webkit-backdrop-filter: blur(25px) !important;
-    flex-direction: column !important;
-    justify-content: flex-start !important;
-    align-items: stretch !important;
-    padding: 24px 20px 40px !important;
-    gap: 8px !important;
-    transform: translateX(0) !important;
-    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.3) !important;
-    border-left: 1px solid var(--border-glass) !important;
-    z-index: 10005 !important;
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-  }
-
-  /* Fallback for Android that doesn't support backdrop-filter */
-  @supports not (backdrop-filter: blur(25px)) {
-    .navlinks.open {
-      background: rgba(251, 239, 239, 1) !important;
-    }
-    body.dark-mode .navlinks.open {
-      background: rgba(13, 11, 20, 1) !important;
-    }
-  }
-
-  body.dark-mode .navlinks.open {
-    background: rgba(13, 11, 20, 0.98) !important;
-    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.7) !important;
-  }
-
-  .navlinks.open a {
-    font-size: 14px !important;
-    padding: 12px 16px !important;
-    border-radius: 12px !important;
-    width: 100% !important;
-    min-height: 44px !important;
-    display: flex !important;
-    align-items: center !important;
-    white-space: normal !important;
   }
 
   .hero {

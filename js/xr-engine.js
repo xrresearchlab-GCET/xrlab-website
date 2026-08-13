@@ -488,69 +488,12 @@
   // 5B. RESPONSIVE MOBILE DRAWER NAVIGATION CONTROLLER
   // =========================================================================
   function initMobileNav() {
-    const toggleBtn = document.getElementById('navtoggle') || document.querySelector('.navtoggle');
-    const navLinks = document.getElementById('navlinks') || document.querySelector('.navlinks');
-    if (!toggleBtn || !navLinks) return;
-
-    // Inject backdrop overlay if missing
-    let backdrop = document.querySelector('.nav-backdrop');
-    if (!backdrop) {
-      backdrop = document.createElement('div');
-      backdrop.className = 'nav-backdrop';
-      document.body.appendChild(backdrop);
+    // Navigation links are rendered as a clean horizontal scrollable tab bar on mobile.
+    // Clean up any stale drawer close button if present
+    const closeBtn = document.querySelector('.nav-close-btn');
+    if (closeBtn && closeBtn.parentNode) {
+      closeBtn.parentNode.removeChild(closeBtn);
     }
-
-    // Inject Close button into mobile drawer if missing
-    if (!navLinks.querySelector('.nav-close-btn')) {
-      const closeBtn = document.createElement('button');
-      closeBtn.className = 'nav-close-btn';
-      closeBtn.setAttribute('aria-label', 'Close Navigation Menu');
-      closeBtn.innerHTML = '✕';
-      closeBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        closeMenu();
-      });
-      navLinks.insertBefore(closeBtn, navLinks.firstChild);
-    }
-
-    const openMenu = () => {
-      toggleBtn.classList.add('open');
-      navLinks.classList.add('open');
-      backdrop.classList.add('open');
-      toggleBtn.setAttribute('aria-expanded', 'true');
-      document.body.style.overflow = 'hidden';
-      if (typeof xrSound !== 'undefined' && xrSound.playClick) xrSound.playClick();
-    };
-
-    const closeMenu = () => {
-      toggleBtn.classList.remove('open');
-      navLinks.classList.remove('open');
-      backdrop.classList.remove('open');
-      toggleBtn.setAttribute('aria-expanded', 'false');
-      document.body.style.overflow = '';
-      if (typeof xrSound !== 'undefined' && xrSound.playClick) xrSound.playClick();
-    };
-
-    toggleBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (navLinks.classList.contains('open')) {
-        closeMenu();
-      } else {
-        openMenu();
-      }
-    });
-
-    backdrop.addEventListener('click', closeMenu);
-
-    navLinks.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', closeMenu);
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && navLinks.classList.contains('open')) {
-        closeMenu();
-      }
-    });
   }
 
 
