@@ -133,225 +133,8 @@
   // =========================================================================
   // 2. 3D SPATIAL BACKGROUND CANVAS ENGINE WITH SCROLL EXPANSION ANIMATION
   // =========================================================================
+  // 2. 3D SPATIAL BACKGROUND SCENE ENGINE
   // =========================================================================
-  // =========================================================================
-  // 2. 3D SPATIAL XR HEADSET CANVAS ENGINE WITH SCROLL EXPANSION ANIMATION
-  // =========================================================================
-  function init3DBackgroundScene() {
-    const container = document.getElementById('canvas-container');
-    if (!container || typeof THREE === 'undefined') return;
-
-    // Check if canvas already initialized
-    if (container.querySelector('canvas')) return;
-
-    const scene = new THREE.Scene();
-
-    const rect = container.getBoundingClientRect();
-    const width = rect.width || (window.innerWidth * 0.46);
-    const height = rect.height || (window.innerHeight * 0.8);
-
-    const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 1000);
-    camera.position.z = 7;
-
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    container.appendChild(renderer.domElement);
-
-    // Create 3D XR Visor Headset Group
-    const xrHeadsetGroup = new THREE.Group();
-
-    // 1. Visor Main Frame Shield (Soft Lavender Wireframe)
-    const visorGeo = new THREE.BoxGeometry(3.6, 1.8, 1.3, 6, 4, 4);
-    const visorMat = new THREE.MeshBasicMaterial({
-      color: 0xC5B3D3,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.45
-    });
-    const visorMesh = new THREE.Mesh(visorGeo, visorMat);
-    xrHeadsetGroup.add(visorMesh);
-
-    // 2. Visor Front Glass Shield (Soft Pastel Pink Tinted Translucent Front Plate)
-    const shieldGeo = new THREE.PlaneGeometry(3.4, 1.6, 4, 4);
-    const shieldMat = new THREE.MeshBasicMaterial({
-      color: 0xFFE2E2,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.5,
-      side: THREE.DoubleSide
-    });
-    const shieldMesh = new THREE.Mesh(shieldGeo, shieldMat);
-    shieldMesh.position.z = 0.66;
-    xrHeadsetGroup.add(shieldMesh);
-
-    // 3. Dual Spatial Optical Lens Rings (Left & Right Eye Display Lenses)
-    const lensGeo = new THREE.TorusGeometry(0.52, 0.07, 16, 32);
-    const lensMat = new THREE.MeshBasicMaterial({
-      color: 0xC5B3D3,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.85
-    });
-
-    const leftLens = new THREE.Mesh(lensGeo, lensMat);
-    leftLens.position.set(-0.85, 0, 0.67);
-    xrHeadsetGroup.add(leftLens);
-
-    const rightLens = new THREE.Mesh(lensGeo, lensMat);
-    rightLens.position.set(0.85, 0, 0.67);
-    xrHeadsetGroup.add(rightLens);
-
-    // 4. Ergonomic Headband Strap Ring (Rose Blush Primary)
-    const strapGeo = new THREE.TorusGeometry(2.1, 0.1, 16, 48);
-    const strapMat = new THREE.MeshBasicMaterial({
-      color: 0xF5CBCB,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.4
-    });
-    const strapMesh = new THREE.Mesh(strapGeo, strapMat);
-    strapMesh.rotation.x = Math.PI / 2;
-    strapMesh.position.z = -0.4;
-    xrHeadsetGroup.add(strapMesh);
-
-    // 5. 6DOF Spatial Tracking Sensors (Glowing Lavender Corner Cameras)
-    const sensorGeo = new THREE.OctahedronGeometry(0.14, 1);
-    const sensorMat = new THREE.MeshBasicMaterial({
-      color: 0xC5B3D3,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.9
-    });
-
-    const sensorPositions = [
-      [-1.7, 0.8, 0.65],
-      [1.7, 0.8, 0.65],
-      [-1.7, -0.8, 0.65],
-      [1.7, -0.8, 0.65]
-    ];
-
-    sensorPositions.forEach(pos => {
-      const sensor = new THREE.Mesh(sensorGeo, sensorMat);
-      sensor.position.set(...pos);
-      xrHeadsetGroup.add(sensor);
-    });
-
-    // 6. Floating Spatial Orbit Ring surrounding Headset
-    const orbitGeo = new THREE.TorusGeometry(3.3, 0.03, 16, 64);
-    const orbitMat = new THREE.MeshBasicMaterial({
-      color: 0xC5B3D3,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.4
-    });
-    const orbitMesh = new THREE.Mesh(orbitGeo, orbitMat);
-    orbitMesh.rotation.x = 1.1;
-    orbitMesh.rotation.y = 0.5;
-    xrHeadsetGroup.add(orbitMesh);
-
-    scene.add(xrHeadsetGroup);
-
-    // Floating Particles System in Soft Lavender & White
-    const particleCount = 220;
-    const particlesGeo = new THREE.BufferGeometry();
-    const positions = new Float32Array(particleCount * 3);
-
-    for (let i = 0; i < particleCount * 3; i += 3) {
-      positions[i] = (Math.random() - 0.5) * 16;
-      positions[i + 1] = (Math.random() - 0.5) * 16;
-      positions[i + 2] = (Math.random() - 0.5) * 16;
-    }
-    particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-
-    const particlesMat = new THREE.PointsMaterial({
-      color: 0xC5B3D3,
-      size: 0.055,
-      transparent: true,
-      opacity: 0.6
-    });
-    const particleSystem = new THREE.Points(particlesGeo, particlesMat);
-    scene.add(particleSystem);
-
-    // Interactive Mouse Parallax
-    let mouseX = 0, mouseY = 0;
-    document.addEventListener('mousemove', (e) => {
-      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-    });
-
-    // 3D Scroll Expansion Physics Engine (Expands headset object as user moves down)
-    let targetScale = 1.0;
-    let currentScale = 1.0;
-    let targetRotSpeed = 1.0;
-    let currentRotSpeed = 1.0;
-
-    window.addEventListener('scroll', () => {
-      const scrollY = window.scrollY || window.pageYOffset;
-      // Object expands smoothly as user scrolls down the page
-      targetScale = 1.0 + Math.min(scrollY / 320, 2.5);
-      targetRotSpeed = 1.0 + Math.min(scrollY / 600, 2.0);
-    });
-
-    // Wireframe Color / Speed Toggle Button (HUD Button)
-    let speedMultiplier = 1;
-    const toggleBtn = document.getElementById('toggle-canvas-wireframe');
-    if (toggleBtn) {
-      toggleBtn.addEventListener('click', () => {
-        speedMultiplier = speedMultiplier === 1 ? 2.5 : 1;
-        visorMat.color.setHex(speedMultiplier > 1 ? 0xF5CBCB : 0xC5B3D3);
-        lensMat.color.setHex(speedMultiplier > 1 ? 0xF5CBCB : 0xC5B3D3);
-      });
-    }
-
-    const hudCoords = document.getElementById('hud-coords');
-
-    // Handle Window Resize
-    window.addEventListener('resize', () => {
-      const r = container.getBoundingClientRect();
-      const w = r.width || window.innerWidth;
-      const h = r.height || window.innerHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    });
-
-    // Animation Loop
-    function animate() {
-      requestAnimationFrame(animate);
-
-      // Lerp scale expansion for fluid organic response to scrolling down
-      currentScale += (targetScale - currentScale) * 0.07;
-      currentRotSpeed += (targetRotSpeed - currentRotSpeed) * 0.07;
-
-      xrHeadsetGroup.scale.set(currentScale, currentScale, currentScale);
-      particleSystem.scale.set(1 + (currentScale - 1) * 0.5, 1 + (currentScale - 1) * 0.5, 1 + (currentScale - 1) * 0.5);
-
-      const effectiveSpeed = speedMultiplier * currentRotSpeed;
-      xrHeadsetGroup.rotation.y += 0.006 * effectiveSpeed;
-      xrHeadsetGroup.rotation.x = Math.sin(Date.now() * 0.001) * 0.15;
-
-      orbitMesh.rotation.z += 0.008 * effectiveSpeed;
-      leftLens.rotation.z += 0.01 * effectiveSpeed;
-      rightLens.rotation.z -= 0.01 * effectiveSpeed;
-
-      particleSystem.rotation.y += 0.001 * effectiveSpeed;
-
-      camera.position.x += (mouseX * 1.2 - camera.position.x) * 0.05;
-      camera.position.y += (-mouseY * 1.2 - camera.position.y) * 0.05;
-      camera.lookAt(scene.position);
-
-      if (hudCoords && Math.random() > 0.85) {
-        const posX = Math.floor(xrHeadsetGroup.rotation.x * 100);
-        const posY = Math.floor(xrHeadsetGroup.rotation.y * 100);
-        const posZ = Math.floor(currentScale * 100);
-        hudCoords.innerText = `X:${posX} Y:${posY} SCALE:${posZ}%`;
-      }
-
-      renderer.render(scene, camera);
-    }
-    animate();
-  }
 
 
   // =========================================================================
@@ -571,7 +354,7 @@
 
 
   // =========================================================================
-  // 2. 3D SPATIAL SPACE CANVAS SCENE (FUN CARTOONS & ROCKETS WITH FUMES) (UPDATE 3 & 4)
+  // 2. 3D SPATIAL SPACE CANVAS SCENE (ENLARGED PLANET, 3 ORBITING SATELLITES, & ULTRA-TINY ALIEN ASTRONAUTS WITH PHYSICS THRUSTERS)
   // =========================================================================
   function init3DBackgroundScene() {
     let container = document.getElementById('canvas-container');
@@ -595,7 +378,7 @@
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
 
-    // Ambient & Point Lighting
+    // Ambient & Directional Lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.95);
     scene.add(ambientLight);
 
@@ -608,7 +391,7 @@
     scene.add(spaceGroup);
 
     // -------------------------------------------------------------------------
-    // A. FUN ROAMING 3D CARTOON ASTRONAUT / ROBOT CHARACTERS
+    // A. ULTRA-TINY ALIEN CHARACTERS WITH SPINNING PROPELLERS & JETPACK THRUSTERS
     // -------------------------------------------------------------------------
     function createCartoonCharacter(colorHex, scale = 1) {
       const charGroup = new THREE.Group();
@@ -620,7 +403,7 @@
       head.position.y = 0.5 * scale;
       charGroup.add(head);
 
-      // Cute Big Visor / Eyes
+      // Cute Visor / Eyes
       const eyeGeo = new THREE.SphereGeometry(0.24 * scale, 16, 16);
       const eyeMat = new THREE.MeshBasicMaterial({ color: 0x222233 });
       const eye = new THREE.Mesh(eyeGeo, eyeMat);
@@ -628,18 +411,41 @@
       eye.scale.set(1.4, 0.9, 0.5);
       charGroup.add(eye);
 
-      // Antenna with Glowing Ball
+      // Antenna Stem
       const antStemGeo = new THREE.CylinderGeometry(0.04 * scale, 0.04 * scale, 0.35 * scale);
       const antStemMat = new THREE.MeshToonMaterial({ color: 0xcccccc });
       const antStem = new THREE.Mesh(antStemGeo, antStemMat);
       antStem.position.set(0, 1.1 * scale, 0);
       charGroup.add(antStem);
 
+      // Antenna Ball
       const antBallGeo = new THREE.SphereGeometry(0.12 * scale, 12, 12);
       const antBallMat = new THREE.MeshBasicMaterial({ color: 0xf5cbcb });
       const antBall = new THREE.Mesh(antBallGeo, antBallMat);
       antBall.position.set(0, 1.3 * scale, 0);
       charGroup.add(antBall);
+
+      // --- PROPELLER ON HEAD/ANTENNA ---
+      const propellerGroup = new THREE.Group();
+      propellerGroup.position.set(0, 1.42 * scale, 0);
+      
+      const propHubGeo = new THREE.CylinderGeometry(0.06 * scale, 0.06 * scale, 0.08 * scale, 12);
+      const propHubMat = new THREE.MeshStandardMaterial({ color: 0x444455, metalness: 0.8 });
+      const propHub = new THREE.Mesh(propHubGeo, propHubMat);
+      propellerGroup.add(propHub);
+
+      // 3 Spinning Propeller Blades
+      for (let b = 0; b < 3; b++) {
+        const bladeGeo = new THREE.BoxGeometry(0.55 * scale, 0.02 * scale, 0.12 * scale);
+        const bladeMat = new THREE.MeshToonMaterial({ color: 0xeeeeff });
+        const blade = new THREE.Mesh(bladeGeo, bladeMat);
+        const bAngle = (b * Math.PI * 2) / 3;
+        blade.position.set(Math.cos(bAngle) * 0.25 * scale, 0, Math.sin(bAngle) * 0.25 * scale);
+        blade.rotation.y = -bAngle + 0.2;
+        propellerGroup.add(blade);
+      }
+      charGroup.add(propellerGroup);
+      charGroup.userData.propeller = propellerGroup;
 
       // Cartoon Body
       const bodyGeo = new THREE.CylinderGeometry(0.38 * scale, 0.45 * scale, 0.7 * scale, 16);
@@ -648,110 +454,256 @@
       body.position.y = -0.15 * scale;
       charGroup.add(body);
 
-      // Cute Backpack Jetpack
+      // Jetpack Backpack
       const packGeo = new THREE.BoxGeometry(0.45 * scale, 0.55 * scale, 0.3 * scale);
       const packMat = new THREE.MeshToonMaterial({ color: colorHex });
       const pack = new THREE.Mesh(packGeo, packMat);
       pack.position.set(0, -0.1 * scale, -0.4 * scale);
       charGroup.add(pack);
 
+      // --- TWIN JETPACK THRUSTERS & FLAMES ---
+      const flames = [];
+      const nozPositions = [-0.16 * scale, 0.16 * scale];
+
+      nozPositions.forEach(posX => {
+        // Metallic Thruster Nozzle
+        const nozGeo = new THREE.CylinderGeometry(0.07 * scale, 0.12 * scale, 0.22 * scale, 12);
+        const nozMat = new THREE.MeshStandardMaterial({ color: 0x222233, metalness: 0.9, roughness: 0.2 });
+        const noz = new THREE.Mesh(nozGeo, nozMat);
+        noz.position.set(posX, -0.42 * scale, -0.4 * scale);
+        noz.rotation.x = Math.PI;
+        charGroup.add(noz);
+
+        // Glowing Thruster Flame
+        const flameGeo = new THREE.ConeGeometry(0.11 * scale, 0.38 * scale, 12);
+        const flameMat = new THREE.MeshBasicMaterial({ color: 0xff9900, transparent: true, opacity: 0.9 });
+        const flame = new THREE.Mesh(flameGeo, flameMat);
+        flame.position.set(posX, -0.68 * scale, -0.4 * scale);
+        flame.rotation.x = Math.PI;
+        charGroup.add(flame);
+        flames.push(flame);
+      });
+      charGroup.userData.flames = flames;
+
+      // Alien Exhaust Particle Stream
+      const pCount = 14;
+      const pGeo = new THREE.BufferGeometry();
+      const pPos = new Float32Array(pCount * 3);
+      for (let p = 0; p < pCount; p++) {
+        pPos[p * 3] = (Math.random() - 0.5) * 0.15 * scale;
+        pPos[p * 3 + 1] = -0.5 * scale - Math.random() * 0.4 * scale;
+        pPos[p * 3 + 2] = -0.4 * scale + (Math.random() - 0.5) * 0.15 * scale;
+      }
+      pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+      const pMat = new THREE.PointsMaterial({
+        color: 0xffcc44,
+        size: 0.08 * scale,
+        transparent: true,
+        opacity: 0.8
+      });
+      const pParticles = new THREE.Points(pGeo, pMat);
+      charGroup.add(pParticles);
+      charGroup.userData.pParticles = pParticles;
+
       return charGroup;
     }
 
-    const cartoon1 = createCartoonCharacter(0xc5b3d3, 1.1);
-    cartoon1.position.set(-3.2, 0.8, 0);
+    // Ultra-tiny Aliens roaming around space (scales reduced to 0.12, 0.09, 0.07 so they look very very small)
+    const cartoon1 = createCartoonCharacter(0xc5b3d3, 0.12);
+    cartoon1.position.set(-2.8, 1.2, 1.0);
     spaceGroup.add(cartoon1);
 
-    const cartoon2 = createCartoonCharacter(0xf5cbcb, 0.85);
-    cartoon2.position.set(3.4, -1.0, 0.5);
+    const cartoon2 = createCartoonCharacter(0xf5cbcb, 0.09);
+    cartoon2.position.set(2.8, -1.2, 1.2);
     spaceGroup.add(cartoon2);
 
+    const cartoon3 = createCartoonCharacter(0x64ffda, 0.07);
+    cartoon3.position.set(1.5, 1.8, 0.8);
+    spaceGroup.add(cartoon3);
+
     // -------------------------------------------------------------------------
-    // B. 3D ROCKET WITH ENGINE FUMES / SMOKE TRAIL
+    // B. 3 HIGH-TECH MINI SATELLITES ORBITING IN DIFFERENT WAYS
     // -------------------------------------------------------------------------
-    const rocketGroup = new THREE.Group();
+    function createSatellite(solarColorHex = 0x38bdf8, scale = 0.2) {
+      const satGroup = new THREE.Group();
 
-    // Rocket Body Cone + Cylinder
-    const rBodyGeo = new THREE.CylinderGeometry(0.35, 0.4, 1.5, 16);
-    const rBodyMat = new THREE.MeshToonMaterial({ color: 0xffffff });
-    const rBody = new THREE.Mesh(rBodyGeo, rBodyMat);
-    rocketGroup.add(rBody);
+      // Main Satellite Chassis Box
+      const bodyGeo = new THREE.BoxGeometry(0.5 * scale, 0.5 * scale, 0.7 * scale);
+      const bodyMat = new THREE.MeshStandardMaterial({ color: 0xe0e0e0, metalness: 0.85, roughness: 0.2 });
+      const body = new THREE.Mesh(bodyGeo, bodyMat);
+      satGroup.add(body);
 
-    // Rocket Nose Cone
-    const rNoseGeo = new THREE.ConeGeometry(0.35, 0.8, 16);
-    const rNoseMat = new THREE.MeshToonMaterial({ color: 0xf5cbcb });
-    const rNose = new THREE.Mesh(rNoseGeo, rNoseMat);
-    rNose.position.y = 1.15;
-    rocketGroup.add(rNose);
+      // Gold Foil Thermal Insulation Shield
+      const foilGeo = new THREE.BoxGeometry(0.42 * scale, 0.42 * scale, 0.06 * scale);
+      const foilMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.95, roughness: 0.1 });
+      const foil = new THREE.Mesh(foilGeo, foilMat);
+      foil.position.z = 0.36 * scale;
+      satGroup.add(foil);
 
-    // Rocket Fin Wings (3 Fins)
-    for (let i = 0; i < 3; i++) {
-      const finGeo = new THREE.BoxGeometry(0.12, 0.6, 0.45);
-      const finMat = new THREE.MeshToonMaterial({ color: 0xc5b3d3 });
-      const fin = new THREE.Mesh(finGeo, finMat);
-      const angle = (i * Math.PI * 2) / 3;
-      fin.position.set(Math.cos(angle) * 0.4, -0.5, Math.sin(angle) * 0.4);
-      fin.rotation.y = -angle;
-      rocketGroup.add(fin);
-    }
+      // Parabolic Dish Antenna
+      const dishGeo = new THREE.CylinderGeometry(0.35 * scale, 0.05 * scale, 0.15 * scale, 16);
+      const dishMat = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.7, roughness: 0.3 });
+      const dish = new THREE.Mesh(dishGeo, dishMat);
+      dish.position.set(0, 0.38 * scale, 0);
+      dish.rotation.x = -Math.PI / 4;
+      satGroup.add(dish);
 
-    // Rocket Nozzle
-    const nozGeo = new THREE.CylinderGeometry(0.22, 0.3, 0.25, 12);
-    const nozMat = new THREE.MeshBasicMaterial({ color: 0x333344 });
-    const nozzle = new THREE.Mesh(nozGeo, nozMat);
-    nozzle.position.y = -0.88;
-    rocketGroup.add(nozzle);
+      // Dish Feed Horn Pin
+      const pinGeo = new THREE.CylinderGeometry(0.02 * scale, 0.02 * scale, 0.25 * scale);
+      const pinMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+      const pin = new THREE.Mesh(pinGeo, pinMat);
+      pin.position.set(0, 0.48 * scale, 0.1 * scale);
+      satGroup.add(pin);
 
-    rocketGroup.rotation.z = -Math.PI / 4;
-    rocketGroup.position.set(0.5, 1.5, 0.8);
-    spaceGroup.add(rocketGroup);
+      // Dual Solar Panel Wings
+      const panelWidth = 1.1 * scale;
+      const panelHeight = 0.4 * scale;
 
-    // Dynamic Rocket Fumes / Smoke Particle Emitter
-    const fumeCount = 120;
-    const fumesGeo = new THREE.BufferGeometry();
-    const fumePositions = new Float32Array(fumeCount * 3);
-    const fumeVelocities = [];
+      [-1, 1].forEach(side => {
+        const armGeo = new THREE.CylinderGeometry(0.04 * scale, 0.04 * scale, 0.3 * scale);
+        const armMat = new THREE.MeshStandardMaterial({ color: 0x444455 });
+        const arm = new THREE.Mesh(armGeo, armMat);
+        arm.rotation.z = Math.PI / 2;
+        arm.position.x = side * 0.38 * scale;
+        satGroup.add(arm);
 
-    for (let i = 0; i < fumeCount; i++) {
-      fumePositions[i * 3] = (Math.random() - 0.5) * 0.5;
-      fumePositions[i * 3 + 1] = -1.0 - Math.random() * 1.8;
-      fumePositions[i * 3 + 2] = (Math.random() - 0.5) * 0.5;
+        const panelGeo = new THREE.BoxGeometry(panelWidth, panelHeight, 0.03 * scale);
+        const panelMat = new THREE.MeshStandardMaterial({ color: solarColorHex, metalness: 0.6, roughness: 0.3 });
+        const panel = new THREE.Mesh(panelGeo, panelMat);
+        panel.position.x = side * (0.38 * scale + panelWidth / 2);
+        satGroup.add(panel);
 
-      fumeVelocities.push({
-        x: (Math.random() - 0.5) * 0.025,
-        y: -0.05 - Math.random() * 0.035,
-        z: (Math.random() - 0.5) * 0.025,
-        life: Math.random()
+        const gridGeo = new THREE.BoxGeometry(panelWidth * 0.96, panelHeight * 0.92, 0.04 * scale);
+        const gridMat = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.45 });
+        const grid = new THREE.Mesh(gridGeo, gridMat);
+        grid.position.x = side * (0.38 * scale + panelWidth / 2);
+        satGroup.add(grid);
       });
+
+      // Signal Beacon Light
+      const beaconGeo = new THREE.SphereGeometry(0.1 * scale, 12, 12);
+      const beaconMat = new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.9 });
+      const beacon = new THREE.Mesh(beaconGeo, beaconMat);
+      beacon.position.set(0, -0.32 * scale, 0);
+      satGroup.add(beacon);
+      satGroup.userData.beacon = beacon;
+
+      return satGroup;
     }
-    fumesGeo.setAttribute('position', new THREE.BufferAttribute(fumePositions, 3));
 
-    const fumesMat = new THREE.PointsMaterial({
-      color: 0xf5cbcb,
-      size: 0.22,
-      transparent: true,
-      opacity: 0.85
-    });
-    const fumeParticles = new THREE.Points(fumesGeo, fumesMat);
-    rocketGroup.add(fumeParticles);
+    // 3 Small Satellites (scales 0.22, 0.18, 0.15)
+    const sat1 = createSatellite(0x38bdf8, 0.22); // Cyan Solar Panels
+    const sat2 = createSatellite(0xec4899, 0.18); // Pink Solar Panels
+    const sat3 = createSatellite(0x10b981, 0.15); // Emerald Solar Panels
+
+    spaceGroup.add(sat1);
+    spaceGroup.add(sat2);
+    spaceGroup.add(sat3);
 
     // -------------------------------------------------------------------------
-    // C. CARTOON PLANET & STARFIELD
+    // C. EVEN BIGGER MAJESTIC PLANET WITH 4D HYPERCUBE CIVILIZATION CORE
     // -------------------------------------------------------------------------
-    const planetGeo = new THREE.SphereGeometry(0.85, 24, 24);
-    const planetMat = new THREE.MeshToonMaterial({ color: 0xc5b3d3 });
+    const planetGeo = new THREE.SphereGeometry(3.2, 36, 36);
+    const planetMat = new THREE.MeshToonMaterial({ color: 0x9b7bb8, transparent: true, opacity: 1.0 });
     const planet = new THREE.Mesh(planetGeo, planetMat);
-    planet.position.set(0, -2.2, -1.2);
+    planet.position.set(0.2, -0.4, -2.8);
 
-    const ringGeo = new THREE.TorusGeometry(1.4, 0.08, 16, 48);
+    // Planet Outer & Inner Wireframe Rings
+    const ringGeo = new THREE.TorusGeometry(4.8, 0.14, 16, 64);
     const ringMat = new THREE.MeshBasicMaterial({ color: 0xf5cbcb, wireframe: true });
     const pRing = new THREE.Mesh(ringGeo, ringMat);
-    pRing.rotation.x = Math.PI / 2.5;
+    pRing.rotation.x = Math.PI / 2.3;
     planet.add(pRing);
+
+    const innerRingGeo = new THREE.TorusGeometry(4.1, 0.05, 16, 64);
+    const innerRingMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 });
+    const pRingInner = new THREE.Mesh(innerRingGeo, innerRingMat);
+    pRingInner.rotation.x = Math.PI / 2.3;
+    planet.add(pRingInner);
+
+    // Cartoon Craters on Planet Surface
+    const craterMat = new THREE.MeshToonMaterial({ color: 0x8262a0, transparent: true, opacity: 1.0 });
+    const craterGeo = new THREE.SphereGeometry(0.55, 16, 16);
+
+    const crater1 = new THREE.Mesh(craterGeo, craterMat);
+    crater1.position.set(1.9, 1.6, 1.8);
+    crater1.scale.set(1, 0.3, 1);
+    planet.add(crater1);
+
+    const crater2 = new THREE.Mesh(craterGeo, craterMat);
+    crater2.position.set(-1.6, -1.1, 2.3);
+    crater2.scale.set(0.7, 0.25, 0.7);
+    planet.add(crater2);
+
+    const crater3 = new THREE.Mesh(craterGeo, craterMat);
+    crater3.position.set(0.4, -2.1, 2.2);
+    crater3.scale.set(0.5, 0.2, 0.5);
+    planet.add(crater3);
+
+    // -------------------------------------------------------------------------
+    // D. 4D TESSERACT HYPERCUBE STRUCTURE INSIDE PLANET CORE (ADVANCED CIVILIZATION)
+    // -------------------------------------------------------------------------
+    const coreGroup = new THREE.Group();
+    planet.add(coreGroup);
+
+    // Outer 3D Hypercube Frame
+    const outerHyperGeo = new THREE.BoxGeometry(2.2, 2.2, 2.2);
+    const outerHyperMat = new THREE.MeshBasicMaterial({ color: 0xa855f7, wireframe: true });
+    const outerHyper = new THREE.Mesh(outerHyperGeo, outerHyperMat);
+    coreGroup.add(outerHyper);
+
+    // Inner 3D Hypercube Frame
+    const innerHyperGeo = new THREE.BoxGeometry(1.1, 1.1, 1.1);
+    const innerHyperMat = new THREE.MeshBasicMaterial({ color: 0x64ffda, wireframe: true });
+    const innerHyper = new THREE.Mesh(innerHyperGeo, innerHyperMat);
+    coreGroup.add(innerHyper);
+
+    // 8 Hyper-Edge Struts Connecting Outer to Inner Corners
+    const hyperStrutsGroup = new THREE.Group();
+    const corners = [
+      [-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1],
+      [-1, -1, 1],  [1, -1, 1],  [1, 1, 1],  [-1, 1, 1]
+    ];
+    corners.forEach(c => {
+      const pOuter = new THREE.Vector3(c[0] * 1.1, c[1] * 1.1, c[2] * 1.1);
+      const pInner = new THREE.Vector3(c[0] * 0.55, c[1] * 0.55, c[2] * 0.55);
+      const lineGeo = new THREE.BufferGeometry().setFromPoints([pOuter, pInner]);
+      const lineMat = new THREE.LineBasicMaterial({ color: 0xec4899, linewidth: 2 });
+      const strut = new THREE.Line(lineGeo, lineMat);
+      hyperStrutsGroup.add(strut);
+    });
+    coreGroup.add(hyperStrutsGroup);
+
+    // Intersecting 4D Hyper-Rings
+    const tRing1 = new THREE.Mesh(new THREE.TorusGeometry(1.6, 0.04, 16, 64), new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true }));
+    const tRing2 = new THREE.Mesh(new THREE.TorusGeometry(1.6, 0.04, 16, 64), new THREE.MeshBasicMaterial({ color: 0xf59e0b, wireframe: true }));
+    tRing2.rotation.x = Math.PI / 2;
+    coreGroup.add(tRing1);
+    coreGroup.add(tRing2);
+
+    // Quantum Core Energy Orb & Core Particle Field
+    const orbGeo = new THREE.IcosahedronGeometry(0.55, 2);
+    const orbMat = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.9 });
+    const orb = new THREE.Mesh(orbGeo, orbMat);
+    coreGroup.add(orb);
+
+    const cCount = 60;
+    const cGeo = new THREE.BufferGeometry();
+    const cPos = new Float32Array(cCount * 3);
+    for (let i = 0; i < cCount * 3; i += 3) {
+      cPos[i] = (Math.random() - 0.5) * 1.6;
+      cPos[i + 1] = (Math.random() - 0.5) * 1.6;
+      cPos[i + 2] = (Math.random() - 0.5) * 1.6;
+    }
+    cGeo.setAttribute('position', new THREE.BufferAttribute(cPos, 3));
+    const cMat = new THREE.PointsMaterial({ color: 0x64ffda, size: 0.07, transparent: true, opacity: 0.85 });
+    const coreParticles = new THREE.Points(cGeo, cMat);
+    coreGroup.add(coreParticles);
+
     spaceGroup.add(planet);
 
     // Starfield particles
-    const starCount = 300;
+    const starCount = 380;
     const starGeo = new THREE.BufferGeometry();
     const starPos = new Float32Array(starCount * 3);
     for (let i = 0; i < starCount * 3; i += 3) {
@@ -780,68 +732,143 @@
       renderer.setSize(w, h);
     });
 
-    // Animation Loop with Continuous 3D Spatial Roaming (UPDATE 1)
+    // Animation Loop with Scroll-Driven Zoom Into Planet Core & 4D Civilization Hypercube
     let clock = new THREE.Clock();
 
     function animate() {
       requestAnimationFrame(animate);
       const elapsed = clock.getElapsedTime();
 
-      // A. Continuous 3D Spatial Roaming for Rocket (Orbital Trajectory & Dynamic Direction Heading)
-      const rSpeed = 0.45;
-      const rX = Math.sin(elapsed * rSpeed) * 5.5;
-      const rY = Math.cos(elapsed * rSpeed * 0.7) * 2.8;
-      const rZ = Math.sin(elapsed * rSpeed * 1.2) * 1.5;
+      // Scroll Progress calculation
+      const scrollY = window.scrollY || window.pageYOffset || 0;
+      const maxScroll = Math.max(document.body.scrollHeight - window.innerHeight, 1);
+      const scrollProgress = Math.min(Math.max(scrollY / maxScroll, 0), 1);
 
-      // Calculate direction velocity vector to rotate rocket along flight path
-      const nextX = Math.sin((elapsed + 0.05) * rSpeed) * 5.5;
-      const nextY = Math.cos((elapsed + 0.05) * rSpeed * 0.7) * 2.8;
-      const nextZ = Math.sin((elapsed + 0.05) * rSpeed * 1.2) * 1.5;
+      // Scroll-driven smooth camera zoom fly-through into planet core
+      const targetCamZ = 8.0 - scrollProgress * 10.2;
+      const targetCamX = (0.2 - scrollProgress * 0.2) + mouseX * 0.3;
+      const targetCamY = (-0.4 + scrollProgress * 0.0) - mouseY * 0.2;
 
-      const dir = new THREE.Vector3(nextX - rX, nextY - rY, nextZ - rZ).normalize();
+      camera.position.z += (targetCamZ - camera.position.z) * 0.08;
+      camera.position.x += (targetCamX - camera.position.x) * 0.08;
+      camera.position.y += (targetCamY - camera.position.y) * 0.08;
 
-      rocketGroup.position.set(rX, rY, rZ);
-      if (dir.lengthSq() > 0.0001) {
-        const targetRotZ = Math.atan2(dir.y, dir.x) - Math.PI / 2;
-        const targetRotY = Math.atan2(dir.x, dir.z);
-        rocketGroup.rotation.z += (targetRotZ - rocketGroup.rotation.z) * 0.1;
-        rocketGroup.rotation.y += (targetRotY - rocketGroup.rotation.y) * 0.1;
+      // Planet Shell Translucent Dissolve as user zooms inside
+      const planetOpacity = Math.max(0.12, 1.0 - (scrollProgress * 1.6));
+      planetMat.opacity = planetOpacity;
+      craterMat.opacity = planetOpacity;
+
+      // Continuous Subtle Floating & Rotation for Planet
+      planet.position.x = 0.2 + Math.sin(elapsed * 0.12) * 0.5;
+      planet.position.y = -0.4 + Math.cos(elapsed * 0.15) * 0.25;
+      planet.rotation.y += 0.004;
+
+      // 4D Tesseract Rotation Animations (Advanced Civilization Quantum Core)
+      outerHyper.rotation.x = elapsed * 0.5;
+      outerHyper.rotation.y = elapsed * 0.7;
+
+      innerHyper.rotation.x = -elapsed * 0.9;
+      innerHyper.rotation.z = elapsed * 0.6;
+
+      hyperStrutsGroup.rotation.x = elapsed * 0.5;
+      hyperStrutsGroup.rotation.y = elapsed * 0.7;
+
+      tRing1.rotation.y = elapsed * 0.8;
+      tRing1.rotation.z = elapsed * 0.4;
+
+      tRing2.rotation.x = elapsed * 0.8;
+      tRing2.rotation.y = -elapsed * 0.5;
+
+      orb.rotation.x = elapsed * 1.2;
+      orb.rotation.y = elapsed * 1.5;
+      const orbScale = 1.0 + Math.sin(elapsed * 4) * 0.12;
+      orb.scale.set(orbScale, orbScale, orbScale);
+
+      coreParticles.rotation.y += 0.01;
+
+      // -----------------------------------------------------------------------
+      // B. 3 SATELLITES ORBITING THE PLANET IN 3 DIFFERENT WAYS
+      // -----------------------------------------------------------------------
+      // Satellite 1: Low-Inclination Fast Equatorial Orbit
+      const a1 = elapsed * 0.65;
+      const s1X = planet.position.x + Math.cos(a1) * 5.6;
+      const s1Y = planet.position.y + Math.sin(a1 * 2.0) * 0.35 + Math.sin(a1) * 0.8;
+      const s1Z = planet.position.z + Math.sin(a1) * 4.6;
+      sat1.position.set(s1X, s1Y, s1Z);
+      sat1.rotation.y = a1 + Math.PI / 2;
+      sat1.rotation.z = Math.sin(elapsed * 2) * 0.1;
+      if (sat1.userData.beacon) {
+        sat1.userData.beacon.material.opacity = 0.4 + Math.sin(elapsed * 6) * 0.5;
       }
 
-      // Continuous Fume Trail update spawning behind rocket nozzle
-      const posArr = fumeParticles.geometry.attributes.position.array;
-      for (let i = 0; i < fumeCount; i++) {
-        const vel = fumeVelocities[i];
-        posArr[i * 3 + 1] += vel.y;
-        posArr[i * 3] += vel.x;
+      // Satellite 2: High-Inclination Polar Orbit (Crossing North/South Poles)
+      const a2 = elapsed * 0.48 + 1.8;
+      const s2X = planet.position.x + Math.sin(a2) * 1.8;
+      const s2Y = planet.position.y + Math.cos(a2) * 5.8;
+      const s2Z = planet.position.z + Math.sin(a2 * 1.2) * 4.2;
+      sat2.position.set(s2X, s2Y, s2Z);
+      sat2.rotation.x = a2;
+      sat2.rotation.z = elapsed * 0.3;
+      if (sat2.userData.beacon) {
+        sat2.userData.beacon.material.opacity = 0.4 + Math.cos(elapsed * 7) * 0.5;
+      }
 
-        if (posArr[i * 3 + 1] < -2.8) {
-          posArr[i * 3] = (Math.random() - 0.5) * 0.4;
-          posArr[i * 3 + 1] = -0.9;
-          posArr[i * 3 + 2] = (Math.random() - 0.5) * 0.4;
+      // Satellite 3: Retrograde Deep Elliptical Orbit (Reverse Direction & Wide Tilt)
+      const a3 = -elapsed * 0.42 + 4.0;
+      const s3X = planet.position.x + Math.cos(a3) * 6.2;
+      const s3Y = planet.position.y + Math.sin(a3) * 2.8;
+      const s3Z = planet.position.z + Math.sin(a3 * 1.3) * 5.0;
+      sat3.position.set(s3X, s3Y, s3Z);
+      sat3.rotation.y = -a3;
+      sat3.rotation.x = Math.sin(elapsed * 1.5) * 0.2;
+      if (sat3.userData.beacon) {
+        sat3.userData.beacon.material.opacity = 0.4 + Math.sin(elapsed * 8) * 0.5;
+      }
+
+      // -----------------------------------------------------------------------
+      // A. ULTRA-TINY ALIEN CHARACTERS FREE-ROAMING IN SPACE
+      // -----------------------------------------------------------------------
+      const aliens = [
+        { mesh: cartoon1, speedX: 0.35, speedY: 0.48, radX: 5.4, radY: 2.5, offsetX: -1.4, offsetY: 1.0, phase: 0 },
+        { mesh: cartoon2, speedX: 0.30, speedY: 0.42, radX: 5.8, radY: 2.8, offsetX: 1.8, offsetY: -1.0, phase: 2.0 },
+        { mesh: cartoon3, speedX: 0.40, speedY: 0.35, radX: 4.8, radY: 2.0, offsetX: 1.0, offsetY: 1.6, phase: 4.0 }
+      ];
+
+      aliens.forEach((a) => {
+        if (!a.mesh) return;
+
+        a.mesh.position.x = Math.sin(elapsed * a.speedX + a.phase) * a.radX + a.offsetX;
+        a.mesh.position.y = Math.cos(elapsed * a.speedY + a.phase) * a.radY + a.offsetY;
+        a.mesh.position.z = Math.sin(elapsed * 0.3 + a.phase) * 1.5 + 0.8;
+
+        a.mesh.rotation.y = elapsed * 0.6 + a.phase;
+        a.mesh.rotation.z = Math.sin(elapsed * 0.8 + a.phase) * 0.2;
+
+        if (a.mesh.userData.propeller) {
+          a.mesh.userData.propeller.rotation.y += 0.4;
         }
-      }
-      fumeParticles.geometry.attributes.position.needsUpdate = true;
 
-      // B. Continuous 3D Free-Space Roaming for Cartoon Aliens / Astronauts
-      // Alien 1 - Drifts freely across upper and left screen bounds
-      cartoon1.position.x = Math.sin(elapsed * 0.35) * 4.5 - 1.2;
-      cartoon1.position.y = Math.cos(elapsed * 0.48) * 2.2 + 0.5;
-      cartoon1.position.z = Math.sin(elapsed * 0.3) * 1.6;
-      cartoon1.rotation.y = elapsed * 0.5;
-      cartoon1.rotation.z = Math.sin(elapsed * 0.8) * 0.25;
+        if (a.mesh.userData.flames) {
+          a.mesh.userData.flames.forEach(f => {
+            const scaleY = 0.7 + Math.random() * 0.6;
+            f.scale.set(1, scaleY, 1);
+          });
+        }
 
-      // Alien 2 - Drifts freely across lower and right screen bounds
-      cartoon2.position.x = Math.cos(elapsed * 0.3 + 2.0) * 4.8 + 0.8;
-      cartoon2.position.y = Math.sin(elapsed * 0.42 + 1.5) * 2.4 - 0.6;
-      cartoon2.position.z = Math.cos(elapsed * 0.35) * 1.5;
-      cartoon2.rotation.y = -elapsed * 0.6;
-      cartoon2.rotation.x = Math.cos(elapsed * 0.7) * 0.2;
-
-      // C. Continuous Orbit for Planet & Rings
-      planet.position.x = Math.sin(elapsed * 0.15) * 2.2;
-      planet.position.y = -2.0 + Math.cos(elapsed * 0.18) * 0.6;
-      planet.rotation.y += 0.008;
+        if (a.mesh.userData.pParticles) {
+          const pArr = a.mesh.userData.pParticles.geometry.attributes.position.array;
+          const count = pArr.length / 3;
+          for (let p = 0; p < count; p++) {
+            pArr[p * 3 + 1] -= 0.03;
+            if (pArr[p * 3 + 1] < -1.2) {
+              pArr[p * 3 + 1] = -0.5;
+              pArr[p * 3] = (Math.random() - 0.5) * 0.1;
+              pArr[p * 3 + 2] = -0.4 + (Math.random() - 0.5) * 0.1;
+            }
+          }
+          a.mesh.userData.pParticles.geometry.attributes.position.needsUpdate = true;
+        }
+      });
 
       // Mouse Parallax smooth interpolation
       spaceGroup.rotation.y += (mouseX * 0.2 - spaceGroup.rotation.y) * 0.05;
@@ -1097,7 +1124,7 @@
   // =========================================================================
   // 6. RENDER 3D THUMBNAILS FOR PROJECT CARDS (STATE 2)
   // =========================================================================
-  window.initProjectCardThumbnails = function() {
+  window.initProjectCardThumbnails = function () {
     document.querySelectorAll('.project-thumb-canvas').forEach(container => {
       if (container.querySelector('canvas') || typeof THREE === 'undefined') return;
 

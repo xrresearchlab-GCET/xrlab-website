@@ -13,8 +13,13 @@
     href="https://fonts.googleapis.com/css2?family=Encode+Sans+Condensed:wght@100;200;300;400;500;600;700;800;900&family=Exo:ital,wght@0,100..900;1,100..900&family=Glegoo:wght@400;700&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Sarpanch:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
     rel="stylesheet">
 
-  <!-- Three.js for 3D Spatial Canvas -->
+  <!-- Three.js & GLTFLoader for Full-Bleed 3D WebGL Canvas -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+  <!-- Lenis Smooth Inertia Scroll Engine -->
+  <link rel="stylesheet" href="https://unpkg.com/lenis@1.1.20/dist/lenis.css">
+  <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
 
   <!-- Spatial XR OS Engine Styles -->
   <link rel="stylesheet" href="css/xr-styles.css">
@@ -277,34 +282,156 @@
       transition: all 0.3s ease;
     }
 
-    /* ---------- Hero & Viewfinder Section ---------- */
-    .hero {
-      position: relative;
-      min-height: 85vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 60px 5vw;
-      overflow: hidden;
-      border-bottom: 1px solid var(--border-glass);
-    }
-
+    /* ---------- Full-Bleed Vertex3D Spatial WebGL Canvas ---------- */
     #canvas-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
       z-index: 0;
       pointer-events: none;
+      overflow: hidden;
     }
 
+    #canvas-container canvas {
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+    }
 
+    /* Hero Section - Full Bleed Canvas Overlay */
+    .hero {
+      position: relative;
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      padding: 80px 5vw;
+      z-index: 2;
+      border-bottom: 1px solid var(--border-glass);
+    }
 
     .hero-content-wrapper {
       position: relative;
       z-index: 4;
-      max-width: 960px;
+      max-width: 900px;
+      background: rgba(251, 239, 239, 0.82);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(197, 179, 211, 0.4);
+      border-left: 4px solid #C5B3D3;
+      border-radius: 20px;
+      padding: 40px 48px;
+      box-shadow: 0 16px 40px rgba(197, 179, 211, 0.2);
+    }
+
+    @media (max-width: 768px) {
+      .hero-content-wrapper {
+        padding: 24px 20px;
+      }
+    }
+
+    .hero-3d-showcase {
+      position: relative;
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(197, 179, 211, 0.4);
+      border-radius: 20px;
+      box-shadow: 0 16px 40px rgba(197, 179, 211, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      overflow: hidden;
+      height: 520px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #canvas-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      flex: 1;
+      cursor: grab;
+    }
+
+    #canvas-container:active {
+      cursor: grabbing;
+    }
+
+    #canvas-container canvas {
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+    }
+
+    .spatial-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      background: rgba(251, 239, 239, 0.88);
+      border-bottom: 1px solid rgba(197, 179, 211, 0.3);
+      z-index: 10;
+    }
+
+    .spatial-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .live-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #10B981;
+      box-shadow: 0 0 10px #10B981;
+      animation: pulseGreen 2s infinite;
+    }
+
+    @keyframes pulseGreen {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.25); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    .spatial-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      font-weight: 700;
+      color: #8E6CA2;
+      text-transform: uppercase;
+    }
+
+    .hud-reset-btn {
+      background: rgba(197, 179, 211, 0.25);
+      border: 1px solid rgba(197, 179, 211, 0.5);
+      color: var(--text-main);
+      padding: 5px 14px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .hud-reset-btn:hover {
+      background: #C5B3D3;
+      color: #fff;
+    }
+
+    .spatial-card-footer {
+      padding: 10px 16px;
+      background: rgba(251, 239, 239, 0.88);
+      border-top: 1px solid rgba(197, 179, 211, 0.3);
+      text-align: center;
+      z-index: 10;
+    }
+
+    .control-hint {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
     }
 
     .badge-tag {
@@ -714,20 +841,29 @@
     </div>
   </header>
 
+  <!-- Full-Bleed Fixed 3D Spatial Canvas Background -->
+  <div id="canvas-container"></div>
+
   <!-- Hero Section -->
   <header class="hero">
-    <div id="canvas-container"></div>
+    <div class="hero-content-wrapper reveal in">
+      <div class="badge-tag">
+        <span class="pulse-dot"></span> SPATIAL COMPUTING HUB
+      </div>
 
-    <div class="hero-content reveal in">
+      <h1 class="hero-title">AR/VR <span class="w-purple">RESEARCH</span> <span class="w-coral">LAB</span></h1>
+
       <div class="hero-tagline"><span class="w-white">Research.</span> <span class="w-coral">Design.</span> <span
           class="w-cyan">Innovate.</span> <span class="w-purple">Immerse.</span></div>
 
       <p class="hero-description">
-        Welcome to the <strong>AR/VR Research Lab</strong>, an advanced spatial computing hub dedicated to Virtual &amp; Augmented Reality, Human-Computer Interaction, and 3D Systems development at GCET.
+        Welcome to the <strong>AR/VR Research Lab</strong>, an advanced spatial computing hub dedicated to Virtual &amp;
+        Augmented Reality, Human-Computer Interaction, and 3D Systems development at GCET.
       </p>
 
       <div class="hero-statement-card">
-        Where curiosity evolves into spatial creation. <strong>Design Experiences. Build Worlds. Shape the Future.</strong>
+        Where curiosity evolves into spatial creation. <strong>Design Experiences. Build Worlds. Shape the
+          Future.</strong>
       </div>
 
       <div class="hero-cta-group">
@@ -754,7 +890,8 @@
       <h2 class="section-title"><span class="w-white">RESEARCH</span> <span class="w-coral">DIVISIONS</span></h2>
     </div>
     <p style="color: var(--text-muted); font-size: 17px; margin-bottom: 30px; max-width: 850px;">
-      Explore our six specialized spatial computing divisions. Select any division card below to navigate directly into its dedicated projects gallery.
+      Explore our six specialized spatial computing divisions. Select any division card below to navigate directly into
+      its dedicated projects gallery.
     </p>
 
     <!-- STATE 1: DIVISION SELECTION -->
@@ -764,7 +901,8 @@
         <div class="domain-card" onclick="openDivisionGallery('engineering')">
           <div class="domain-canvas-wrap" id="canvas-engineering"></div>
           <h3>Engineering</h3>
-          <p>Mechanical simulations, CAD model visualization, and structural digital twins built for real-time 3D analysis.</p>
+          <p>Mechanical simulations, CAD model visualization, and structural digital twins built for real-time 3D
+            analysis.</p>
           <button class="btn-explore">Explore Projects →</button>
         </div>
 
@@ -772,7 +910,8 @@
         <div class="domain-card" onclick="openDivisionGallery('placements')">
           <div class="domain-canvas-wrap" id="canvas-placements"></div>
           <h3>Placements</h3>
-          <p>Industry-ready training, technical skill showcases, and career placement portfolios in spatial technology.</p>
+          <p>Industry-ready training, technical skill showcases, and career placement portfolios in spatial technology.
+          </p>
           <button class="btn-explore">Explore Projects →</button>
         </div>
 
@@ -796,7 +935,8 @@
         <div class="domain-card" onclick="openDivisionGallery('entertainment')">
           <div class="domain-canvas-wrap" id="canvas-entertainment"></div>
           <h3>Entertainment</h3>
-          <p>Interactive 3D spatial gaming, Holo-Stage performance simulators, and immersive audio-visual experiences.</p>
+          <p>Interactive 3D spatial gaming, Holo-Stage performance simulators, and immersive audio-visual experiences.
+          </p>
           <button class="btn-explore">Explore Projects →</button>
         </div>
 
@@ -814,12 +954,15 @@
     <div id="projects-gallery-screen">
       <div class="gallery-topbar">
         <button class="btn-back-divisions" onclick="returnToDivisions()">← Back to Divisions</button>
-        <span style="font-family:var(--font-mono); font-size:12px; color:var(--primary-accent); letter-spacing:0.12em;">RESEARCH DIVISION GALLERY</span>
+        <span
+          style="font-family:var(--font-mono); font-size:12px; color:var(--primary-accent); letter-spacing:0.12em;">RESEARCH
+          DIVISION GALLERY</span>
       </div>
 
       <div class="gallery-header-info">
         <h1 id="gallery-division-title">Division Projects</h1>
-        <p id="gallery-division-desc">Select a project card below to view detailed spatial computing implementations.</p>
+        <p id="gallery-division-desc">Select a project card below to view detailed spatial computing implementations.
+        </p>
       </div>
 
       <!-- Responsive Grid of Division Projects -->
