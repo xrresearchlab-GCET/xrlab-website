@@ -1721,14 +1721,15 @@ body.dark-mode .ptag {
   .navlinks {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     gap: 12px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     padding: 4px 6px 8px;
-    width: 100%;
+    width: max-content;
     max-width: 100%;
+    margin: 0 auto;
     background: transparent;
     box-shadow: none;
     border: none;
