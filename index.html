@@ -1,19 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AR/VR Research Lab — Exploring the Future of Immersive Technologies</title>
 
-  <!-- Modern Google Fonts -->
+  <!-- Browser Tab Icon (Favicon) -->
+  <link rel="icon" type="image/png" href="images/collegelogo.png">
+  <link rel="apple-touch-icon" href="images/collegelogo.png">
+
+  <!-- =========================================================================
+       1. EXTERNAL TYPOGRAPHY & LIBRARIES
+       - Google Fonts: Exo (Headings), Glegoo (Body text), JetBrains Mono (Code/Metadata)
+       - Three.js & GLTFLoader: WebGL 3D background spatial engine
+       - Lenis: Smooth scrolling engine
+       - xr-styles.css: Single source of truth for styles, tokens, and dark theme
+       ========================================================================= -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Encode+Sans+Condensed:wght@100;200;300;400;500;600;700;800;900&family=Exo:ital,wght@0,100..900;1,100..900&family=Glegoo:wght@400;700&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Sarpanch:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
     rel="stylesheet">
 
-  <!-- Three.js & GLTFLoader for Full-Bleed 3D WebGL Canvas -->
+  <!-- Three.js WebGL Engine -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
@@ -21,801 +31,18 @@
   <link rel="stylesheet" href="https://unpkg.com/lenis@1.1.20/dist/lenis.css">
   <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
 
-  <!-- Spatial XR OS Engine Styles -->
-  <link rel="stylesheet" href="css/xr-styles.css">
-
-  <style>
-    :root {
-      --bg-dark: #FBEFEF;
-      --bg-card: rgba(255, 255, 255, 0.75);
-      --bg-card-hover: rgba(255, 255, 255, 0.95);
-      --border-glass: rgba(197, 179, 211, 0.25);
-      --border-glow: #C5B3D3;
-
-      --violet-primary: #C5B3D3;
-      --violet-light: #F5CBCB;
-      --cyan-accent: #C5B3D3;
-      --cyan-glow: #F5CBCB;
-      --pink-accent: #F5CBCB;
-      --emerald-accent: #C5B3D3;
-
-      --text-main: #2B2B2B;
-      --text-muted: rgba(43, 43, 43, 0.75);
-      --text-dim: rgba(43, 43, 43, 0.55);
-
-      --font-display: 'Exo', sans-serif;
-      --font-body: 'Glegoo', serif;
-      --font-mono: 'JetBrains Mono', monospace;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      font-family: var(--font-body);
-      -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
-      position: relative;
-      line-height: 1.6;
-    }
-
-    /* Background Ambient Lighting Glows */
-    body::before {
-      content: '';
-      position: fixed;
-      top: -20%;
-      left: 20%;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, rgba(197, 179, 211, 0.25) 0%, rgba(251, 239, 239, 0) 70%);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    body::after {
-      content: '';
-      position: fixed;
-      bottom: -20%;
-      right: 10%;
-      width: 700px;
-      height: 700px;
-      background: radial-gradient(circle, rgba(245, 203, 203, 0.22) 0%, rgba(251, 239, 239, 0) 70%);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    button {
-      font-family: inherit;
-    }
-
-    /* ---------- Standardized Site Header ---------- */
-    .site-header {
-      position: sticky;
-      top: 0;
-      z-index: 10000;
-      background: rgba(251, 239, 239, 0.92);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: none;
-      box-shadow: 0 4px 24px rgba(197, 179, 211, 0.15);
-    }
-
-    .header-logo-bar {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 10px 5vw 6px;
-    }
-
-    .header-top {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 4px 5vw;
-      gap: 16px;
-      position: relative;
-    }
-
-    .header-logo-wrap {
-      display: flex;
-      align-items: center;
-      flex-shrink: 0;
-      transition: transform 0.3s ease;
-    }
-
-    .header-logo-wrap:hover {
-      transform: scale(1.06);
-    }
-
-    .header-logo {
-      height: 80px;
-      width: auto;
-      max-width: 280px;
-      object-fit: contain;
-      filter: none;
-      mix-blend-mode: normal;
-    }
-
-    .header-logo-bar .header-logo {
-      height: 88px;
-      max-width: 320px;
-    }
-
-    .header-heading {
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 2px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    .site-title {
-      font-family: var(--font-display);
-      font-weight: 800;
-      font-size: clamp(20px, 3.2vw, 32px);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      line-height: 1.15;
-      margin: 0;
-    }
-
-    .site-title a {
-      color: inherit;
-      background: none;
-      -webkit-background-clip: unset;
-      -webkit-text-fill-color: initial;
-      text-shadow: none;
-    }
-
-    .site-subtitle {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 0.22em;
-      color: var(--cyan-glow);
-      text-transform: uppercase;
-      font-weight: 500;
-    }
-
-    .header-bottom {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 6px 5vw 10px;
-      border-top: none;
-      border-bottom: none;
-    }
-
-    .navlinks {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto;
-      gap: 24px;
-    }
-
-    .navlinks a {
-      font-family: var(--font-mono);
-      font-size: 13px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      position: relative;
-      padding: 6px 14px 10px;
-      border-radius: 0;
-      background: transparent;
-      border: none;
-      box-shadow: none;
-      transition: color 0.25s ease;
-      text-decoration: none;
-    }
-
-    .navlinks a::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%) scaleX(0);
-      width: 85%;
-      height: 3px;
-      border-radius: 3px;
-      background: #C5B3D3;
-      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
-      opacity: 0;
-    }
-
-    .navlinks a:hover {
-      color: var(--text-main);
-      background: transparent;
-    }
-
-    .navlinks a:hover::after {
-      transform: translateX(-50%) scaleX(0.5);
-      opacity: 0.6;
-    }
-
-    .navlinks a.active {
-      color: var(--text-main);
-      font-weight: 700;
-      background: transparent;
-      border: none;
-      box-shadow: none;
-    }
-
-    .navlinks a.active::after {
-      transform: translateX(-50%) scaleX(1);
-      opacity: 1;
-      background: #C5B3D3;
-      box-shadow: 0 0 10px rgba(197, 179, 211, 0.6);
-    }
-
-    .navtoggle {
-      display: none;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      padding: 8px;
-    }
-
-    .navtoggle span {
-      display: block;
-      width: 24px;
-      height: 2px;
-      background: var(--text-main);
-      margin: 5px 0;
-      transition: all 0.3s ease;
-    }
-
-    /* ---------- Full-Bleed Vertex3D Spatial WebGL Canvas ---------- */
-    #canvas-container {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    #canvas-container canvas {
-      width: 100% !important;
-      height: 100% !important;
-      display: block;
-    }
-
-    /* Hero Section - Full Bleed Canvas Overlay */
-    .hero {
-      position: relative;
-      min-height: 90vh;
-      display: flex;
-      align-items: center;
-      padding: 80px 5vw;
-      z-index: 2;
-      border-bottom: 1px solid var(--border-glass);
-    }
-
-    .hero-content-wrapper {
-      position: relative;
-      z-index: 4;
-      max-width: 900px;
-      background: rgba(251, 239, 239, 0.82);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(197, 179, 211, 0.4);
-      border-left: 4px solid #C5B3D3;
-      border-radius: 20px;
-      padding: 40px 48px;
-      box-shadow: 0 16px 40px rgba(197, 179, 211, 0.2);
-    }
-
-    @media (max-width: 768px) {
-      .hero-content-wrapper {
-        padding: 24px 20px;
-      }
-    }
-
-    .hero-3d-showcase {
-      position: relative;
-      background: rgba(255, 255, 255, 0.65);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(197, 179, 211, 0.4);
-      border-radius: 20px;
-      box-shadow: 0 16px 40px rgba(197, 179, 211, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-      overflow: hidden;
-      height: 520px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    #canvas-container {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      flex: 1;
-      cursor: grab;
-    }
-
-    #canvas-container:active {
-      cursor: grabbing;
-    }
-
-    #canvas-container canvas {
-      width: 100% !important;
-      height: 100% !important;
-      display: block;
-    }
-
-    .spatial-card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 20px;
-      background: rgba(251, 239, 239, 0.88);
-      border-bottom: 1px solid rgba(197, 179, 211, 0.3);
-      z-index: 10;
-    }
-
-    .spatial-status {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .live-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: #10B981;
-      box-shadow: 0 0 10px #10B981;
-      animation: pulseGreen 2s infinite;
-    }
-
-    @keyframes pulseGreen {
-      0% { transform: scale(0.95); opacity: 0.8; }
-      50% { transform: scale(1.25); opacity: 1; }
-      100% { transform: scale(0.95); opacity: 0.8; }
-    }
-
-    .spatial-title {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 0.14em;
-      font-weight: 700;
-      color: #8E6CA2;
-      text-transform: uppercase;
-    }
-
-    .hud-reset-btn {
-      background: rgba(197, 179, 211, 0.25);
-      border: 1px solid rgba(197, 179, 211, 0.5);
-      color: var(--text-main);
-      padding: 5px 14px;
-      border-radius: 6px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .hud-reset-btn:hover {
-      background: #C5B3D3;
-      color: #fff;
-    }
-
-    .spatial-card-footer {
-      padding: 10px 16px;
-      background: rgba(251, 239, 239, 0.88);
-      border-top: 1px solid rgba(197, 179, 211, 0.3);
-      text-align: center;
-      z-index: 10;
-    }
-
-    .control-hint {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-dim);
-      letter-spacing: 0.05em;
-    }
-
-    .badge-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 14px;
-      background: rgba(197, 179, 211, 0.2);
-      border: 1px solid rgba(197, 179, 211, 0.4);
-      border-radius: 20px;
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      letter-spacing: 0.12em;
-      color: #8E6CA2;
-      margin-bottom: 20px;
-    }
-
-    .hero-title {
-      font-family: var(--font-display);
-      font-size: clamp(42px, 6.2vw, 82px);
-      font-weight: 900;
-      line-height: 1.05;
-      letter-spacing: -0.01em;
-      color: #2B2B2B;
-      margin-bottom: 12px;
-    }
-
-    .hero-tagline {
-      font-family: var(--font-mono);
-      font-size: clamp(16px, 2.2vw, 22px);
-      color: #8E6CA2;
-      letter-spacing: 0.08em;
-      margin-bottom: 24px;
-      font-weight: 500;
-      font-style: italic;
-    }
-
-    .hero-description {
-      font-size: 17px;
-      line-height: 1.75;
-      color: var(--text-muted);
-      max-width: 820px;
-      margin-bottom: 24px;
-    }
-
-    .hero-statement-card {
-      background: rgba(255, 255, 255, 0.75);
-      border: 1px solid var(--border-glass);
-      border-left: 3px solid #C5B3D3;
-      border-radius: 12px;
-      padding: 20px 24px;
-      backdrop-filter: blur(16px);
-      font-size: 15.5px;
-      color: var(--text-main);
-      line-height: 1.65;
-      margin-bottom: 32px;
-      max-width: 820px;
-    }
-
-    .hero-cta-group {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 14px 28px;
-      background: #C5B3D3;
-      color: #FFFFFF;
-      font-weight: 700;
-      font-family: var(--font-mono);
-      font-size: 13px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      border-radius: 8px;
-      border: 1px solid rgba(197, 179, 211, 0.5);
-      box-shadow: 0 4px 20px rgba(197, 179, 211, 0.35);
-      transition: all 0.3s ease;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 28px rgba(245, 203, 203, 0.5);
-      background: #F5CBCB;
-      color: #2B2B2B;
-    }
-
-    .btn-secondary {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 14px 26px;
-      background: transparent;
-      color: #2B2B2B;
-      font-family: var(--font-mono);
-      font-size: 13px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      border-radius: 8px;
-      border: 1px solid #C5B3D3;
-      backdrop-filter: blur(12px);
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-
-    .btn-secondary:hover {
-      background: rgba(197, 179, 211, 0.15);
-      border-color: #C5B3D3;
-      color: #8E6CA2;
-    }
-
-    /* ---------- Sections Layout ---------- */
-    section {
-      padding: 90px 5vw;
-      position: relative;
-    }
-
-    .section-header {
-      margin-bottom: 40px;
-    }
-
-    .section-eyebrow {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      letter-spacing: 0.18em;
-      color: #8E6CA2;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-    }
-
-    .section-eyebrow .line {
-      width: 30px;
-      height: 1px;
-      background: #C5B3D3;
-    }
-
-    .section-title {
-      font-family: var(--font-display);
-      font-size: clamp(28px, 3.5vw, 44px);
-      font-weight: 800;
-      color: #2B2B2B;
-      line-height: 1.15;
-    }
-
-    .reveal {
-      opacity: 0;
-      transform: translateY(28px);
-      transition: opacity 0.8s ease, transform 0.8s ease;
-    }
-
-    .reveal.in {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Grid components */
-    .grid-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
-    }
-
-    .glass-card {
-      background: rgba(255, 255, 255, 0.75);
-      border: 1px solid var(--border-glass);
-      border-radius: 16px;
-      padding: 30px 26px;
-      backdrop-filter: blur(16px);
-      transition: all 0.3s ease;
-    }
-
-    .glass-card:hover {
-      background: rgba(255, 255, 255, 0.95);
-      border-color: #C5B3D3;
-      transform: translateY(-4px);
-      box-shadow: 0 12px 32px rgba(197, 179, 211, 0.35);
-    }
-
-    .card-num {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: #8E6CA2;
-      letter-spacing: 0.14em;
-      margin-bottom: 8px;
-    }
-
-    .card-title {
-      font-family: var(--font-display);
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 10px;
-    }
-
-    .card-desc {
-      font-size: 14.5px;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
-
-    /* Featured Areas Grid */
-    .featured-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-    }
-
-    .area-pill {
-      background: rgba(255, 255, 255, 0.75);
-      border: 1px solid var(--border-glass);
-      border-radius: 12px;
-      padding: 18px 20px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      font-family: var(--font-display);
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-main);
-      backdrop-filter: blur(12px);
-      transition: all 0.3s ease;
-    }
-
-    .area-pill:hover {
-      border-color: #C5B3D3;
-      background: rgba(255, 255, 255, 0.95);
-      color: #8E6CA2;
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(197, 179, 211, 0.3);
-    }
-
-    .area-icon {
-      font-size: 24px;
-    }
-
-    /* Lab Highlights HUD Grid */
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
-    }
-
-    .info-card {
-      background: rgba(255, 255, 255, 0.75);
-      border: 1px solid var(--border-glass);
-      border-radius: 16px;
-      padding: 28px;
-      backdrop-filter: blur(16px);
-      transition: all 0.3s ease;
-    }
-
-    .info-card:hover {
-      border-color: #C5B3D3;
-      transform: translateY(-3px);
-      box-shadow: 0 12px 32px rgba(197, 179, 211, 0.35);
-    }
-
-    .info-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .info-icon {
-      font-size: 24px;
-    }
-
-    .info-title {
-      font-family: var(--font-display);
-      font-size: 18px;
-      font-weight: 700;
-      color: #2B2B2B;
-    }
-
-    .info-detail {
-      color: var(--text-muted);
-      font-size: 14.5px;
-      line-height: 1.5;
-    }
-
-    .lead-card {
-      grid-column: 1 / -1;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(245, 203, 203, 0.3) 100%);
-      border: 1px solid rgba(197, 179, 211, 0.35);
-      border-radius: 16px;
-      padding: 28px 32px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-
-    .lead-info h3 {
-      font-family: var(--font-display);
-      font-size: 22px;
-      color: #2B2B2B;
-      margin-bottom: 4px;
-    }
-
-    .lead-info p {
-      color: #8E6CA2;
-      font-family: var(--font-mono);
-      font-size: 13px;
-      letter-spacing: 0.08em;
-    }
-
-    .lead-contact {
-      display: flex;
-      gap: 20px;
-      font-family: var(--font-mono);
-      font-size: 13px;
-      color: var(--text-main);
-      flex-wrap: wrap;
-    }
-
-    .lead-contact a {
-      color: #8E6CA2;
-      transition: color 0.2s ease;
-    }
-
-    .lead-contact a:hover {
-      color: #2B2B2B;
-      text-decoration: underline;
-    }
-
-    /* Quote Banner */
-    .quote-banner {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(245, 203, 203, 0.35) 100%);
-      border: 1px solid rgba(197, 179, 211, 0.35);
-      border-radius: 20px;
-      padding: 50px 40px;
-      text-align: center;
-      backdrop-filter: blur(20px);
-    }
-
-    .quote-banner blockquote {
-      font-family: var(--font-display);
-      font-size: clamp(20px, 2.5vw, 30px);
-      font-weight: 600;
-      color: #2B2B2B;
-      line-height: 1.45;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    /* ---------- Footer ---------- */
-    .footer {
-      padding: 50px 5vw;
-      border-top: 1px solid var(--border-glass);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 20px;
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      color: var(--text-dim);
-      letter-spacing: 0.08em;
-      background: rgba(251, 239, 239, 0.95);
-    }
-
-    .footer-contact {
-      display: flex;
-      gap: 20px;
-      color: var(--text-muted);
-    }
-  </style>
+  <!-- Centralized Spatial XR OS Engine Styles -->
   <link rel="stylesheet" href="css/xr-styles.css">
 </head>
 
-<body>
+<body class="dark-mode">
 
-  <!-- Standardized Site Header -->
+  <!-- =========================================================================
+       2. STANDARDIZED SITE HEADER
+       - Centered College Logo (GCET)
+       - Main Title ("AR/VR RESEARCH LAB") without underline + Clean Theme Toggle Button
+       - Top Navigation: Home, About Us
+       ========================================================================= -->
   <header class="site-header">
     <div class="header-logo-bar">
       <a href="https://gcet.edu.in/" target="_blank" rel="noopener" class="header-logo-wrap"
@@ -829,13 +56,13 @@
               class="w-white">RESEARCH</span> <span class="w-coral">LAB</span></a></h1>
         <span class="site-subtitle">EXPLORING THE FUTURE OF IMMERSIVE TECHNOLOGIES</span>
       </div>
+      <!-- Simple Clickable Dark/Light Mode Button -->
       <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Theme">🌙 Dark</button>
     </div>
     <div class="header-bottom">
       <nav class="navlinks" id="navlinks">
         <a href="index.html" class="active">Home</a>
         <a href="about.html">About Us</a>
-        <a href="contact.html">Contact Us</a>
       </nav>
       <button class="navtoggle" id="navtoggle" aria-label="Toggle Navigation">
         <span></span><span></span><span></span>
@@ -843,116 +70,67 @@
     </div>
   </header>
 
-  <!-- Full-Bleed Fixed 3D Spatial Canvas Background -->
+  <!-- =========================================================================
+       3. 3D BACKGROUND CANVAS MOUNT POINT
+       - Fixed to viewport background (position: fixed; inset: 0; z-index: 0)
+       - Renders interactive floating spatial objects, astronauts, and starfields
+       ========================================================================= -->
   <div id="canvas-container"></div>
 
-  <!-- Hero Section -->
-  <header class="hero">
-    <div class="hero-content-wrapper reveal in">
-      <div class="badge-tag">
-        <span class="pulse-dot"></span> SPATIAL COMPUTING HUB
-      </div>
-
-      <h1 class="hero-title">AR/VR <span class="w-purple">RESEARCH</span> <span class="w-coral">LAB</span></h1>
-
-      <div class="hero-tagline"><span class="w-white">Research.</span> <span class="w-coral">Design.</span> <span
-          class="w-cyan">Innovate.</span> <span class="w-purple">Immerse.</span></div>
-
-      <p class="hero-description">
-        Welcome to the <strong>AR/VR Research Lab</strong>, an advanced spatial computing hub dedicated to Virtual &amp;
-        Augmented Reality, Human-Computer Interaction, and 3D Systems development at GCET.
-      </p>
-
-      <div class="hero-statement-card">
-        Where curiosity evolves into spatial creation. <strong>Design Experiences. Build Worlds. Shape the
-          Future.</strong>
-      </div>
-
-      <div class="hero-cta-group">
-        <a href="#research-divisions" class="btn-primary">Explore Our Divisions →</a>
-        <a href="about.html" class="btn-secondary">About the Lab</a>
-      </div>
-    </div>
-  </header>
-
-  <!-- Inspirational Quote -->
-  <section class="reveal">
-    <div class="quote-banner">
-      <blockquote>
-        "Every immersive experience begins with a question. Every breakthrough begins with curiosity. At the AR/VR
-        Research Lab, we transform both into innovation."
-      </blockquote>
-    </div>
-  </section>
-
-  <!-- Research Divisions Section -->
+  <!-- =========================================================================
+       4. RESEARCH DIVISIONS SECTION
+       - State 1: 3x3 Division Selection Grid (Directly at the top of the Home page)
+       - State 2: Dynamic Project Gallery Screen with interactive cards and WebGL launcher
+       ========================================================================= -->
   <section id="research-divisions">
-    <div class="section-header">
-      <div class="section-eyebrow"><span class="line"></span><span>INTERACTIVE PORTFOLIO</span></div>
-      <h2 class="section-title"><span class="w-white">RESEARCH</span> <span class="w-coral">DIVISIONS</span></h2>
-    </div>
-    <p style="color: var(--text-muted); font-size: 17px; margin-bottom: 30px; max-width: 850px;">
-      Explore our six specialized spatial computing divisions. Select any division card below to navigate directly into
-      its dedicated projects gallery.
-    </p>
-
-    <!-- STATE 1: DIVISION SELECTION -->
+    <!-- STATE 1: DIVISION SELECTION (3-column responsive grid) -->
     <div id="division-selection-screen" class="reveal in">
       <div class="domain-grid">
-        <!-- 1. Engineering -->
+        <!-- 1. Engineering Division -->
         <div class="domain-card" onclick="openDivisionGallery('engineering')">
           <div class="domain-canvas-wrap" id="canvas-engineering"></div>
           <h3>Engineering</h3>
-          <p>Mechanical simulations, CAD model visualization, and structural digital twins built for real-time 3D
-            analysis.</p>
           <button class="btn-explore">Explore Projects →</button>
         </div>
 
-        <!-- 2. Placements -->
+        <!-- 2. Placements Division -->
         <div class="domain-card" onclick="openDivisionGallery('placements')">
           <div class="domain-canvas-wrap" id="canvas-placements"></div>
           <h3>Placements</h3>
-          <p>Industry-ready training, technical skill showcases, and career placement portfolios in spatial technology.
-          </p>
           <button class="btn-explore">Explore Projects →</button>
         </div>
 
-        <!-- 3. Healthcare -->
+        <!-- 3. Healthcare Division -->
         <div class="domain-card" onclick="openDivisionGallery('healthcare')">
           <div class="domain-canvas-wrap" id="canvas-healthcare"></div>
           <h3>Healthcare</h3>
-          <p>Surgical VR training, medical anatomy visualization, and AR-assisted clinical simulations.</p>
           <button class="btn-explore">Explore Projects →</button>
         </div>
 
-        <!-- 4. Tourism and Culture -->
+        <!-- 4. Tourism & Culture Division -->
         <div class="domain-card" onclick="openDivisionGallery('tourism')">
           <div class="domain-canvas-wrap" id="canvas-tourism"></div>
           <h3>Tourism &amp; Culture</h3>
-          <p>Heritage site preservation, virtual museum walkthroughs, and interactive cultural spatial experiences.</p>
           <button class="btn-explore">Explore Projects →</button>
         </div>
 
-        <!-- 5. Entertainment -->
+        <!-- 5. Entertainment Division -->
         <div class="domain-card" onclick="openDivisionGallery('entertainment')">
           <div class="domain-canvas-wrap" id="canvas-entertainment"></div>
           <h3>Entertainment</h3>
-          <p>Interactive 3D spatial gaming, Holo-Stage performance simulators, and immersive audio-visual experiences.
-          </p>
           <button class="btn-explore">Explore Projects →</button>
         </div>
 
-        <!-- 6. Building and Infrastructure -->
+        <!-- 6. Building & Infrastructure Division -->
         <div class="domain-card" onclick="openDivisionGallery('building')">
           <div class="domain-canvas-wrap" id="canvas-building"></div>
           <h3>Building &amp; Infrastructure</h3>
-          <p>BIM architecture walkthroughs, civil engineering visualization, and smart city digital twins.</p>
           <button class="btn-explore">Explore Projects →</button>
         </div>
       </div>
     </div>
 
-    <!-- STATE 2: PROJECTS GALLERY -->
+    <!-- STATE 2: DIVISION PROJECTS GALLERY (Switched via openDivisionGallery()) -->
     <div id="projects-gallery-screen">
       <div class="gallery-topbar">
         <button class="btn-back-divisions" onclick="returnToDivisions()">← Back to Divisions</button>
@@ -972,7 +150,72 @@
     </div>
   </section>
 
-  <!-- Footer -->
+  <!-- =========================================================================
+       5. CONNECT WITH US SECTION
+       - Social platform pills linking to Instagram, GitHub, YouTube, Discord
+       ========================================================================= -->
+  <section class="reveal">
+    <div class="section-label"><span class="dash"></span><span class="eyebrow">Digital Community</span></div>
+    <h2 style="font-family:var(--font-display); font-size:clamp(26px, 3.2vw, 36px); font-weight:800; color:var(--text-main); margin-bottom:16px;">
+      Connect With Us
+    </h2>
+    <div class="social-grid">
+      <a href="https://www.instagram.com/ar.vr.researchlab?igsh=MWM5bzhsd2VkNGFuag==" class="social-pill" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://github.com" class="social-pill" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://youtube.com" class="social-pill" target="_blank" rel="noopener">YouTube</a>
+      <a href="https://discord.com" class="social-pill" target="_blank" rel="noopener">Discord</a>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       6. COLLABORATION & CONTACT FORM SECTION
+       - Direct inquiry submission form for student projects, industry, and research
+       ========================================================================= -->
+  <section class="reveal" id="collaboration">
+    <div class="section-label"><span class="dash"></span><span class="eyebrow">Collaboration</span></div>
+    <h2 style="font-family:var(--font-display); font-size:clamp(26px, 3.2vw, 36px); font-weight:800; color:var(--text-main); margin-bottom:16px;">
+      Have an Idea?
+    </h2>
+
+    <div class="contact-form-wrapper">
+      <form class="contact-form" onsubmit="event.preventDefault(); this.querySelector('.sent-msg').style.display='block';">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Full Name *</label>
+            <input required type="text" id="name" class="form-control" placeholder="Enter your full name">
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address *</label>
+            <input required type="email" id="email" class="form-control" placeholder="Enter your email address">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="dept">Department / Organization</label>
+            <input type="text" id="dept" class="form-control" placeholder="e.g. CSE / ECE / Industry Partner">
+          </div>
+          <div class="form-group">
+            <label for="subject">Subject *</label>
+            <input required type="text" id="subject" class="form-control" placeholder="e.g. Research Collaboration / Membership Inquiry">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="message">Message *</label>
+          <textarea required id="message" class="form-control" placeholder="Tell us about your project, idea, or inquiry..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">Send Message →</button>
+        <div class="sent-msg">Message sent successfully — we will be in touch shortly!</div>
+      </form>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       7. SITE FOOTER
+       - Copyright, college attribution, and official contact details
+       ========================================================================= -->
   <footer class="footer">
     <div>© 2026 AR/VR RESEARCH LAB — GEETHANJALI COLLEGE OF ENGINEERING &amp; TECHNOLOGY</div>
     <div class="footer-contact">
@@ -982,7 +225,11 @@
     </div>
   </footer>
 
-  <!-- Division Gallery Logic -->
+  <!-- =========================================================================
+       8. DIVISION PROJECT DATABASE & STATE SWITCHER SCRIPT
+       - Stores project data for all 6 research divisions
+       - Manages transitions between division selection and project gallery
+       ========================================================================= -->
   <script>
     // Project Database for all 6 Divisions
     const divisionDatabase = {
@@ -1033,7 +280,10 @@
       }
     };
 
-    // State Switcher Functions
+    /**
+     * Opens the detailed project gallery for a specific division.
+     * @param {string} divKey - Key corresponding to divisionDatabase entry.
+     */
     function openDivisionGallery(divKey) {
       const data = divisionDatabase[divKey];
       if (!data) return;
@@ -1050,6 +300,7 @@
       container.innerHTML = '';
 
       if (data.projects.length === 0) {
+        // Placeholder state when division projects are under development
         container.innerHTML = `
           <div class="glass-card" style="grid-column: 1 / -1; padding: 52px 32px; text-align: center; max-width: 680px; margin: 20px auto;">
             <div style="font-size: 46px; margin-bottom: 16px;">🚀</div>
@@ -1061,6 +312,7 @@
           </div>
         `;
       } else {
+        // Render project cards dynamically
         data.projects.forEach((proj, idx) => {
           let badgeClass = 'badge-completed';
           if (proj.status === 'Ongoing') badgeClass = 'badge-ongoing';
@@ -1094,7 +346,7 @@
       const gallery = document.getElementById('projects-gallery-screen');
       gallery.classList.add('active');
 
-      // Initialize 3D Thumbnails
+      // Initialize 3D Thumbnails if available
       if (window.initProjectCardThumbnails) {
         setTimeout(window.initProjectCardThumbnails, 100);
       }
@@ -1102,6 +354,9 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    /**
+     * Returns from project gallery view back to the 3x3 division selection screen.
+     */
     function returnToDivisions() {
       // Hide State 2 (Projects Gallery)
       const gallery = document.getElementById('projects-gallery-screen');
@@ -1110,12 +365,14 @@
       // Show State 1 (Division Selection)
       document.getElementById('division-selection-screen').classList.remove('hidden');
 
-      // Scroll to divisions section
+      // Smooth scroll back to divisions container
       const divSection = document.getElementById('research-divisions');
       if (divSection) divSection.scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Direct Launch 3D WebGL Game Modal
+    /**
+     * Direct launch of interactive 3D WebGL Game Modal.
+     */
     function viewProjectDetails(divKey, actionKey) {
       const modalBody = document.getElementById('enlarge-modal-body');
       const overlay = document.querySelector('.enlarge-modal-overlay');
@@ -1150,8 +407,6 @@
       });
     }, { threshold: 0.15 });
     reveals.forEach(r => observer.observe(r));
-
-    // 3D Spatial Wireframe Background Canvas is initialized automatically by js/xr-engine.js
   </script>
 
   <!-- Spatial XR OS Engine Script -->

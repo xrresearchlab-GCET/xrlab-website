@@ -9,13 +9,26 @@
   // Apply saved theme immediately on script execution to prevent FOUC
   try {
     const savedTheme = localStorage.getItem('xr_theme');
-    if (savedTheme === 'dark') {
+    if (savedTheme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+      if (document.body) {
+        document.body.classList.remove('dark-mode');
+        document.body.classList.add('light-mode');
+      } else {
+        document.addEventListener('DOMContentLoaded', () => {
+          document.body.classList.remove('dark-mode');
+          document.body.classList.add('light-mode');
+        });
+      }
+    } else {
       document.documentElement.setAttribute('data-theme', 'dark');
       if (document.body) {
         document.body.classList.add('dark-mode');
+        document.body.classList.remove('light-mode');
       } else {
         document.addEventListener('DOMContentLoaded', () => {
           document.body.classList.add('dark-mode');
+          document.body.classList.remove('light-mode');
         });
       }
     }
@@ -306,8 +319,14 @@
   // =========================================================================
   function initThemeToggle() {
     const savedTheme = localStorage.getItem('xr_theme');
-    if (savedTheme === 'dark') {
+    // Default to dark mode unless user explicitly chose light
+    if (savedTheme === 'light') {
+      document.body.classList.remove('dark-mode');
+      document.body.classList.add('light-mode');
+      document.documentElement.setAttribute('data-theme', 'light');
+    } else {
       document.body.classList.add('dark-mode');
+      document.body.classList.remove('light-mode');
       document.documentElement.setAttribute('data-theme', 'dark');
     }
 
@@ -323,13 +342,19 @@
       updateLabel();
 
       btn.addEventListener('click', () => {
-        const isDark = document.body.classList.toggle('dark-mode');
-        if (isDark) {
+        const isCurrentlyDark = document.body.classList.contains('dark-mode');
+        if (isCurrentlyDark) {
+          // Switch to light mode
+          document.body.classList.remove('dark-mode');
+          document.body.classList.add('light-mode');
+          document.documentElement.setAttribute('data-theme', 'light');
+          localStorage.setItem('xr_theme', 'light');
+        } else {
+          // Switch to dark mode
+          document.body.classList.add('dark-mode');
+          document.body.classList.remove('light-mode');
           document.documentElement.setAttribute('data-theme', 'dark');
           localStorage.setItem('xr_theme', 'dark');
-        } else {
-          document.documentElement.removeAttribute('data-theme');
-          localStorage.setItem('xr_theme', 'light');
         }
         updateLabel();
         if (typeof xrSound !== 'undefined' && xrSound.playClick) {
@@ -889,12 +914,61 @@
   // =========================================================================
   function initDomainCardCanvases() {
     const domains = [
-      { id: 'canvas-engineering', type: 'engineering', primaryColor: 0xc5b3d3, accentColor: 0xa855f7 },
-      { id: 'canvas-placements', type: 'placements', primaryColor: 0xf5cbcb, accentColor: 0xec4899 },
-      { id: 'canvas-healthcare', type: 'healthcare', primaryColor: 0x64ffda, accentColor: 0x10b981 },
-      { id: 'canvas-tourism', type: 'tourism', primaryColor: 0xa855f7, accentColor: 0x38bdf8 },
-      { id: 'canvas-entertainment', type: 'entertainment', primaryColor: 0xec4899, accentColor: 0xf59e0b },
-      { id: 'canvas-building', type: 'building', primaryColor: 0x38bdf8, accentColor: 0x6366f1 }
+      {
+        id: 'canvas-engineering',
+        type: 'engineering',
+        modelPath: '3d objects/non-military_consumer_uav_drone.glb',
+        primaryColor: 0xc5b3d3,
+        accentColor: 0xa855f7,
+        initialRotX: 0.25,
+        targetScaleMultiplier: 3.4
+      },
+      {
+        id: 'canvas-placements',
+        type: 'placements',
+        modelPath: '3d objects/graduate cap.glb',
+        primaryColor: 0xf5cbcb,
+        accentColor: 0xec4899,
+        initialRotX: 0.35,
+        targetScaleMultiplier: 3.4
+      },
+      {
+        id: 'canvas-healthcare',
+        type: 'healthcare',
+        modelPath: '3d objects/syringe_background_env.glb',
+        primaryColor: 0x64ffda,
+        accentColor: 0x10b981,
+        initialRotX: 0.1,
+        modelOrientation: { x: Math.PI / 2, y: 0, z: 0 },
+        targetScaleMultiplier: 3.5
+      },
+      {
+        id: 'canvas-tourism',
+        type: 'tourism',
+        modelPath: '3d objects/eiffel_tower.glb',
+        primaryColor: 0xa855f7,
+        accentColor: 0x38bdf8,
+        initialRotX: 0.1,
+        targetScaleMultiplier: 3.6
+      },
+      {
+        id: 'canvas-entertainment',
+        type: 'entertainment',
+        modelPath: '3d objects/wheel_of_brisbane_ferris_wheel_low-poly_free.glb',
+        primaryColor: 0xec4899,
+        accentColor: 0xf59e0b,
+        initialRotX: 0.05,
+        targetScaleMultiplier: 3.5
+      },
+      {
+        id: 'canvas-building',
+        type: 'building',
+        modelPath: '3d objects/building_no_19_form_tokyo_otemachi_building_pack.glb',
+        primaryColor: 0x38bdf8,
+        accentColor: 0x6366f1,
+        initialRotX: 0.2,
+        targetScaleMultiplier: 3.5
+      }
     ];
 
     domains.forEach(d => {
@@ -904,196 +978,146 @@
 
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-      camera.position.z = 4.2;
+      camera.position.set(0, 0, 4.2);
 
       const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-      renderer.setSize(160, 160);
+      renderer.setSize(220, 220);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      if (THREE.sRGBEncoding) renderer.outputEncoding = THREE.sRGBEncoding;
       container.appendChild(renderer.domElement);
 
-      const light1 = new THREE.DirectionalLight(0xffffff, 1.4);
-      light1.position.set(3, 4, 5);
-      scene.add(light1);
+      // Studio Lighting setup for realistic GLTF/PBR Rendering
+      const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
+      scene.add(ambientLight);
 
-      const light2 = new THREE.PointLight(d.accentColor, 1.5, 10);
-      light2.position.set(-2, -2, 2);
-      scene.add(light2);
+      const dirLight1 = new THREE.DirectionalLight(0xffffff, 2.2);
+      dirLight1.position.set(4, 6, 5);
+      scene.add(dirLight1);
 
-      scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+      const dirLight2 = new THREE.DirectionalLight(0xffffff, 1.3);
+      dirLight2.position.set(-4, -2, -3);
+      scene.add(dirLight2);
+
+      const pointLight = new THREE.PointLight(d.accentColor, 1.8, 12);
+      pointLight.position.set(0, -2, 3);
+      scene.add(pointLight);
 
       const masterGroup = new THREE.Group();
       scene.add(masterGroup);
 
-      // Construct Domain Specific 3D Models
-      if (d.type === 'engineering') {
-        // Engineering: Multi-Layer Mechanical Industrial Gear & Shaft Engine Assembly (UPDATE 3)
-        const gearGroup = new THREE.Group();
+      // Load 3D GLB Model
+      if (typeof THREE.GLTFLoader !== 'undefined') {
+        const loader = new THREE.GLTFLoader();
+        loader.load(
+          encodeURI(d.modelPath),
+          (gltf) => {
+            const model = gltf.scene;
 
-        // Main center gear hub
-        const mainHub = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.72, 0.72, 0.28, 24),
-          new THREE.MeshStandardMaterial({ color: d.primaryColor, metalness: 0.85, roughness: 0.2 })
+            // Apply custom model orientation (e.g. standing up the syringe vertically)
+            if (d.modelOrientation) {
+              if (d.modelOrientation.x) model.rotation.x = d.modelOrientation.x;
+              if (d.modelOrientation.y) model.rotation.y = d.modelOrientation.y;
+              if (d.modelOrientation.z) model.rotation.z = d.modelOrientation.z;
+              model.updateMatrixWorld(true);
+            }
+
+            // Compute Bounding Box after applying orientation to auto-center and scale
+            const box = new THREE.Box3().setFromObject(model);
+            const center = box.getCenter(new THREE.Vector3());
+            const size = box.getSize(new THREE.Vector3());
+
+            // Center the model's pivot
+            model.position.x -= center.x;
+            model.position.y -= center.y;
+            model.position.z -= center.z;
+
+            // Normalize scale so model fits nicely inside viewport
+            const maxDim = Math.max(size.x, size.y, size.z);
+            if (maxDim > 0) {
+              const targetScale = (d.targetScaleMultiplier || 2.3) / maxDim;
+              masterGroup.scale.set(targetScale, targetScale, targetScale);
+            }
+
+            masterGroup.add(model);
+          },
+          undefined,
+          (err) => {
+            console.warn(`Could not load GLB for ${d.id}, falling back:`, err);
+            // Fallback wireframe geometric placeholder
+            const geo = new THREE.IcosahedronGeometry(1.0, 1);
+            const mat = new THREE.MeshStandardMaterial({
+              color: d.primaryColor,
+              roughness: 0.2,
+              metalness: 0.8,
+              wireframe: true
+            });
+            masterGroup.add(new THREE.Mesh(geo, mat));
+          }
         );
-        gearGroup.add(mainHub);
-
-        // 8 Extruded Industrial Gear Teeth
-        const toothCount = 8;
-        for (let i = 0; i < toothCount; i++) {
-          const tooth = new THREE.Mesh(
-            new THREE.BoxGeometry(0.22, 0.28, 0.32),
-            new THREE.MeshStandardMaterial({ color: d.primaryColor, metalness: 0.75, roughness: 0.25 })
-          );
-          const angle = (i * Math.PI * 2) / toothCount;
-          tooth.position.set(Math.cos(angle) * 0.85, 0, Math.sin(angle) * 0.85);
-          tooth.rotation.y = -angle;
-          gearGroup.add(tooth);
-        }
-
-        // Center Axle Shaft
-        const axle = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.3, 0.3, 0.65, 16),
-          new THREE.MeshStandardMaterial({ color: d.accentColor, metalness: 0.9, roughness: 0.15 })
-        );
-        gearGroup.add(axle);
-
-        // Interlocking Inner Wireframe Cog
-        const innerCog = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.48, 0.48, 0.35, 12),
-          new THREE.MeshBasicMaterial({ color: d.accentColor, wireframe: true })
-        );
-        gearGroup.add(innerCog);
-
-        masterGroup.add(gearGroup);
-      } else if (d.type === 'placements') {
-        // Placements: Octahedron Crystal Trophy & Orbit Ring
-        const trophy = new THREE.Mesh(
-          new THREE.OctahedronGeometry(1.0, 0),
-          new THREE.MeshStandardMaterial({ color: d.primaryColor, roughness: 0.1, metalness: 0.8 })
-        );
-        masterGroup.add(trophy);
-
-        const ring = new THREE.Mesh(
-          new THREE.TorusGeometry(1.3, 0.04, 16, 48),
-          new THREE.MeshBasicMaterial({ color: d.accentColor })
-        );
-        ring.rotation.x = Math.PI / 3;
-        masterGroup.add(ring);
-      } else if (d.type === 'healthcare') {
-        // Healthcare: DNA Double Helix Strand
-        const dnaGroup = new THREE.Group();
-        const sphereGeo = new THREE.SphereGeometry(0.12, 12, 12);
-        const matA = new THREE.MeshStandardMaterial({ color: d.primaryColor });
-        const matB = new THREE.MeshStandardMaterial({ color: d.accentColor });
-
-        for (let i = -6; i <= 6; i++) {
-          const y = i * 0.22;
-          const angle = i * 0.45;
-          const x1 = Math.cos(angle) * 0.7;
-          const z1 = Math.sin(angle) * 0.7;
-
-          const s1 = new THREE.Mesh(sphereGeo, matA);
-          s1.position.set(x1, y, z1);
-          dnaGroup.add(s1);
-
-          const s2 = new THREE.Mesh(sphereGeo, matB);
-          s2.position.set(-x1, y, -z1);
-          dnaGroup.add(s2);
-
-          // Connecting rungs
-          const rungGeo = new THREE.CylinderGeometry(0.03, 0.03, 1.4);
-          const rungMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 });
-          const rung = new THREE.Mesh(rungGeo, rungMat);
-          rung.position.set(0, y, 0);
-          rung.rotation.z = Math.PI / 2;
-          rung.rotation.y = angle;
-          dnaGroup.add(rung);
-        }
-        masterGroup.add(dnaGroup);
-      } else if (d.type === 'tourism') {
-        // Tourism & Culture: Orbital Globe
-        const globe = new THREE.Mesh(
-          new THREE.SphereGeometry(0.85, 20, 20),
-          new THREE.MeshStandardMaterial({ color: d.primaryColor, wireframe: true })
-        );
-        masterGroup.add(globe);
-
-        const orb1 = new THREE.Mesh(
-          new THREE.TorusGeometry(1.25, 0.04, 16, 40),
-          new THREE.MeshBasicMaterial({ color: d.accentColor })
-        );
-        orb1.rotation.x = Math.PI / 2.5;
-        masterGroup.add(orb1);
-      } else if (d.type === 'entertainment') {
-        // Entertainment: Spatial 3D VR Headset & Gaming Optics (UPDATE 3)
-        const headsetGroup = new THREE.Group();
-
-        // Curved VR Main Chassis Box
-        const mainChassis = new THREE.Mesh(
-          new THREE.BoxGeometry(1.15, 0.62, 0.7, 4, 4, 4),
-          new THREE.MeshStandardMaterial({ color: d.primaryColor, roughness: 0.25, metalness: 0.65 })
-        );
-        headsetGroup.add(mainChassis);
-
-        // Curved Dark Reflective Glass Visor Faceplate
-        const glassVisor = new THREE.Mesh(
-          new THREE.BoxGeometry(1.1, 0.56, 0.12),
-          new THREE.MeshStandardMaterial({ color: 0x111122, roughness: 0.05, metalness: 0.95 })
-        );
-        glassVisor.position.z = 0.36;
-        headsetGroup.add(glassVisor);
-
-        // Dual Glowing Camera Optics Rings
-        const lensGeo = new THREE.TorusGeometry(0.16, 0.035, 16, 24);
-        const lensMat = new THREE.MeshBasicMaterial({ color: d.accentColor });
-        const leftLens = new THREE.Mesh(lensGeo, lensMat);
-        leftLens.position.set(-0.3, 0, 0.43);
-        headsetGroup.add(leftLens);
-
-        const rightLens = new THREE.Mesh(lensGeo, lensMat);
-        rightLens.position.set(0.3, 0, 0.43);
-        headsetGroup.add(rightLens);
-
-        // Halo Headstrap
-        const haloStrap = new THREE.Mesh(
-          new THREE.TorusGeometry(0.68, 0.05, 12, 32, Math.PI),
-          new THREE.MeshStandardMaterial({ color: 0x333344, roughness: 0.4 })
-        );
-        haloStrap.rotation.x = -Math.PI / 2;
-        haloStrap.position.set(0, 0.28, -0.05);
-        headsetGroup.add(haloStrap);
-
-        masterGroup.add(headsetGroup);
       } else {
-        // Building & Infrastructure: Lattice Skyscraper Cube
-        const lattice = new THREE.Mesh(
-          new THREE.BoxGeometry(1.1, 1.4, 1.1, 4, 5, 4),
-          new THREE.MeshStandardMaterial({ color: d.primaryColor, wireframe: true })
-        );
-        masterGroup.add(lattice);
-
-        const coreBlock = new THREE.Mesh(
-          new THREE.BoxGeometry(0.6, 0.9, 0.6),
-          new THREE.MeshStandardMaterial({ color: d.accentColor, roughness: 0.3 })
-        );
-        masterGroup.add(coreBlock);
+        const geo = new THREE.IcosahedronGeometry(1.0, 1);
+        const mat = new THREE.MeshStandardMaterial({
+          color: d.primaryColor,
+          roughness: 0.2,
+          metalness: 0.8,
+          wireframe: true
+        });
+        masterGroup.add(new THREE.Mesh(geo, mat));
       }
 
-      // Parallax Tilt Controller for Card
+      // Interactive High-Sensitivity Mouse & Touch Controller
       const card = container.closest('.domain-card');
       let targetRotX = 0, targetRotY = 0;
+      let isHovered = false;
+      let isDragging = false;
+      let dragStartX = 0, dragStartY = 0;
+      let dragOffsetRotX = 0, dragOffsetRotY = 0;
 
       if (card) {
+        card.addEventListener('mouseenter', () => {
+          isHovered = true;
+        });
+
+        // High-sensitivity mouse tracking across card
         card.addEventListener('mousemove', (e) => {
+          if (isDragging) return;
           const rect = card.getBoundingClientRect();
-          const x = (e.clientX - rect.left) / rect.width - 0.5;
-          const y = (e.clientY - rect.top) / rect.height - 0.5;
-          targetRotY = x * 0.8;
-          targetRotX = -y * 0.8;
+          const normX = (e.clientX - rect.left) / rect.width - 0.5;
+          const normY = (e.clientY - rect.top) / rect.height - 0.5;
+
+          // Increased rotation sensitivity (yaw ±2.8 rad, pitch ±1.8 rad)
+          targetRotY = normX * 3.2;
+          targetRotX = -normY * 2.2;
         });
 
         card.addEventListener('mouseleave', () => {
+          isHovered = false;
+          isDragging = false;
           targetRotX = 0;
           targetRotY = 0;
+        });
+
+        // Direct Drag-to-Rotate Support on Canvas
+        container.addEventListener('mousedown', (e) => {
+          isDragging = true;
+          dragStartX = e.clientX;
+          dragStartY = e.clientY;
+          e.stopPropagation();
+        });
+
+        window.addEventListener('mousemove', (e) => {
+          if (!isDragging) return;
+          const deltaX = e.clientX - dragStartX;
+          const deltaY = e.clientY - dragStartY;
+          dragStartX = e.clientX;
+          dragStartY = e.clientY;
+
+          dragOffsetRotY += deltaX * 0.03;
+          dragOffsetRotX += deltaY * 0.03;
+        });
+
+        window.addEventListener('mouseup', () => {
+          isDragging = false;
         });
       }
 
@@ -1103,16 +1127,29 @@
         requestAnimationFrame(animate);
         const elapsed = clock.getElapsedTime();
 
-        // Continuous Rotation
-        masterGroup.rotation.y += 0.015;
-        masterGroup.rotation.x += 0.008;
+        if (isDragging) {
+          // Direct drag rotation
+          masterGroup.rotation.y = dragOffsetRotY;
+          masterGroup.rotation.x = d.initialRotX + dragOffsetRotX;
+          masterGroup.position.z = 0.35;
+        } else if (isHovered) {
+          // Interactive cursor tracking with high responsiveness
+          masterGroup.rotation.y += (targetRotY + dragOffsetRotY - masterGroup.rotation.y) * 0.14;
+          masterGroup.rotation.x += (d.initialRotX + targetRotX + dragOffsetRotX - masterGroup.rotation.x) * 0.14;
 
-        // Floating Idle Bobbing
-        masterGroup.position.y = Math.sin(elapsed * 2.2) * 0.12;
+          // Subtle float and lifted hover depth
+          masterGroup.position.y = Math.sin(elapsed * 3.0) * 0.08;
+          masterGroup.position.z += (0.3 - masterGroup.position.z) * 0.12;
+        } else {
+          // Smooth continuous idle rotation when unhovered
+          dragOffsetRotY += 0.014;
+          masterGroup.rotation.y += (dragOffsetRotY - masterGroup.rotation.y) * 0.08;
+          masterGroup.rotation.x += (d.initialRotX - masterGroup.rotation.x) * 0.08;
 
-        // Smooth Parallax Interpolation
-        masterGroup.rotation.y += (targetRotY - masterGroup.rotation.y) * 0.1;
-        masterGroup.rotation.x += (targetRotX - masterGroup.rotation.x) * 0.1;
+          // Gentle idle bobbing
+          masterGroup.position.y = Math.sin(elapsed * 2.0) * 0.06;
+          masterGroup.position.z += (0 - masterGroup.position.z) * 0.1;
+        }
 
         renderer.render(scene, camera);
       }
