@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — XR Research Lab</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="XR Research Lab Administration">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="images/collegelogo.png">
+
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Cloudflare Turnstile -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/homepage.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+
+<body>
+  <div class="admin-wrapper" id="admin-app">
+
+    <!-- ===== LOGIN SCREEN (Step 1: Credentials + CAPTCHA) ===== -->
+    <div class="admin-login-screen" id="login-screen">
+      <div class="admin-login-bg"></div>
+      <div class="admin-login-card">
+        <div class="admin-login-brand">
+          <span class="brand-xr">XR</span>
+          <span class="brand-label">RESEARCH LAB — ADMIN CONTROL</span>
+        </div>
+
+        <!-- Step 1: Email + Password + CAPTCHA -->
+        <div id="login-step1">
+          <h2 class="admin-login-title">Authentication Required</h2>
+          <p class="admin-login-subtitle">Enter administrator credentials to proceed</p>
+
+          <div id="login-error" class="admin-message"></div>
+
+          <form id="login-form" autocomplete="off">
+            <div class="admin-field">
+              <label for="admin-email">Admin Email</label>
+              <input type="email" id="admin-email" placeholder="admin@example.com" required autocomplete="username">
+            </div>
+            <div class="admin-field">
+              <label for="admin-password">Password</label>
+              <input type="password" id="admin-password" placeholder="••••••••••" required autocomplete="current-password">
+            </div>
+
+            <!-- Turnstile CAPTCHA -->
+            <div class="turnstile-container">
+              <div class="cf-turnstile" data-sitekey="" data-theme="dark" data-callback="onCaptchaSuccess" id="turnstile-widget"></div>
+            </div>
+
+            <button type="submit" class="admin-btn admin-btn-primary" id="login-submit-btn" disabled>
+              <span id="login-btn-text">VERIFY IDENTITY</span>
+              <div class="admin-spinner" id="login-spinner" style="display:none"></div>
+            </button>
+          </form>
+        </div>
+
+        <!-- Step 2: OTP Verification -->
+        <div id="login-step2" style="display:none">
+          <h2 class="admin-login-title">Verification Code</h2>
+          <p class="admin-login-subtitle">Enter the 6-digit code sent to the lab email</p>
+
+          <div id="otp-error" class="admin-message"></div>
+
+          <form id="otp-form" autocomplete="off">
+            <div class="admin-otp-inputs" id="otp-inputs">
+              <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" autocomplete="one-time-code">
+              <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
+              <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
+              <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
+              <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
+              <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
+            </div>
+
+            <button type="submit" class="admin-btn admin-btn-primary" id="otp-submit-btn">
+              <span id="otp-btn-text">VERIFY CODE</span>
+              <div class="admin-spinner" id="otp-spinner" style="display:none"></div>
+            </button>
+          </form>
+
+          <p style="text-align:center; margin-top:16px; font-size:12px; color:var(--cin-text-dim);">
+            Code expires in <span id="otp-timer">10:00</span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== DASHBOARD (shown after auth) ===== -->
+    <div class="admin-dashboard" id="admin-dashboard" style="display:none">
+
+      <!-- Mobile sidebar toggle -->
+      <button class="admin-sidebar-toggle" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+
+      <!-- Sidebar -->
+      <aside class="admin-sidebar" id="admin-sidebar">
+        <div class="admin-sidebar-brand">
+          <span class="brand-xr">XR</span>
+          <span class="brand-sub">ADMIN CONTROL PANEL</span>
+        </div>
+
+        <nav class="admin-nav">
+          <button class="admin-nav-item active" data-section="dashboard">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Dashboard
+          </button>
+          <button class="admin-nav-item" data-section="events">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            Events
+          </button>
+          <button class="admin-nav-item" data-section="create">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+            Create Event
+          </button>
+
+          <div class="admin-nav-divider"></div>
+
+          <button class="admin-nav-item" data-section="security">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Security
+          </button>
+
+          <div class="admin-nav-spacer"></div>
+
+          <button class="admin-nav-item" id="logout-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+            Logout
+          </button>
+        </nav>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="admin-main" id="admin-main">
+        <!-- Content sections injected by JS -->
+      </main>
+    </div>
+
+  </div>
+
+  <script src="js/admin.js"></script>
+</body>
+
+</html>

@@ -4,413 +4,251 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AR/VR Research Lab — Exploring the Future of Immersive Technologies</title>
+  <title>XR Research Lab — Exploring the Future of Immersive Technologies</title>
+  <meta name="description" content="XR Research Lab at Geethanjali College of Engineering & Technology. Pioneering research in AR/VR, spatial computing, and immersive technologies across engineering, healthcare, entertainment, and more.">
 
   <!-- Browser Tab Icon (Favicon) -->
   <link rel="icon" type="image/png" href="images/collegelogo.png">
   <link rel="apple-touch-icon" href="images/collegelogo.png">
 
-  <!-- =========================================================================
-       1. EXTERNAL TYPOGRAPHY & LIBRARIES
-       - Google Fonts: Exo (Headings), Glegoo (Body text), JetBrains Mono (Code/Metadata)
-       - Three.js & GLTFLoader: WebGL 3D background spatial engine
-       - Lenis: Smooth scrolling engine
-       - xr-styles.css: Single source of truth for styles, tokens, and dark theme
-       ========================================================================= -->
+  <!-- Typography: Space Grotesk (Display) + Inter (Body) + JetBrains Mono (Technical) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Encode+Sans+Condensed:wght@100;200;300;400;500;600;700;800;900&family=Exo:ital,wght@0,100..900;1,100..900&family=Glegoo:wght@400;700&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Sarpanch:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Three.js WebGL Engine -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-
-  <!-- Lenis Smooth Inertia Scroll Engine -->
-  <link rel="stylesheet" href="https://unpkg.com/lenis@1.1.20/dist/lenis.css">
-  <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
-
-  <!-- Centralized Spatial XR OS Engine Styles -->
-  <link rel="stylesheet" href="css/xr-styles.css">
+  <!-- Homepage Cinematic Styles -->
+  <link rel="stylesheet" href="css/homepage.css">
 </head>
 
-<body class="dark-mode">
+<body>
 
   <!-- =========================================================================
-       2. STANDARDIZED SITE HEADER
-       - Centered College Logo (GCET)
-       - Main Title ("AR/VR RESEARCH LAB") without underline + Clean Theme Toggle Button
-       - Top Navigation: Home, About Us
+       1. CINEMATIC TRANSPARENT NAVIGATION
        ========================================================================= -->
-  <header class="site-header">
-    <div class="header-logo-bar">
-      <a href="https://gcet.edu.in/" target="_blank" rel="noopener" class="header-logo-wrap"
-        title="Geethanjali College of Engineering &amp; Technology (Official Website)">
-        <img src="images/collegelogo.png" alt="GCET College Logo" class="header-logo">
+  <header class="cin-header" id="cin-header">
+    <nav class="cin-nav">
+      <!-- Logo / Brand -->
+      <a href="index.html" class="cin-brand" aria-label="XR Research Lab Home">
+        <span class="brand-xr">XR</span>
+        <span class="brand-sep"></span>
+        <span class="brand-text">RESEARCH LAB</span>
       </a>
-    </div>
-    <div class="header-top">
-      <div class="header-heading">
-        <h1 class="site-title"><a href="index.html"><span class="w-cyan">AR/VR</span> <span
-              class="w-white">RESEARCH</span> <span class="w-coral">LAB</span></a></h1>
-        <span class="site-subtitle">EXPLORING THE FUTURE OF IMMERSIVE TECHNOLOGIES</span>
+
+      <!-- Desktop Navigation Links -->
+      <div class="cin-nav-links" id="cin-nav-links">
+        <a href="index.html" class="cin-nav-link active" aria-current="page">Home</a>
+        <a href="about.html" class="cin-nav-link">About Us</a>
+
+        <!-- EXPLORE with dropdown -->
+        <div class="cin-nav-dropdown" id="cin-explore">
+          <button class="cin-nav-link cin-dropdown-trigger" aria-expanded="false" aria-haspopup="true" id="explore-trigger">
+            Explore
+            <svg class="dropdown-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="cin-dropdown" id="cin-explore-dropdown" role="menu" aria-label="Explore submenu">
+            <a href="learn.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span>
+              Learn
+            </a>
+            <a href="milestones.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span>
+              Milestones
+            </a>
+          </div>
+        </div>
+
+        <!-- CONNECT with dropdown -->
+        <div class="cin-nav-dropdown cin-nav-connect" id="cin-connect">
+          <button class="cin-nav-link cin-dropdown-trigger cin-connect-trigger" aria-expanded="false" aria-haspopup="true" id="connect-trigger">
+            Connect
+            <svg class="dropdown-chevron connect-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="cin-dropdown" id="cin-dropdown" role="menu" aria-label="Connect submenu">
+            <a href="projects.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span>
+              Ongoing Projects
+            </a>
+            <a href="events.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span>
+              Upcoming Events
+            </a>
+            <a href="research.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span>
+              Research
+            </a>
+          </div>
+        </div>
       </div>
-      <!-- Simple Clickable Dark/Light Mode Button -->
-      <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Theme">🌙 Dark</button>
-    </div>
-    <div class="header-bottom">
-      <nav class="navlinks" id="navlinks">
-        <a href="index.html" class="active">Home</a>
-        <a href="about.html">About Us</a>
-      </nav>
-      <button class="navtoggle" id="navtoggle" aria-label="Toggle Navigation">
-        <span></span><span></span><span></span>
+
+      <!-- Mobile Hamburger -->
+      <button class="cin-hamburger" id="cin-hamburger" aria-label="Toggle Navigation" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
       </button>
-    </div>
+    </nav>
   </header>
 
-  <!-- =========================================================================
-       3. 3D BACKGROUND CANVAS MOUNT POINT
-       - Fixed to viewport background (position: fixed; inset: 0; z-index: 0)
-       - Renders interactive floating spatial objects, astronauts, and starfields
-       ========================================================================= -->
-  <div id="canvas-container"></div>
+  <!-- Mobile Navigation Overlay -->
+  <div class="cin-mobile-overlay" id="cin-mobile-overlay" aria-hidden="true">
+    <div class="cin-mobile-menu">
+      <a href="index.html" class="cin-mobile-link active">Home</a>
+      <a href="about.html" class="cin-mobile-link">About Us</a>
 
-  <!-- =========================================================================
-       4. RESEARCH DIVISIONS SECTION
-       - State 1: 3x3 Division Selection Grid (Directly at the top of the Home page)
-       - State 2: Dynamic Project Gallery Screen with interactive cards and WebGL launcher
-       ========================================================================= -->
-  <section id="research-divisions">
-    <!-- STATE 1: DIVISION SELECTION (3-column responsive grid) -->
-    <div id="division-selection-screen" class="reveal in">
-      <div class="domain-grid">
-        <!-- 1. Engineering Division -->
-        <div class="domain-card" onclick="openDivisionGallery('engineering')">
-          <div class="domain-canvas-wrap" id="canvas-engineering"></div>
-          <h3>Engineering</h3>
-          <button class="btn-explore">Explore Projects →</button>
+      <!-- Mobile Explore Accordion -->
+      <div class="cin-mobile-accordion" id="cin-mobile-explore-wrap">
+        <button class="cin-mobile-link cin-mobile-accordion-trigger" id="mobile-explore-trigger" aria-expanded="false">
+          Explore
+          <svg class="dropdown-chevron mobile-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="cin-mobile-dropdown" id="cin-mobile-explore-dropdown">
+          <a href="learn.html" class="cin-mobile-sub">Learn</a>
+          <a href="milestones.html" class="cin-mobile-sub">Milestones</a>
         </div>
+      </div>
 
-        <!-- 2. Placements Division -->
-        <div class="domain-card" onclick="openDivisionGallery('placements')">
-          <div class="domain-canvas-wrap" id="canvas-placements"></div>
-          <h3>Placements</h3>
-          <button class="btn-explore">Explore Projects →</button>
-        </div>
-
-        <!-- 3. Healthcare Division -->
-        <div class="domain-card" onclick="openDivisionGallery('healthcare')">
-          <div class="domain-canvas-wrap" id="canvas-healthcare"></div>
-          <h3>Healthcare</h3>
-          <button class="btn-explore">Explore Projects →</button>
-        </div>
-
-        <!-- 4. Tourism & Culture Division -->
-        <div class="domain-card" onclick="openDivisionGallery('tourism')">
-          <div class="domain-canvas-wrap" id="canvas-tourism"></div>
-          <h3>Tourism &amp; Culture</h3>
-          <button class="btn-explore">Explore Projects →</button>
-        </div>
-
-        <!-- 5. Entertainment Division -->
-        <div class="domain-card" onclick="openDivisionGallery('entertainment')">
-          <div class="domain-canvas-wrap" id="canvas-entertainment"></div>
-          <h3>Entertainment</h3>
-          <button class="btn-explore">Explore Projects →</button>
-        </div>
-
-        <!-- 6. Building & Infrastructure Division -->
-        <div class="domain-card" onclick="openDivisionGallery('building')">
-          <div class="domain-canvas-wrap" id="canvas-building"></div>
-          <h3>Building &amp; Infrastructure</h3>
-          <button class="btn-explore">Explore Projects →</button>
+      <!-- Mobile Connect Accordion -->
+      <div class="cin-mobile-accordion" id="cin-mobile-connect-wrap">
+        <button class="cin-mobile-link cin-mobile-accordion-trigger cin-mobile-connect-trigger" id="mobile-connect-trigger" aria-expanded="false">
+          Connect
+          <svg class="dropdown-chevron connect-chevron mobile-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="cin-mobile-dropdown" id="cin-mobile-dropdown">
+          <a href="projects.html" class="cin-mobile-sub">Ongoing Projects</a>
+          <a href="events.html" class="cin-mobile-sub">Upcoming Events</a>
+          <a href="research.html" class="cin-mobile-sub">Research</a>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- STATE 2: DIVISION PROJECTS GALLERY (Switched via openDivisionGallery()) -->
-    <div id="projects-gallery-screen">
-      <div class="gallery-topbar">
-        <button class="btn-back-divisions" onclick="returnToDivisions()">← Back to Divisions</button>
-        <span
-          style="font-family:var(--font-mono); font-size:12px; color:var(--primary-accent); letter-spacing:0.12em;">RESEARCH
-          DIVISION GALLERY</span>
+  <!-- =========================================================================
+       2. SEXY & DASHING INTRODUCTION SECTION (BEFORE DIVISIONS)
+       ========================================================================= -->
+  <section class="cin-intro-section" id="cin-intro">
+    <div class="intro-bg-glow" aria-hidden="true"></div>
+    <div class="intro-grid-pattern" aria-hidden="true"></div>
+
+    <div class="intro-container">
+      <!-- High-tech Lab Badge -->
+      <div class="intro-badge">
+        <span class="intro-badge-pulse"></span>
+        <span class="intro-badge-text">GCET AR/VR RESEARCH LAB // NEXT-GEN SPATIAL COMPUTING</span>
       </div>
 
-      <div class="gallery-header-info">
-        <h1 id="gallery-division-title">Division Projects</h1>
-        <p id="gallery-division-desc">Select a project card below to view detailed spatial computing implementations.
-        </p>
-      </div>
+      <!-- Main Headline with Electric Gradient -->
+      <h1 class="intro-headline">
+        PIONEERING THE <span class="intro-gradient">NEXT DIMENSION</span> OF COMPUTING
+      </h1>
 
-      <!-- Responsive Grid of Division Projects -->
-      <div class="projects-grid" id="projects-grid-container"></div>
+      <!-- Seductive & Dashing Lead Paragraph -->
+      <p class="intro-lead">
+        Step beyond physical screens. The GCET XR Research Lab engineers real-time 3D simulations, structural digital twins, and natural spatial human-computer interfaces across six pioneering scientific disciplines.
+      </p>
+
+      <!-- Action Buttons -->
+      <div class="intro-actions">
+        <a href="#divisions" class="intro-btn-primary" id="btn-enter-divisions">
+          <span class="btn-text">WATCH OUT</span>
+          <svg class="btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 5v14M19 12l-7 7-7-7"/>
+          </svg>
+        </a>
+
+        <a href="about.html" class="intro-btn-secondary">
+          <span>ABOUT OUR LAB</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
     </div>
   </section>
 
   <!-- =========================================================================
-       5. CONNECT WITH US SECTION
-       - Social platform pills linking to Instagram, GitHub, YouTube, Discord
+       3. FULL-SCREEN CINEMATIC HERO — RESEARCH DIVISION EXPERIENCE
        ========================================================================= -->
-  <section class="reveal">
-    <div class="section-label"><span class="dash"></span><span class="eyebrow">Digital Community</span></div>
-    <h2 style="font-family:var(--font-display); font-size:clamp(26px, 3.2vw, 36px); font-weight:800; color:var(--text-main); margin-bottom:16px;">
-      Connect With Us
-    </h2>
-    <div class="social-grid">
-      <a href="https://www.instagram.com/ar.vr.researchlab?igsh=MWM5bzhsd2VkNGFuag==" class="social-pill" target="_blank" rel="noopener">Instagram</a>
-      <a href="https://github.com" class="social-pill" target="_blank" rel="noopener">GitHub</a>
-      <a href="https://youtube.com" class="social-pill" target="_blank" rel="noopener">YouTube</a>
-      <a href="https://discord.com" class="social-pill" target="_blank" rel="noopener">Discord</a>
+  <main class="cin-hero" id="cin-hero" data-anchor="divisions">
+    <div id="divisions" style="position: absolute; top: 0; left: 0;"></div>
+
+    <!-- Video Background Layer (one per division, swapped via JS) -->
+    <div class="cin-hero-bg" id="cin-hero-bg" aria-hidden="true">
+      <!-- Videos injected dynamically by JS -->
     </div>
-  </section>
+
+    <!-- Dark Cinematic Overlay -->
+    <div class="cin-hero-overlay" aria-hidden="true"></div>
+
+    <!-- Ambient Scanline / Grid effect -->
+    <div class="cin-hero-scanlines" aria-hidden="true"></div>
+
+    <!-- Hero Content -->
+    <div class="cin-hero-content">
+      <h1 class="cin-hero-title" id="hero-title">ENGINEERING</h1>
+
+      <p class="cin-hero-desc" id="hero-desc">
+        Mechanical simulations, CAD model visualization, and structural digital twins built for real-time 3D engineering analysis.
+      </p>
+
+      <a href="#" class="cin-hero-cta" id="hero-cta" aria-label="Explore Engineering Projects">
+        <span class="cta-text">EXPLORE PROJECTS</span>
+        <span class="cta-arrow">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+      </a>
+    </div>
+
+    <!-- Bottom Research Division Selector -->
+    <div class="cin-division-selector" id="cin-division-selector">
+      <div class="cin-division-track" id="cin-division-track" role="tablist" aria-label="Research Divisions">
+        <!-- Division capsule items injected by JS -->
+      </div>
+    </div>
+
+    <!-- Scroll hint -->
+    <div class="cin-scroll-hint" aria-hidden="true">
+      <div class="scroll-line"></div>
+    </div>
+
+  </main>
 
   <!-- =========================================================================
-       6. COLLABORATION & CONTACT FORM SECTION
-       - Direct inquiry submission form for student projects, industry, and research
+       3. SITE FOOTER
        ========================================================================= -->
-  <section class="reveal" id="collaboration">
-    <div class="section-label"><span class="dash"></span><span class="eyebrow">Collaboration</span></div>
-    <h2 style="font-family:var(--font-display); font-size:clamp(26px, 3.2vw, 36px); font-weight:800; color:var(--text-main); margin-bottom:16px;">
-      Have an Idea?
-    </h2>
-
-    <div class="contact-form-wrapper">
-      <form class="contact-form" onsubmit="event.preventDefault(); this.querySelector('.sent-msg').style.display='block';">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="name">Full Name *</label>
-            <input required type="text" id="name" class="form-control" placeholder="Enter your full name">
-          </div>
-          <div class="form-group">
-            <label for="email">Email Address *</label>
-            <input required type="email" id="email" class="form-control" placeholder="Enter your email address">
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="dept">Department / Organization</label>
-            <input type="text" id="dept" class="form-control" placeholder="e.g. CSE / ECE / Industry Partner">
-          </div>
-          <div class="form-group">
-            <label for="subject">Subject *</label>
-            <input required type="text" id="subject" class="form-control" placeholder="e.g. Research Collaboration / Membership Inquiry">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="message">Message *</label>
-          <textarea required id="message" class="form-control" placeholder="Tell us about your project, idea, or inquiry..."></textarea>
-        </div>
-
-        <button type="submit" class="btn-submit">Send Message →</button>
-        <div class="sent-msg">Message sent successfully — we will be in touch shortly!</div>
-      </form>
-    </div>
-  </section>
-
-  <!-- =========================================================================
-       7. SITE FOOTER
-       - Copyright, college attribution, and official contact details
-       ========================================================================= -->
-  <footer class="footer">
-    <div>© 2026 AR/VR RESEARCH LAB — GEETHANJALI COLLEGE OF ENGINEERING &amp; TECHNOLOGY</div>
-    <div class="footer-contact">
-      <span>Email: <a href="mailto:xrresearchlab@gcet.edu.in"
-          style="color:var(--cyan-glow);">xrresearchlab@gcet.edu.in</a></span>
-      <span>Phone: <a href="tel:8763688312" style="color:var(--cyan-glow);">+91 8763688312</a></span>
+  <footer class="cin-footer">
+    <div class="cin-footer-inner">
+      <div class="cin-footer-brand">
+        <span class="footer-xr">XR</span> RESEARCH LAB
+      </div>
+      <div class="cin-footer-info">
+        © 2026 AR/VR RESEARCH LAB — GEETHANJALI COLLEGE OF ENGINEERING &amp; TECHNOLOGY
+      </div>
+      <div class="cin-footer-contact">
+        <a href="mailto:xrresearchlab@gcet.edu.in">xrresearchlab@gcet.edu.in</a>
+      </div>
+      <div class="cin-footer-social">
+        <a href="https://www.instagram.com/ar.vr.researchlab?igsh=MWM5bzhsd2VkNGFuag==" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
+        <a href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
+        <a href="https://youtube.com" target="_blank" rel="noopener" aria-label="YouTube">YouTube</a>
+        <a href="https://discord.com" target="_blank" rel="noopener" aria-label="Discord">Discord</a>
+      </div>
     </div>
   </footer>
 
   <!-- =========================================================================
-       8. DIVISION PROJECT DATABASE & STATE SWITCHER SCRIPT
-       - Stores project data for all 6 research divisions
-       - Manages transitions between division selection and project gallery
+       4. RESEARCH DIVISION DATA & HOMEPAGE ENGINE
        ========================================================================= -->
-  <script>
-    // Project Database for all 6 Divisions
-    const divisionDatabase = {
-      engineering: {
-        title: 'Engineering Sector Projects',
-        desc: 'Mechanical simulations, CAD model visualization, and structural digital twins built for real-time 3D engineering analysis.',
-        projects: []
-      },
+  <script src="js/homepage.js"></script>
 
-      placements: {
-        title: 'Placements & Career Development Projects',
-        desc: 'Industry-ready training, technical skill showcases, and career placement portfolios in spatial technology.',
-        projects: []
-      },
-
-      healthcare: {
-        title: 'Healthcare & Medical XR Projects',
-        desc: 'Surgical VR training, medical anatomy visualization, and AR-assisted clinical simulations.',
-        projects: []
-      },
-
-      tourism: {
-        title: 'Tourism & Cultural Heritage Projects',
-        desc: 'Heritage site preservation, virtual museum walkthroughs, and interactive cultural spatial experiences.',
-        projects: []
-      },
-
-      entertainment: {
-        title: 'Entertainment XR Projects',
-        desc: 'Interactive 3D spatial gaming, Holo-Stage performance simulators, and live WebGL audio-visual experiences.',
-        projects: [
-          {
-            title: 'Entertainment 3D Interactive WebGL Demo Game',
-            desc: 'Interactive WebGL 3D game experience built with Unity & WebGL, featuring real-time spatial graphics and controls.',
-            tags: ['Unity 3D', 'WebGL Game', 'Spatial Computing'],
-            status: 'Completed',
-            color: '0xec4899',
-            isLiveDemo: true,
-            actionKey: 'entertainment_demo'
-          }
-        ]
-      },
-
-      building: {
-        title: 'Building & Infrastructure Projects',
-        desc: 'BIM architecture walkthroughs, civil engineering visualization, and smart city digital twins.',
-        projects: []
-      }
-    };
-
-    /**
-     * Opens the detailed project gallery for a specific division.
-     * @param {string} divKey - Key corresponding to divisionDatabase entry.
-     */
-    function openDivisionGallery(divKey) {
-      const data = divisionDatabase[divKey];
-      if (!data) return;
-
-      // Hide State 1 (Division Selection)
-      document.getElementById('division-selection-screen').classList.add('hidden');
-
-      // Set State 2 Header Info
-      document.getElementById('gallery-division-title').innerText = data.title;
-      document.getElementById('gallery-division-desc').innerText = data.desc;
-
-      // Render Projects Grid
-      const container = document.getElementById('projects-grid-container');
-      container.innerHTML = '';
-
-      if (data.projects.length === 0) {
-        // Placeholder state when division projects are under development
-        container.innerHTML = `
-          <div class="glass-card" style="grid-column: 1 / -1; padding: 52px 32px; text-align: center; max-width: 680px; margin: 20px auto;">
-            <div style="font-size: 46px; margin-bottom: 16px;">🚀</div>
-            <h3 style="font-family: var(--font-display); font-size: 24px; margin-bottom: 12px; color: var(--text-main);">Projects Under Active Development</h3>
-            <p style="color: var(--text-muted); font-size: 15.5px; line-height: 1.7; max-width: 540px; margin: 0 auto 24px;">
-              Projects for this spatial computing division are currently being researched and built by our team. Check back soon for upcoming WebGL and WebXR releases!
-            </p>
-            <button class="btn-back-divisions" onclick="returnToDivisions()">← Explore Other Divisions</button>
-          </div>
-        `;
-      } else {
-        // Render project cards dynamically
-        data.projects.forEach((proj, idx) => {
-          let badgeClass = 'badge-completed';
-          if (proj.status === 'Ongoing') badgeClass = 'badge-ongoing';
-          else if (proj.status === 'Research') badgeClass = 'badge-research';
-          else if (proj.status === 'Prototype') badgeClass = 'badge-prototype';
-
-          const tagsHtml = proj.tags.map(t => `<span class="ptag">${t}</span>`).join('');
-
-          const card = document.createElement('div');
-          card.className = 'project-card';
-          card.style.animationDelay = `${idx * 0.12}s`;
-          card.onclick = () => viewProjectDetails(divKey, proj.actionKey);
-
-          card.innerHTML = `
-            <div class="project-thumb-box">
-              <div class="project-thumb-canvas" data-color="${proj.color}"></div>
-              <span class="status-badge ${badgeClass}">${proj.status}</span>
-            </div>
-            <h3>${proj.title}</h3>
-            <p>${proj.desc}</p>
-            <div class="project-tags">${tagsHtml}</div>
-            <button class="btn-view-project" onclick="event.stopPropagation(); viewProjectDetails('${divKey}', '${proj.actionKey}')">
-              Launch 3D WebGL Game 🚀
-            </button>
-          `;
-          container.appendChild(card);
-        });
-      }
-
-      // Show State 2 (Projects Gallery)
-      const gallery = document.getElementById('projects-gallery-screen');
-      gallery.classList.add('active');
-
-      // Initialize 3D Thumbnails if available
-      if (window.initProjectCardThumbnails) {
-        setTimeout(window.initProjectCardThumbnails, 100);
-      }
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    /**
-     * Returns from project gallery view back to the 3x3 division selection screen.
-     */
-    function returnToDivisions() {
-      // Hide State 2 (Projects Gallery)
-      const gallery = document.getElementById('projects-gallery-screen');
-      gallery.classList.remove('active');
-
-      // Show State 1 (Division Selection)
-      document.getElementById('division-selection-screen').classList.remove('hidden');
-
-      // Smooth scroll back to divisions container
-      const divSection = document.getElementById('research-divisions');
-      if (divSection) divSection.scrollIntoView({ behavior: 'smooth' });
-    }
-
-    /**
-     * Direct launch of interactive 3D WebGL Game Modal.
-     */
-    function viewProjectDetails(divKey, actionKey) {
-      const modalBody = document.getElementById('enlarge-modal-body');
-      const overlay = document.querySelector('.enlarge-modal-overlay');
-      if (modalBody && overlay) {
-        modalBody.innerHTML = `
-          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
-            <div>
-              <span class="status-badge badge-completed" style="position:static; display:inline-block; margin-bottom:6px;">LIVE WEBGL GAME DEMO</span>
-              <h3 style="font-family:var(--font-display); font-size:24px; color:var(--text-main);">Entertainment 3D Interactive WebGL Demo Game</h3>
-            </div>
-            <a href="projects/entertainment/demo game/index.html" target="_blank" class="btn-explore" style="padding:8px 16px; font-size:11px; text-decoration:none;">Open Fullscreen ↗</a>
-          </div>
-          <div style="border-radius:18px; overflow:hidden; border:1.5px solid var(--border-glow); box-shadow:0 20px 60px rgba(0,0,0,0.7); background:#0b0c10;">
-            <iframe src="projects/entertainment/demo game/index.html" style="width:100%; height:620px; border:none; display:block;" title="Interactive 3D WebGL Game"></iframe>
-          </div>
-        `;
-        overlay.classList.add('active');
-        if (window.xrSound && window.xrSound.playSwoosh) {
-          window.xrSound.playSwoosh();
-        }
-      }
-    }
-
-    // Scroll Reveal Intersection Observer
-    const reveals = document.querySelectorAll('.reveal');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('in');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.15 });
-    reveals.forEach(r => observer.observe(r));
-  </script>
-
-  <!-- Spatial XR OS Engine Script -->
-  <script src="js/xr-engine.js"></script>
 </body>
-
 </html>

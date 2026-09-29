@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upcoming Events — XR Research Lab</title>
+  <meta name="description" content="Upcoming events, workshops, seminars, and research presentations at XR Research Lab.">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="images/collegelogo.png">
+  <link rel="apple-touch-icon" href="images/collegelogo.png">
+
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/homepage.css">
+  <link rel="stylesheet" href="css/subpages.css">
+  <link rel="stylesheet" href="css/xr-styles.css">
+</head>
+
+<body>
+
+  <!-- Cinematic Transparent Navigation -->
+  <header class="cin-header" id="cin-header">
+    <nav class="cin-nav">
+      <a href="index.html" class="cin-brand" aria-label="XR Research Lab Home">
+        <span class="brand-xr">XR</span>
+        <span class="brand-sep"></span>
+        <span class="brand-text">RESEARCH LAB</span>
+      </a>
+
+      <div class="cin-nav-links" id="cin-nav-links">
+        <a href="index.html" class="cin-nav-link">Home</a>
+        <a href="about.html" class="cin-nav-link">About Us</a>
+
+        <div class="cin-nav-dropdown" id="cin-explore">
+          <button class="cin-nav-link cin-dropdown-trigger" aria-expanded="false" aria-haspopup="true" id="explore-trigger">
+            Explore
+            <svg class="dropdown-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="cin-dropdown" id="cin-explore-dropdown" role="menu" aria-label="Explore submenu">
+            <a href="learn.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Learn
+            </a>
+            <a href="milestones.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Milestones
+            </a>
+          </div>
+        </div>
+
+        <div class="cin-nav-dropdown cin-nav-connect" id="cin-connect">
+          <button class="cin-nav-link cin-dropdown-trigger cin-connect-trigger active" aria-expanded="false" aria-haspopup="true" id="connect-trigger">
+            Connect
+            <svg class="dropdown-chevron connect-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="cin-dropdown" id="cin-dropdown" role="menu" aria-label="Connect submenu">
+            <a href="projects.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Ongoing Projects
+            </a>
+            <a href="events.html" class="cin-dropdown-item active" role="menuitem">
+              <span class="dropdown-indicator"></span> Upcoming Events
+            </a>
+            <a href="research.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Research
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <button class="cin-hamburger" id="cin-hamburger" aria-label="Toggle Navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Mobile Navigation Overlay -->
+  <div class="cin-mobile-overlay" id="cin-mobile-overlay" aria-hidden="true">
+    <div class="cin-mobile-menu">
+      <a href="index.html" class="cin-mobile-link">Home</a>
+      <a href="about.html" class="cin-mobile-link">About Us</a>
+      <div class="cin-mobile-accordion" id="cin-mobile-explore-wrap">
+        <button class="cin-mobile-link cin-mobile-accordion-trigger" id="mobile-explore-trigger" aria-expanded="false">
+          Explore
+          <svg class="dropdown-chevron mobile-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="cin-mobile-dropdown" id="cin-mobile-explore-dropdown">
+          <a href="learn.html" class="cin-mobile-sub">Learn</a>
+          <a href="milestones.html" class="cin-mobile-sub">Milestones</a>
+        </div>
+      </div>
+      <div class="cin-mobile-accordion" id="cin-mobile-connect-wrap">
+        <button class="cin-mobile-link cin-mobile-accordion-trigger cin-mobile-connect-trigger" id="mobile-connect-trigger" aria-expanded="false">
+          Connect
+          <svg class="dropdown-chevron connect-chevron mobile-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="cin-mobile-dropdown" id="cin-mobile-dropdown">
+          <a href="projects.html" class="cin-mobile-sub">Ongoing Projects</a>
+          <a href="events.html" class="cin-mobile-sub active">Upcoming Events</a>
+          <a href="research.html" class="cin-mobile-sub">Research</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="subpage-wrapper">
+    <div class="subpage-hero">
+      <div class="subpage-badge">
+        <span class="subpage-badge-dot"></span>
+        <span>CONNECT — EVENTS</span>
+      </div>
+      <h1 class="subpage-title">UPCOMING <span class="gradient-text">EVENTS</span></h1>
+      <p class="subpage-lead">
+        Workshops, seminars, hackathons, and research presentations organized by the XR Research Lab. Stay updated with our latest scheduled activities.
+      </p>
+    </div>
+
+    <section class="subpage-section">
+      <div class="section-label-bar">
+        <span class="section-label-num">01</span>
+        <span class="section-label-title">SCHEDULED EVENTS</span>
+      </div>
+
+      <div class="subpage-cards-grid" id="events-grid">
+        <!-- Events loaded dynamically -->
+        <div style="grid-column:1/-1;text-align:center;padding:60px 0;color:var(--cin-text-dim)">
+          <div style="width:24px;height:24px;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--cin-accent-bright);border-radius:50%;animation:adminSpin 0.6s linear infinite;margin:0 auto 16px"></div>
+          Loading events...
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div id="events-empty" style="display:none;text-align:center;padding:80px 24px">
+        <h3 style="font-family:var(--font-display);font-size:20px;color:var(--cin-text-secondary);margin-bottom:12px">No Upcoming Events</h3>
+        <p style="font-size:14px;color:var(--cin-text-dim);max-width:400px;margin:0 auto">Check back soon for new workshops, seminars, and research presentations.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="cin-footer">
+    <div class="cin-footer-inner">
+      <div class="cin-footer-brand"><span class="footer-xr">XR</span> RESEARCH LAB</div>
+      <div class="cin-footer-info">© 2026 AR/VR RESEARCH LAB — GEETHANJALI COLLEGE OF ENGINEERING &amp; TECHNOLOGY</div>
+      <div class="cin-footer-contact"><a href="mailto:xrresearchlab@gcet.edu.in">xrresearchlab@gcet.edu.in</a></div>
+      <div class="cin-footer-social">
+        <a href="https://www.instagram.com/ar.vr.researchlab?igsh=MWM5bzhsd2VkNGFuag==" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
+        <a href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
+        <a href="https://youtube.com" target="_blank" rel="noopener" aria-label="YouTube">YouTube</a>
+        <a href="https://discord.com" target="_blank" rel="noopener" aria-label="Discord">Discord</a>
+      </div>
+    </div>
+  </footer>
+
+  <style>
+    @keyframes adminSpin { to { transform: rotate(360deg); } }
+
+    .event-card {
+      background: rgba(14,18,28,0.55);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.35);
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .event-card:hover {
+      background: rgba(20,26,42,0.7);
+      border-color: rgba(96,165,250,0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 48px rgba(0,0,0,0.5), 0 0 24px rgba(59,130,246,0.18);
+    }
+    .event-card-image {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+    }
+    .event-card-image-placeholder {
+      width: 100%;
+      height: 180px;
+      background: linear-gradient(135deg, rgba(59,130,246,0.15) 0%, rgba(14,18,28,0.8) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .event-card-image-placeholder svg { opacity: 0.2; }
+    .event-card-body { padding: 24px; }
+    .event-card-category {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      color: var(--cin-accent-bright);
+      background: rgba(59,130,246,0.12);
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+    .event-card-title {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 18px;
+      color: var(--cin-text);
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+    .event-card-desc {
+      font-size: 13.5px;
+      color: var(--cin-text-secondary);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .event-card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--cin-text-dim);
+    }
+    .event-card-meta span { display: flex; align-items: center; gap: 5px; }
+    .event-card-actions { margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.06); }
+    .event-card-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(59,130,246,0.3);
+      border-radius: 6px;
+      color: var(--cin-accent-bright);
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: all 0.25s ease;
+    }
+    .event-card-btn:hover {
+      background: var(--cin-accent);
+      color: #fff;
+      border-color: var(--cin-accent);
+    }
+  </style>
+
+  <script src="js/homepage.js"></script>
+  <script>
+    (function() {
+      'use strict';
+
+      async function loadEvents() {
+        try {
+          const res = await fetch('/api/events-public');
+          const data = await res.json();
+          const events = data.events || [];
+
+          const grid = document.getElementById('events-grid');
+          const empty = document.getElementById('events-empty');
+
+          if (!events.length) {
+            grid.innerHTML = '';
+            empty.style.display = '';
+            return;
+          }
+
+          empty.style.display = 'none';
+          grid.innerHTML = events.map(e => {
+            const date = e.start_datetime ? new Date(e.start_datetime).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }) : '';
+            const time = e.start_datetime ? new Date(e.start_datetime).toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' }) : '';
+
+            return `
+              <a href="/events/${encodeURIComponent(e.slug)}" class="event-card">
+                ${e.featured_image
+                  ? `<img class="event-card-image" src="${e.featured_image}" alt="" loading="lazy">`
+                  : `<div class="event-card-image-placeholder"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>`
+                }
+                <div class="event-card-body">
+                  ${e.category ? `<span class="event-card-category">${e.category}</span>` : ''}
+                  <h2 class="event-card-title">${e.title}</h2>
+                  ${e.short_description ? `<p class="event-card-desc">${e.short_description}</p>` : ''}
+                  <div class="event-card-meta">
+                    ${date ? `<span>📅 ${date}</span>` : ''}
+                    ${time ? `<span>🕐 ${time}</span>` : ''}
+                    ${e.location ? `<span>📍 ${e.location}</span>` : ''}
+                  </div>
+                  ${e.registration_url ? `
+                    <div class="event-card-actions">
+                      <span class="event-card-btn">VIEW DETAILS →</span>
+                    </div>
+                  ` : ''}
+                </div>
+              </a>
+            `;
+          }).join('');
+        } catch (err) {
+          document.getElementById('events-grid').innerHTML = `
+            <div style="grid-column:1/-1;text-align:center;padding:60px 0;color:var(--cin-text-dim)">
+              <p>Unable to load events. Please try again later.</p>
+            </div>
+          `;
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', loadEvents);
+    })();
+  </script>
+
+</body>
+</html>

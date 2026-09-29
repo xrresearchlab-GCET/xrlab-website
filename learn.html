@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learn XR &amp; Spatial Computing — XR Research Lab</title>
+  <meta name="description" content="Explore learning pathways, workshops, and technical curricula in AR/VR, spatial computing, Unreal Engine, and WebXR at XR Research Lab.">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="images/collegelogo.png">
+  <link rel="apple-touch-icon" href="images/collegelogo.png">
+
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/homepage.css">
+  <link rel="stylesheet" href="css/subpages.css">
+</head>
+
+<body>
+
+  <!-- Cinematic Transparent Navigation -->
+  <header class="cin-header" id="cin-header">
+    <nav class="cin-nav">
+      <a href="index.html" class="cin-brand" aria-label="XR Research Lab Home">
+        <span class="brand-xr">XR</span>
+        <span class="brand-sep"></span>
+        <span class="brand-text">RESEARCH LAB</span>
+      </a>
+
+      <div class="cin-nav-links" id="cin-nav-links">
+        <a href="index.html" class="cin-nav-link">Home</a>
+        <a href="about.html" class="cin-nav-link">About Us</a>
+
+        <!-- EXPLORE with dropdown (Active on Learn) -->
+        <div class="cin-nav-dropdown" id="cin-explore">
+          <button class="cin-nav-link cin-dropdown-trigger active" aria-expanded="false" aria-haspopup="true" id="explore-trigger">
+            Explore
+            <svg class="dropdown-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="cin-dropdown" id="cin-explore-dropdown" role="menu" aria-label="Explore submenu">
+            <a href="learn.html" class="cin-dropdown-item active" role="menuitem">
+              <span class="dropdown-indicator"></span>
+              Learn
+            </a>
+            <a href="milestones.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span>
+              Milestones
+            </a>
+          </div>
+        </div>
+
+        <!-- CONNECT with dropdown -->
+        <div class="cin-nav-dropdown cin-nav-connect" id="cin-connect">
+          <button class="cin-nav-link cin-dropdown-trigger cin-connect-trigger" aria-expanded="false" aria-haspopup="true" id="connect-trigger">
+            Connect
+            <svg class="dropdown-chevron connect-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="cin-dropdown" id="cin-dropdown" role="menu" aria-label="Connect submenu">
+            <a href="projects.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span>
+              Ongoing Projects
+            </a>
+            <a href="events.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span>
+              Upcoming Events
+            </a>
+            <a href="research.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span>
+              Research
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Hamburger -->
+      <button class="cin-hamburger" id="cin-hamburger" aria-label="Toggle Navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Mobile Navigation Overlay -->
+  <div class="cin-mobile-overlay" id="cin-mobile-overlay" aria-hidden="true">
+    <div class="cin-mobile-menu">
+      <a href="index.html" class="cin-mobile-link">Home</a>
+      <a href="about.html" class="cin-mobile-link">About Us</a>
+
+      <div class="cin-mobile-accordion" id="cin-mobile-explore-wrap">
+        <button class="cin-mobile-link cin-mobile-accordion-trigger" id="mobile-explore-trigger" aria-expanded="false">
+          Explore
+          <svg class="dropdown-chevron mobile-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="cin-mobile-dropdown" id="cin-mobile-explore-dropdown">
+          <a href="learn.html" class="cin-mobile-sub active">Learn</a>
+          <a href="milestones.html" class="cin-mobile-sub">Milestones</a>
+        </div>
+      </div>
+
+      <div class="cin-mobile-accordion" id="cin-mobile-connect-wrap">
+        <button class="cin-mobile-link cin-mobile-accordion-trigger cin-mobile-connect-trigger" id="mobile-connect-trigger" aria-expanded="false">
+          Connect
+          <svg class="dropdown-chevron connect-chevron mobile-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="cin-mobile-dropdown" id="cin-mobile-dropdown">
+          <a href="projects.html" class="cin-mobile-sub">Ongoing Projects</a>
+          <a href="events.html" class="cin-mobile-sub">Upcoming Events</a>
+          <a href="research.html" class="cin-mobile-sub">Research</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Subpage Container -->
+  <main class="subpage-wrapper">
+    <div class="subpage-hero">
+      <div class="subpage-badge">
+        <span class="subpage-badge-dot"></span>
+        <span>KNOWLEDGE &amp; SKILLS</span>
+      </div>
+      <h1 class="subpage-title">LEARN <span class="gradient-text">SPATIAL COMPUTING</span></h1>
+      <p class="subpage-lead">
+        From foundational 3D graphics and linear algebra to real-time spatial shaders and gesture recognition. Explore our structured curricula designed for undergraduate engineers and researchers.
+      </p>
+    </div>
+
+    <!-- Learning Pathways Grid -->
+    <section class="subpage-section">
+      <div class="section-label-bar">
+        <span class="section-label-num">01</span>
+        <span class="section-label-title">CORE CURRICULA &amp; TRACKS</span>
+      </div>
+
+      <div class="subpage-cards-grid">
+        <div class="subpage-card">
+          <div class="card-track-badge">TRACK 01</div>
+          <h2 class="card-heading">Unreal Engine 5 &amp; Virtual Production</h2>
+          <p class="card-body-text">
+            Master Nanite, Lumen dynamic illumination, Niagara particle physics, Blueprint visual scripting, and C++ gameplay systems tailored for high-fidelity VR.
+          </p>
+          <div class="card-tags">
+            <span class="card-tag">UE5</span>
+            <span class="card-tag">C++</span>
+            <span class="card-tag">Lumen &amp; Nanite</span>
+            <span class="card-tag">VR OpenXR</span>
+          </div>
+        </div>
+
+        <div class="subpage-card">
+          <div class="card-track-badge">TRACK 02</div>
+          <h2 class="card-heading">Unity 3D &amp; XR Interaction Toolkit</h2>
+          <p class="card-body-text">
+            Build cross-platform AR/VR experiences targeting Meta Quest 3, Apple Vision Pro, and mobile AR with ARFoundation, spatial anchors, and hand-tracking.
+          </p>
+          <div class="card-tags">
+            <span class="card-tag">Unity</span>
+            <span class="card-tag">C#</span>
+            <span class="card-tag">XRIT</span>
+            <span class="card-tag">ARFoundation</span>
+          </div>
+        </div>
+
+        <div class="subpage-card">
+          <div class="card-track-badge">TRACK 03</div>
+          <h2 class="card-heading">WebXR, Three.js &amp; Browser 3D</h2>
+          <p class="card-body-text">
+            Create zero-install spatial experiences running directly in web browsers using WebGL, WebGPU, Three.js, GLTF pipelines, and WebXR device APIs.
+          </p>
+          <div class="card-tags">
+            <span class="card-tag">JavaScript</span>
+            <span class="card-tag">Three.js</span>
+            <span class="card-tag">WebGL</span>
+            <span class="card-tag">WebXR</span>
+          </div>
+        </div>
+
+        <div class="subpage-card">
+          <div class="card-track-badge">TRACK 04</div>
+          <h2 class="card-heading">Spatial UI/UX &amp; Cognitive Ergonomics</h2>
+          <p class="card-body-text">
+            Design intuitive 3D spatial user interfaces, natural eye-gaze targeting, gesture control schemas, and comfortable stereoscopic depth layouts.
+          </p>
+          <div class="card-tags">
+            <span class="card-tag">Spatial UX</span>
+            <span class="card-tag">Figma 3D</span>
+            <span class="card-tag">HCI</span>
+            <span class="card-tag">Depth Perception</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Lab Workshop Offerings -->
+    <section class="subpage-section">
+      <div class="section-label-bar">
+        <span class="section-label-num">02</span>
+        <span class="section-label-title">HANDS-ON WORKSHOPS</span>
+      </div>
+
+      <div class="workshop-list">
+        <div class="workshop-item">
+          <div class="workshop-meta">
+            <span class="workshop-code">WS-101</span>
+            <span class="workshop-duration">4-Week Boot Camp</span>
+          </div>
+          <div class="workshop-info">
+            <h3 class="workshop-title">Introduction to Virtual Reality Hardware &amp; Toolchains</h3>
+            <p class="workshop-desc">Setup VR headsets, configure SteamVR/Oculus Link, calibrate tracking bounds, and deploy your first interactive 3D room.</p>
+          </div>
+        </div>
+
+        <div class="workshop-item">
+          <div class="workshop-meta">
+            <span class="workshop-code">WS-201</span>
+            <span class="workshop-duration">Weekend Intensive</span>
+          </div>
+          <div class="workshop-info">
+            <h3 class="workshop-title">Mobile Augmented Reality with Markerless Surface Tracking</h3>
+            <p class="workshop-desc">Plane detection, environmental raycasting, point cloud meshes, and persistent cloud anchors for indoor navigation.</p>
+          </div>
+        </div>
+
+        <div class="workshop-item">
+          <div class="workshop-meta">
+            <span class="workshop-code">WS-301</span>
+            <span class="workshop-duration">Advanced Lab Series</span>
+          </div>
+          <div class="workshop-info">
+            <h3 class="workshop-title">Spatial Audio &amp; Haptic Feedback Integration</h3>
+            <p class="workshop-desc">Ambisonics, HRTF spatial sound propagation, distance attenuation, and haptic motor waveform programming.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="cin-footer">
+    <div class="cin-footer-inner">
+      <div class="cin-footer-brand">
+        <span class="footer-xr">XR</span> RESEARCH LAB
+      </div>
+      <div class="cin-footer-info">
+        © 2026 AR/VR RESEARCH LAB — GEETHANJALI COLLEGE OF ENGINEERING &amp; TECHNOLOGY
+      </div>
+      <div class="cin-footer-contact">
+        <a href="mailto:xrresearchlab@gcet.edu.in">xrresearchlab@gcet.edu.in</a>
+      </div>
+      <div class="cin-footer-social">
+        <a href="https://www.instagram.com/ar.vr.researchlab?igsh=MWM5bzhsd2VkNGFuag==" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
+        <a href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
+        <a href="https://youtube.com" target="_blank" rel="noopener" aria-label="YouTube">YouTube</a>
+        <a href="https://discord.com" target="_blank" rel="noopener" aria-label="Discord">Discord</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/homepage.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "xrlab-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "XR Research Lab Website with Admin Event Management",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "bcryptjs": "^2.4.3",
+    "cookie": "^0.6.0",
+    "jsonwebtoken": "^9.0.2",
+    "resend": "^4.0.0",
+    "zod": "^3.23.0",
+    "dompurify": "^3.1.0",
+    "jsdom": "^24.0.0",
+    "uuid": "^9.0.0"
+  }
+}

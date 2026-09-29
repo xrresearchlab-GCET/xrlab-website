@@ -6,34 +6,21 @@
 (function () {
   'use strict';
 
-  // Apply saved theme immediately on script execution to prevent FOUC
+  // Force permanent dark mode immediately on script execution
   try {
-    const savedTheme = localStorage.getItem('xr_theme');
-    if (savedTheme === 'light') {
-      document.documentElement.setAttribute('data-theme', 'light');
-      if (document.body) {
-        document.body.classList.remove('dark-mode');
-        document.body.classList.add('light-mode');
-      } else {
-        document.addEventListener('DOMContentLoaded', () => {
-          document.body.classList.remove('dark-mode');
-          document.body.classList.add('light-mode');
-        });
-      }
+    document.documentElement.setAttribute('data-theme', 'dark');
+    if (document.body) {
+      document.body.classList.add('dark-mode');
+      document.body.classList.remove('light-mode');
     } else {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      if (document.body) {
+      document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('dark-mode');
         document.body.classList.remove('light-mode');
-      } else {
-        document.addEventListener('DOMContentLoaded', () => {
-          document.body.classList.add('dark-mode');
-          document.body.classList.remove('light-mode');
-        });
-      }
+      });
     }
+    localStorage.setItem('xr_theme', 'dark');
   } catch (e) {
-    console.warn('LocalStorage error:', e);
+    // Silent fail
   }
 
   // =========================================================================
@@ -315,66 +302,19 @@
   }
 
   // =========================================================================
-  // 1B. DARK MODE THEME CONTROLLER WITH LOCALSTORAGE PERSISTENCE (UPDATE 1)
+  // 1B. PERMANENT DARK MODE — Theme toggle removed per redesign
   // =========================================================================
   function initThemeToggle() {
-    const savedTheme = localStorage.getItem('xr_theme');
-    // Default to dark mode unless user explicitly chose light
-    if (savedTheme === 'light') {
-      document.body.classList.remove('dark-mode');
-      document.body.classList.add('light-mode');
-      document.documentElement.setAttribute('data-theme', 'light');
-    } else {
-      document.body.classList.add('dark-mode');
-      document.body.classList.remove('light-mode');
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
+    // Force permanent dark mode
+    document.body.classList.add('dark-mode');
+    document.body.classList.remove('light-mode');
+    document.documentElement.setAttribute('data-theme', 'dark');
+    localStorage.setItem('xr_theme', 'dark');
 
-    const attachToggleBtn = (btn) => {
-      if (!btn || btn.dataset.themeBound) return;
-      btn.dataset.themeBound = 'true';
-
-      const updateLabel = () => {
-        const isDark = document.body.classList.contains('dark-mode') || document.documentElement.getAttribute('data-theme') === 'dark';
-        btn.innerHTML = isDark ? '🌙 Dark' : '☀️ Light';
-        btn.setAttribute('aria-label', `Switch to ${isDark ? 'Light' : 'Dark'} mode`);
-      };
-      updateLabel();
-
-      btn.addEventListener('click', () => {
-        const isCurrentlyDark = document.body.classList.contains('dark-mode');
-        if (isCurrentlyDark) {
-          // Switch to light mode
-          document.body.classList.remove('dark-mode');
-          document.body.classList.add('light-mode');
-          document.documentElement.setAttribute('data-theme', 'light');
-          localStorage.setItem('xr_theme', 'light');
-        } else {
-          // Switch to dark mode
-          document.body.classList.add('dark-mode');
-          document.body.classList.remove('light-mode');
-          document.documentElement.setAttribute('data-theme', 'dark');
-          localStorage.setItem('xr_theme', 'dark');
-        }
-        updateLabel();
-        if (typeof xrSound !== 'undefined' && xrSound.playClick) {
-          xrSound.playClick();
-        }
-      });
-    };
-
-    // Attach to existing toggle buttons or inject into header if missing
-    document.querySelectorAll('.theme-toggle-btn, #theme-toggle').forEach(attachToggleBtn);
-
-    // Auto inject theme button into header right side if not present
-    const headerTop = document.querySelector('.header-top');
-    if (headerTop && !document.querySelector('#theme-toggle')) {
-      const btn = document.createElement('button');
-      btn.id = 'theme-toggle';
-      btn.className = 'theme-toggle-btn';
-      headerTop.appendChild(btn);
-      attachToggleBtn(btn);
-    }
+    // Remove any existing toggle buttons
+    document.querySelectorAll('.theme-toggle-btn, #theme-toggle').forEach(btn => {
+      btn.style.display = 'none';
+    });
   }
 
 

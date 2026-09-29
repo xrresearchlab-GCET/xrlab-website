@@ -5,534 +5,572 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About Us — AR/VR Research Lab</title>
+  <meta name="description" content="About the AR/VR Research Lab at Geethanjali College of Engineering &amp; Technology. Pioneering multidisciplinary research in spatial computing, immersive simulation, and human-centered 3D technology.">
 
   <!-- Browser Tab Icon (Favicon) -->
   <link rel="icon" type="image/png" href="images/collegelogo.png">
   <link rel="apple-touch-icon" href="images/collegelogo.png">
 
-  <!-- =========================================================================
-       1. EXTERNAL FONTS & LIBRARIES
-       - Google Fonts: Modern typography (Exo for headers, Glegoo for body, JetBrains Mono for accents)
-       - Three.js & GLTFLoader: WebGL 3D background canvas engine
-       - Lenis: Smooth inertia scrolling engine
-       - xr-styles.css: Centralized design system & responsive styling
-       ========================================================================= -->
+  <!-- Typography: Space Grotesk (Display) + Inter (Body) + JetBrains Mono (Technical) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Encode+Sans+Condensed:wght@100;200;300;400;500;600;700;800;900&family=Exo:ital,wght@0,100..900;1,100..900&family=Glegoo:wght@400;700&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Sarpanch:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Three.js 3D WebGL Spatial Canvas -->
+  <!-- Three.js 3D WebGL Spatial Canvas Engine -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
-  <!-- Lenis Smooth Scrolling -->
-  <link rel="stylesheet" href="https://unpkg.com/lenis@1.1.20/dist/lenis.css">
-  <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
-
-  <!-- Centralized Spatial XR OS Engine Styles (Single source of truth) -->
-  <link rel="stylesheet" href="css/xr-styles.css">
+  <!-- Global Styles & Glossy Theme -->
+  <link rel="stylesheet" href="css/homepage.css">
+  <link rel="stylesheet" href="css/about.css">
 </head>
 
-<body class="dark-mode">
+<body class="about-page dark-mode">
 
   <!-- =========================================================================
-       2. STANDARDIZED SITE HEADER
-       - Row 1: Centered College Logo Bar (GCET official logo)
-       - Row 2: Title with colored word spans + Simple Dark/Light Mode toggle button
-       - Row 3: Navigation links (Home, About Us) with animated hover indicators
+       1. CINEMATIC TRANSPARENT NAVIGATION
        ========================================================================= -->
-  <header class="site-header">
-    <div class="header-logo-bar">
-      <a href="https://gcet.edu.in/" target="_blank" rel="noopener" class="header-logo-wrap"
-        title="Geethanjali College of Engineering &amp; Technology (Official Website)">
-        <img src="images/collegelogo.png" alt="GCET College Logo" class="header-logo">
+  <header class="cin-header" id="cin-header">
+    <nav class="cin-nav">
+      <!-- Logo / Brand -->
+      <a href="index.html" class="cin-brand" aria-label="XR Research Lab Home">
+        <span class="brand-xr">XR</span>
+        <span class="brand-sep"></span>
+        <span class="brand-text">RESEARCH LAB</span>
       </a>
-    </div>
-    <div class="header-top">
-      <div class="header-heading">
-        <h1 class="site-title"><a href="index.html"><span class="w-cyan">AR/VR</span> <span
-              class="w-white">RESEARCH</span> <span class="w-coral">LAB</span></a></h1>
-        <span class="site-subtitle">EXPLORING THE FUTURE OF IMMERSIVE TECHNOLOGIES</span>
+
+      <!-- Desktop Navigation Links -->
+      <div class="cin-nav-links" id="cin-nav-links">
+        <a href="index.html" class="cin-nav-link">Home</a>
+        <a href="about.html" class="cin-nav-link active" aria-current="page">About Us</a>
+
+        <!-- EXPLORE with dropdown -->
+        <div class="cin-nav-dropdown" id="cin-explore">
+          <button class="cin-nav-link cin-dropdown-trigger" aria-expanded="false" aria-haspopup="true" id="explore-trigger">
+            Explore
+            <svg class="dropdown-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="cin-dropdown" id="cin-explore-dropdown" role="menu" aria-label="Explore submenu">
+            <a href="learn.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span>
+              Learn
+            </a>
+            <a href="milestones.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span>
+              Milestones
+            </a>
+          </div>
+        </div>
+
+        <!-- CONNECT with dropdown -->
+        <div class="cin-nav-dropdown cin-nav-connect" id="cin-connect">
+          <button class="cin-nav-link cin-dropdown-trigger cin-connect-trigger" aria-expanded="false" aria-haspopup="true" id="connect-trigger">
+            Connect
+            <svg class="dropdown-chevron connect-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="cin-dropdown" id="cin-dropdown" role="menu" aria-label="Connect submenu">
+            <a href="projects.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span>
+              Ongoing Projects
+            </a>
+            <a href="events.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span>
+              Upcoming Events
+            </a>
+            <a href="research.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span>
+              Research
+            </a>
+          </div>
+        </div>
       </div>
-      <!-- Simple Clickable Dark/Light Mode Button -->
-      <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Theme">🌙 Dark</button>
-    </div>
-    <div class="header-bottom">
-      <nav class="navlinks" id="navlinks">
-        <a href="index.html">Home</a>
-        <a href="about.html" class="active">About Us</a>
-      </nav>
-      <button class="navtoggle" id="navtoggle" aria-label="Toggle Navigation">
+
+      <!-- Mobile Hamburger -->
+      <button class="cin-hamburger" id="cin-hamburger" aria-label="Toggle Navigation" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
-    </div>
+    </nav>
   </header>
 
+  <!-- Mobile Navigation Overlay -->
+  <div class="cin-mobile-overlay" id="cin-mobile-overlay" aria-hidden="true">
+    <div class="cin-mobile-menu">
+      <a href="index.html" class="cin-mobile-link">Home</a>
+      <a href="about.html" class="cin-mobile-link active">About Us</a>
+
+      <!-- Mobile Explore Accordion -->
+      <div class="cin-mobile-accordion" id="cin-mobile-explore-wrap">
+        <button class="cin-mobile-link cin-mobile-accordion-trigger" id="mobile-explore-trigger" aria-expanded="false">
+          Explore
+          <svg class="dropdown-chevron mobile-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="cin-mobile-dropdown" id="cin-mobile-explore-dropdown">
+          <a href="learn.html" class="cin-mobile-sub">Learn</a>
+          <a href="milestones.html" class="cin-mobile-sub">Milestones</a>
+        </div>
+      </div>
+
+      <!-- Mobile Connect Accordion -->
+      <div class="cin-mobile-accordion" id="cin-mobile-connect-wrap">
+        <button class="cin-mobile-link cin-mobile-accordion-trigger cin-mobile-connect-trigger" id="mobile-connect-trigger" aria-expanded="false">
+          Connect
+          <svg class="dropdown-chevron connect-chevron mobile-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="cin-mobile-dropdown" id="cin-mobile-dropdown">
+          <a href="projects.html" class="cin-mobile-sub">Ongoing Projects</a>
+          <a href="events.html" class="cin-mobile-sub">Upcoming Events</a>
+          <a href="research.html" class="cin-mobile-sub">Research</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- =========================================================================
-       3. 3D BACKGROUND CANVAS MOUNT POINT
-       - Pinned fixed in background (z-index: 0, pointer-events: none)
-       - Initialized automatically by js/xr-engine.js
+       2. 3D BACKGROUND CANVAS MOUNT POINT
        ========================================================================= -->
   <div id="canvas-container"></div>
 
+  <!-- Subtle ambient vignette allowing center 3D world to shine through -->
+  <div class="about-ambient-vignette" aria-hidden="true"></div>
+
   <!-- =========================================================================
-       4. HERO SECTION: WHO WE ARE
-       - Centered hero introduction with high-contrast text and lab tagline
+       3. ABOUT CONTENT LAYER (GLOSSY GLASSMORPHISM PANELS)
        ========================================================================= -->
-  <header class="hero">
-    <div class="hero-content-wrapper reveal in">
-      <p class="eyebrow">Multidisciplinary Center</p>
-      <h1><span class="w-white">WHO</span> <span class="w-coral">WE ARE</span></h1>
-      <p class="hero-tag">
-        The <strong>AR/VR Research Lab</strong> at <strong>GCET</strong> is a multidisciplinary research center advancing
-        spatial computing, immersive simulation, and human-centered 3D technology.
+  <main class="about-content-layer">
+
+    <!-- Hero Section: Who We Are -->
+    <header class="about-hero reveal in">
+      <div class="about-hero-badge">
+        <span>MULTIDISCIPLINARY CENTER</span>
+      </div>
+      <h1 class="about-hero-title">WHO <span class="accent-text">WE ARE</span></h1>
+      <p class="about-hero-tag">
+        The <strong>AR/VR Research Lab</strong> at <strong>GCET</strong> is a multidisciplinary research center advancing spatial computing, immersive simulation, and human-centered 3D technology.
       </p>
-    </div>
-  </header>
+    </header>
 
-  <!-- =========================================================================
-       5. LAB PURPOSE & OVERVIEW
-       - Core statement explaining the lab's research philosophy and student focus
-       ========================================================================= -->
-  <section class="reveal">
-    <div class="section-header">
-      <div class="section-eyebrow"><span class="line"></span><span>OUR PURPOSE</span></div>
-      <h2 class="section-title"><span class="w-white">What</span> <span class="w-coral">we do</span></h2>
-    </div>
-    <div class="hero-statement-card">
-      <p style="margin-bottom: 16px;"><strong>Technology is no longer confined to screens.</strong></p>
-      <p style="margin-bottom: 16px;">The future belongs to immersive environments where humans interact naturally with
-        digital spaces. At the AR/VR Research Lab, we prepare students to lead that transformation by providing an
-        ecosystem for experimentation, collaboration, and research.</p>
-      <p>From virtual simulations and interactive experiences to spatial interfaces and intelligent digital
-        environments, we encourage students to think beyond conventional software and engineer the next generation of
-        immersive computing.</p>
-    </div>
-  </section>
+    <!-- Lab Purpose & Overview -->
+    <section class="about-section reveal">
+      <div class="section-eyebrow">
+        <span class="line"></span>
+        <span>OUR PURPOSE</span>
+      </div>
+      <h2 class="section-title">What <span class="accent-text">We Do</span></h2>
 
-  <!-- =========================================================================
-       6. PLATFORM FOR GROWTH: 10 KEY RESEARCH PILLARS
-       - Rendered in a symmetrical 3-column responsive grid (.grid-cards)
-       ========================================================================= -->
-  <section class="reveal">
-    <div class="section-header">
-      <div class="section-eyebrow"><span class="line"></span><span>PLATFORM FOR GROWTH</span></div>
-      <h2 class="section-title"><span class="w-white">What You'll</span> <span class="w-cyan">Discover</span></h2>
-    </div>
-
-    <p style="color: var(--text-muted); font-size: 16.5px; margin-bottom: 24px;">
-      Instead of simply learning technology, you'll experience how it's imagined, designed, engineered, and refined. Our
-      lab serves as a platform for:
-    </p>
-
-    <div class="grid-cards">
-      <div class="glass-card">
-        <div class="card-num">01</div>
-        <div class="card-title">Emerging Tech Research</div>
-        <div class="card-desc">Scientific exploration and investigation into state-of-the-art immersive technologies.</div>
-      </div>
-      <div class="glass-card">
-        <div class="card-num">02</div>
-        <div class="card-title">VR &amp; AR Development</div>
-        <div class="card-desc">Engineering interactive Virtual and Augmented Reality solutions for real-world use cases.</div>
-      </div>
-      <div class="glass-card">
-        <div class="card-num">03</div>
-        <div class="card-title">Interactive App Design</div>
-        <div class="card-desc">Crafting human-centered, responsive spatial software applications.</div>
-      </div>
-      <div class="glass-card">
-        <div class="card-num">04</div>
-        <div class="card-title">XR Game Development</div>
-        <div class="card-desc">Building immersive 3D games using Unreal Engine, Unity, and modern spatial APIs.</div>
-      </div>
-      <div class="glass-card">
-        <div class="card-num">05</div>
-        <div class="card-title">Human-Centered Computing</div>
-        <div class="card-desc">Studying natural user interfaces, gesture control, and spatial cognitive ergonomics.</div>
-      </div>
-      <div class="glass-card">
-        <div class="card-num">06</div>
-        <div class="card-title">3D Content Creation</div>
-        <div class="card-desc">Modeling, texturing, animating, and rendering photorealistic assets and digital twin environments.</div>
-      </div>
-      <div class="glass-card">
-        <div class="card-num">07</div>
-        <div class="card-title">Spatial UI Design</div>
-        <div class="card-desc">Designing invisible, intuitive user interfaces tailored for 3D spatial computing.</div>
-      </div>
-      <div class="glass-card">
-        <div class="card-num">08</div>
-        <div class="card-title">Conference Publications</div>
-        <div class="card-desc">Authoring research papers, poster sessions, and presenting at national &amp; international venues.</div>
-      </div>
-      <div class="glass-card">
-        <div class="card-num">09</div>
-        <div class="card-title">Industry Collaborations</div>
-        <div class="card-desc">Partnering with technology organizations, research institutions, and academic experts.</div>
-      </div>
-      <div class="glass-card">
-        <div class="card-num">10</div>
-        <div class="card-title">Innovation Student Projects</div>
-        <div class="card-desc">Empowering student teams to transform creative concepts into functional prototypes.</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- =========================================================================
-       7. FEATURED DOMAINS OF EXCELLENCE
-       - Quick tags displaying core specialization areas (.featured-grid)
-       ========================================================================= -->
-  <section class="reveal">
-    <div class="section-header">
-      <div class="section-eyebrow"><span class="line"></span><span>DOMAINS OF EXCELLENCE</span></div>
-      <h2 class="section-title"><span class="w-white">Featured</span> <span class="w-purple">Areas</span></h2>
-    </div>
-
-    <div class="featured-grid">
-      <div class="area-pill">Virtual Reality</div>
-      <div class="area-pill">Augmented Reality</div>
-      <div class="area-pill">Extended Reality (XR)</div>
-      <div class="area-pill">Human-Computer Interaction</div>
-      <div class="area-pill">Immersive Games</div>
-      <div class="area-pill">Digital Heritage</div>
-      <div class="area-pill">Healthcare Simulation</div>
-      <div class="area-pill">Engineering Visualization</div>
-      <div class="area-pill">AI + XR</div>
-      <div class="area-pill">Metaverse Experiences</div>
-    </div>
-  </section>
-
-  <!-- =========================================================================
-       8. CENTER OVERVIEW & ORIGIN STORY
-       - Narrative explaining the history and future trajectory of the lab
-       ========================================================================= -->
-  <section class="reveal">
-    <div class="section-label"><span class="dash"></span><span class="eyebrow">Center Overview</span></div>
-    <h2 class="story-heading">
-      Established with the vision of preparing students for the next generation of computing, the lab brings together
-      researchers, developers, designers, and innovators to explore how immersive technologies can solve real-world
-      problems and redefine digital interaction.
-    </h2>
-    <p class="story-text">
-      The lab serves as an environment where theoretical concepts evolve into practical solutions through hands-on
-      development, scientific inquiry, and interdisciplinary collaboration.
-    </p>
-  </section>
-
-  <section class="reveal">
-    <div class="section-label"><span class="dash"></span><span class="eyebrow">Our Story</span></div>
-    <h2 class="story-heading">
-      Immersive technologies are rapidly transforming industries across healthcare, education, manufacturing,
-      architecture, entertainment, and communication.
-    </h2>
-    <p class="story-text">
-      Recognizing this shift, the AR/VR Research Lab was established to create an environment where students could
-      explore these emerging technologies beyond the classroom. Today, the lab has grown into a collaborative space where
-      research meets creativity and ideas become impactful experiences.
-    </p>
-  </section>
-
-  <!-- =========================================================================
-       9. OUR PHILOSOPHY: 3 CORE GUIDING PRINCIPLES
-       - Symmetrical 3-column grid (.philosophy-grid)
-       ========================================================================= -->
-  <section class="reveal">
-    <div class="section-label"><span class="dash"></span><span class="eyebrow">Our Philosophy</span></div>
-    <p style="color: var(--text-muted); font-size: 16.5px; max-width: 800px; margin-bottom: 20px;">
-      We believe innovation is driven by curiosity. Rather than focusing solely on learning software or programming
-      languages, we encourage students to understand people, interactions, and experiences.
-    </p>
-
-    <div class="philosophy-grid">
-      <div class="philo-card">
-        <h3>Technology should feel natural.</h3>
-        <p style="color:var(--text-muted); font-size:14.5px;">Seamless digital integration into human life and physical
-          spaces.</p>
-      </div>
-      <div class="philo-card">
-        <h3>Design should feel invisible.</h3>
-        <p style="color:var(--text-muted); font-size:14.5px;">Interfaces that get out of the way to let user intent flow
-          freely.</p>
-      </div>
-      <div class="philo-card">
-        <h3>Research should create impact.</h3>
-        <p style="color:var(--text-muted); font-size:14.5px;">Solving real-world problems and advancing societal
-          capabilities.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- =========================================================================
-       10. VISION & MISSION
-       - Balanced 2-column layout (.vm-grid)
-       ========================================================================= -->
-  <section class="reveal">
-    <div class="vm-grid">
-      <div class="vm-card">
-        <div class="vm-title">Vision</div>
-        <p style="color: var(--text-muted); font-size: 15.5px; line-height: 1.75;">
-          To become a leading academic center for immersive technology research, innovation, and experiential learning
-          while contributing meaningful solutions to society through Extended Reality.
+      <div class="hero-statement-card">
+        <p style="margin-bottom: 16px;"><strong>Technology is no longer confined to screens.</strong></p>
+        <p style="margin-bottom: 16px;">
+          The future belongs to immersive environments where humans interact naturally with digital spaces. At the AR/VR Research Lab, we prepare students to lead that transformation by providing an ecosystem for experimentation, collaboration, and research.
+        </p>
+        <p>
+          From virtual simulations and interactive experiences to spatial interfaces and intelligent digital environments, we encourage students to think beyond conventional software and engineer the next generation of immersive computing.
         </p>
       </div>
+    </section>
 
-      <div class="vm-card">
-        <div class="vm-title">Mission</div>
-        <ul class="mission-list">
-          <li><span class="mission-bullet">✓</span> Advance research in immersive technologies.</li>
-          <li><span class="mission-bullet">✓</span> Encourage interdisciplinary innovation across departments.</li>
-          <li><span class="mission-bullet">✓</span> Promote experiential and project-based learning.</li>
-          <li><span class="mission-bullet">✓</span> Foster global academic engagement through conferences and
-            publications.</li>
-          <li><span class="mission-bullet">✓</span> Build solutions that positively impact society and industry.</li>
-        </ul>
+    <!-- Platform for Growth: 10 Key Research Pillars -->
+    <section class="about-section reveal">
+      <div class="section-eyebrow">
+        <span class="line"></span>
+        <span>PLATFORM FOR GROWTH</span>
       </div>
-    </div>
-  </section>
+      <h2 class="section-title">What You'll <span class="accent-text">Discover</span></h2>
+      <p class="section-intro-text">
+        Instead of simply learning technology, you'll experience how it's imagined, designed, engineered, and refined. Our lab serves as a platform for:
+      </p>
 
-  <!-- =========================================================================
-       11. OUR CULTURE
-       ========================================================================= -->
-  <section class="reveal">
-    <div class="section-label"><span class="dash"></span><span class="eyebrow">Our Culture</span></div>
-    <h2 class="story-heading">
-      We believe the best ideas emerge when diverse perspectives come together.
-    </h2>
-    <p class="story-text">
-      Our lab promotes openness, collaboration, experimentation, continuous learning, and responsible innovation. Every
-      project is viewed as an opportunity to discover something new.
-    </p>
-  </section>
+      <div class="grid-cards">
+        <div class="glass-card">
+          <div class="card-num">01</div>
+          <div class="card-title">Emerging Tech Research</div>
+          <div class="card-desc">Scientific exploration and investigation into state-of-the-art immersive technologies.</div>
+        </div>
+        <div class="glass-card">
+          <div class="card-num">02</div>
+          <div class="card-title">VR &amp; AR Development</div>
+          <div class="card-desc">Engineering interactive Virtual and Augmented Reality solutions for real-world use cases.</div>
+        </div>
+        <div class="glass-card">
+          <div class="card-num">03</div>
+          <div class="card-title">Interactive App Design</div>
+          <div class="card-desc">Crafting human-centered, responsive spatial software applications.</div>
+        </div>
+        <div class="glass-card">
+          <div class="card-num">04</div>
+          <div class="card-title">XR Game Development</div>
+          <div class="card-desc">Building immersive 3D games using Unreal Engine, Unity, and modern spatial APIs.</div>
+        </div>
+        <div class="glass-card">
+          <div class="card-num">05</div>
+          <div class="card-title">Human-Centered Computing</div>
+          <div class="card-desc">Studying natural user interfaces, gesture control, and spatial cognitive ergonomics.</div>
+        </div>
+        <div class="glass-card">
+          <div class="card-num">06</div>
+          <div class="card-title">3D Content Creation</div>
+          <div class="card-desc">Modeling, texturing, animating, and rendering photorealistic assets and digital twin environments.</div>
+        </div>
+        <div class="glass-card">
+          <div class="card-num">07</div>
+          <div class="card-title">Spatial UI Design</div>
+          <div class="card-desc">Designing invisible, intuitive user interfaces tailored for 3D spatial computing.</div>
+        </div>
+        <div class="glass-card">
+          <div class="card-num">08</div>
+          <div class="card-title">Conference Publications</div>
+          <div class="card-desc">Authoring research papers, poster sessions, and presenting at national &amp; international venues.</div>
+        </div>
+        <div class="glass-card">
+          <div class="card-num">09</div>
+          <div class="card-title">Industry Collaborations</div>
+          <div class="card-desc">Partnering with technology organizations, research institutions, and academic experts.</div>
+        </div>
+        <div class="glass-card">
+          <div class="card-num">10</div>
+          <div class="card-title">Innovation Student Projects</div>
+          <div class="card-desc">Empowering student teams to transform creative concepts into functional prototypes.</div>
+        </div>
+      </div>
+    </section>
 
-  <!-- =========================================================================
-       12. RESEARCH FACILITIES & INFRASTRUCTURE
-       - Balanced 3-column symmetrical grid (.grid5)
-       ========================================================================= -->
-  <section class="reveal">
-    <div class="section-label"><span class="dash"></span><span class="eyebrow">Research Environment</span></div>
-    <div class="section-header">
+    <!-- Featured Domains of Excellence -->
+    <section class="about-section reveal">
+      <div class="section-eyebrow">
+        <span class="line"></span>
+        <span>DOMAINS OF EXCELLENCE</span>
+      </div>
+      <h2 class="section-title">Featured <span class="accent-text">Areas</span></h2>
+
+      <div class="featured-grid">
+        <div class="area-pill">Virtual Reality</div>
+        <div class="area-pill">Augmented Reality</div>
+        <div class="area-pill">Extended Reality (XR)</div>
+        <div class="area-pill">Human-Computer Interaction</div>
+        <div class="area-pill">Immersive Games</div>
+        <div class="area-pill">Digital Heritage</div>
+        <div class="area-pill">Healthcare Simulation</div>
+        <div class="area-pill">Engineering Visualization</div>
+        <div class="area-pill">AI + XR</div>
+        <div class="area-pill">Metaverse Experiences</div>
+      </div>
+    </section>
+
+    <!-- Center Overview & Origin Story -->
+    <section class="about-section reveal">
+      <div class="section-eyebrow">
+        <span class="line"></span>
+        <span>CENTER OVERVIEW</span>
+      </div>
+      <h2 class="story-heading">
+        Established with the vision of preparing students for the next generation of computing, the lab brings together researchers, developers, designers, and innovators to explore how immersive technologies can solve real-world problems and redefine digital interaction.
+      </h2>
+      <p class="story-text">
+        The lab serves as an environment where theoretical concepts evolve into practical solutions through hands-on development, scientific inquiry, and interdisciplinary collaboration.
+      </p>
+    </section>
+
+    <section class="about-section reveal">
+      <div class="section-eyebrow">
+        <span class="line"></span>
+        <span>OUR STORY</span>
+      </div>
+      <h2 class="story-heading">
+        Immersive technologies are rapidly transforming industries across healthcare, education, manufacturing, architecture, entertainment, and communication.
+      </h2>
+      <p class="story-text">
+        Recognizing this shift, the AR/VR Research Lab was established to create an environment where students could explore these emerging technologies beyond the classroom. Today, the lab has grown into a collaborative space where research meets creativity and ideas become impactful experiences.
+      </p>
+    </section>
+
+    <!-- Our Philosophy: 3 Core Guiding Principles -->
+    <section class="about-section reveal">
+      <div class="section-eyebrow">
+        <span class="line"></span>
+        <span>OUR PHILOSOPHY</span>
+      </div>
+      <p class="section-intro-text">
+        We believe innovation is driven by curiosity. Rather than focusing solely on learning software or programming languages, we encourage students to understand people, interactions, and experiences.
+      </p>
+
+      <div class="philosophy-grid">
+        <div class="philo-card">
+          <h3>Technology should feel natural.</h3>
+          <p style="color:var(--cin-text-secondary); font-size:14.5px;">Seamless digital integration into human life and physical spaces.</p>
+        </div>
+        <div class="philo-card">
+          <h3>Design should feel invisible.</h3>
+          <p style="color:var(--cin-text-secondary); font-size:14.5px;">Interfaces that get out of the way to let user intent flow freely.</p>
+        </div>
+        <div class="philo-card">
+          <h3>Research should create impact.</h3>
+          <p style="color:var(--cin-text-secondary); font-size:14.5px;">Solving real-world problems and advancing societal capabilities.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Vision & Mission -->
+    <section class="about-section reveal">
+      <div class="vm-grid">
+        <div class="vm-card">
+          <div class="vm-title">Vision</div>
+          <p style="color: var(--cin-text-secondary); font-size: 15.5px; line-height: 1.75;">
+            To become a leading academic center for immersive technology research, innovation, and experiential learning while contributing meaningful solutions to society through Extended Reality.
+          </p>
+        </div>
+
+        <div class="vm-card">
+          <div class="vm-title">Mission</div>
+          <ul class="mission-list">
+            <li><span class="mission-bullet">✓</span> Advance research in immersive technologies.</li>
+            <li><span class="mission-bullet">✓</span> Encourage interdisciplinary innovation across departments.</li>
+            <li><span class="mission-bullet">✓</span> Promote experiential and project-based learning.</li>
+            <li><span class="mission-bullet">✓</span> Foster global academic engagement through conferences and publications.</li>
+            <li><span class="mission-bullet">✓</span> Build solutions that positively impact society and industry.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Our Culture -->
+    <section class="about-section reveal">
+      <div class="section-eyebrow">
+        <span class="line"></span>
+        <span>OUR CULTURE</span>
+      </div>
+      <h2 class="story-heading">
+        We believe the best ideas emerge when diverse perspectives come together.
+      </h2>
+      <p class="story-text">
+        Our lab promotes openness, collaboration, experimentation, continuous learning, and responsible innovation. Every project is viewed as an opportunity to discover something new.
+      </p>
+    </section>
+
+    <!-- Facilities & Infrastructure -->
+    <section class="about-section reveal">
+      <div class="section-eyebrow">
+        <span class="line"></span>
+        <span>RESEARCH ENVIRONMENT</span>
+      </div>
       <h2 class="section-title">Facilities &amp; Infrastructure</h2>
-    </div>
 
-    <div class="grid5">
-      <div class="cell"><div class="num">01</div><h3>AR &amp; VR Development</h3></div>
-      <div class="cell"><div class="num">02</div><h3>XR Application Design</h3></div>
-      <div class="cell"><div class="num">03</div><h3>Game Development</h3></div>
-      <div class="cell"><div class="num">04</div><h3>3D Modeling &amp; Animation</h3></div>
-      <div class="cell"><div class="num">05</div><h3>Spatial Interface Design</h3></div>
-      <div class="cell"><div class="num">06</div><h3>Research &amp; Publications</h3></div>
-      <div class="cell"><div class="num">07</div><h3>Prototype Development</h3></div>
-      <div class="cell"><div class="num">08</div><h3>Technical Workshops</h3></div>
-      <div class="cell"><div class="num">09</div><h3>Collaborative Research</h3></div>
-    </div>
-  </section>
+      <div class="grid5">
+        <div class="cell"><div class="num">01</div><h3>AR &amp; VR Development</h3></div>
+        <div class="cell"><div class="num">02</div><h3>XR Application Design</h3></div>
+        <div class="cell"><div class="num">03</div><h3>Game Development</h3></div>
+        <div class="cell"><div class="num">04</div><h3>3D Modeling &amp; Animation</h3></div>
+        <div class="cell"><div class="num">05</div><h3>Spatial Interface Design</h3></div>
+        <div class="cell"><div class="num">06</div><h3>Research &amp; Publications</h3></div>
+        <div class="cell"><div class="num">07</div><h3>Prototype Development</h3></div>
+        <div class="cell"><div class="num">08</div><h3>Technical Workshops</h3></div>
+        <div class="cell"><div class="num">09</div><h3>Collaborative Research</h3></div>
+      </div>
+    </section>
+
+    <!-- Lab Leadership & Research Head -->
+    <section class="about-section reveal">
+      <div class="section-eyebrow">
+        <span class="line"></span>
+        <span>LAB LEADERSHIP &amp; MENTORSHIP</span>
+      </div>
+
+      <div class="member-grid">
+        <!-- Lead Researcher & Lab Head Card (MD Akif) -->
+        <div class="member-card head-card">
+          <div class="member-name">MD Akif</div>
+          <div class="member-role">AR/VR Research Lab Lead Researcher &amp; Head</div>
+          <div class="member-meta">
+            <span class="meta-badge">Head of Lab</span>
+            <span class="meta-badge">Immersive Tech &amp; HCI Research</span>
+          </div>
+          <p class="member-desc">
+            Oversees overall lab direction, strategic research initiatives, interdisciplinary project teams, and global academic collaborations.
+          </p>
+          <div class="member-contact-row">
+            <span>EMAIL: <a href="mailto:xrresearchlab@gcet.edu.in">xrresearchlab@gcet.edu.in</a></span>
+            <span>PHONE: <a href="tel:8763688312">+91 8763688312</a></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Student Researchers & Team Members -->
+    <section class="about-section reveal">
+      <div class="section-eyebrow">
+        <span class="line"></span>
+        <span>STUDENT RESEARCHERS &amp; TEAM MEMBERS</span>
+      </div>
+      <p class="section-intro-text">
+        Coordinating lab activities, research initiatives, workshops, 3D design, and development projects.
+      </p>
+
+      <div class="member-grid">
+        <!-- Member 1 -->
+        <div class="member-card">
+          <div class="member-avatar-box"><span class="avatar-placeholder-icon">01</span></div>
+          <div class="member-name">Team Member Name 1</div>
+          <div class="member-role">XR Developer / Research Lead</div>
+          <div class="member-meta"><span class="meta-badge">3rd Year</span><span class="meta-badge">CSE</span></div>
+          <p class="member-desc">Specializes in Unity VR development, spatial tracking, and interactive environment design.</p>
+          <div class="member-contact-row">
+            <span>EMAIL: <a href="mailto:member1@gcet.edu.in">member1@gcet.edu.in</a></span>
+            <span>PHONE: +91 XXXXX XXXXX</span>
+          </div>
+        </div>
+
+        <!-- Member 2 -->
+        <div class="member-card">
+          <div class="member-avatar-box"><span class="avatar-placeholder-icon">02</span></div>
+          <div class="member-name">Team Member Name 2</div>
+          <div class="member-role">AR Prototyping Lead</div>
+          <div class="member-meta"><span class="meta-badge">3rd Year</span><span class="meta-badge">ECE</span></div>
+          <p class="member-desc">Focuses on AR optical overlays, sensor integration, and hardware test rigs.</p>
+          <div class="member-contact-row">
+            <span>EMAIL: <a href="mailto:member2@gcet.edu.in">member2@gcet.edu.in</a></span>
+            <span>PHONE: +91 XXXXX XXXXX</span>
+          </div>
+        </div>
+
+        <!-- Member 3 -->
+        <div class="member-card">
+          <div class="member-avatar-box"><span class="avatar-placeholder-icon">03</span></div>
+          <div class="member-name">Team Member Name 3</div>
+          <div class="member-role">Spatial UI/UX Designer</div>
+          <div class="member-meta"><span class="meta-badge">2nd Year</span><span class="meta-badge">IT</span></div>
+          <p class="member-desc">Crafts intuitive 3D spatial user interfaces, visual design systems, and interaction models.</p>
+          <div class="member-contact-row">
+            <span>EMAIL: <a href="mailto:member3@gcet.edu.in">member3@gcet.edu.in</a></span>
+            <span>PHONE: +91 XXXXX XXXXX</span>
+          </div>
+        </div>
+
+        <!-- Member 4 -->
+        <div class="member-card">
+          <div class="member-avatar-box"><span class="avatar-placeholder-icon">04</span></div>
+          <div class="member-name">Team Member Name 4</div>
+          <div class="member-role">3D Graphics Specialist</div>
+          <div class="member-meta"><span class="meta-badge">4th Year</span><span class="meta-badge">CSE</span></div>
+          <p class="member-desc">Develops photorealistic 3D assets, Blender shaders, and digital twin environments.</p>
+          <div class="member-contact-row">
+            <span>EMAIL: <a href="mailto:member4@gcet.edu.in">member4@gcet.edu.in</a></span>
+            <span>PHONE: +91 XXXXX XXXXX</span>
+          </div>
+        </div>
+
+        <!-- Member 5 -->
+        <div class="member-card">
+          <div class="member-avatar-box"><span class="avatar-placeholder-icon">05</span></div>
+          <div class="member-name">Team Member Name 5</div>
+          <div class="member-role">AI + XR Researcher</div>
+          <div class="member-meta"><span class="meta-badge">3rd Year</span><span class="meta-badge">AIML</span></div>
+          <p class="member-desc">Investigates machine learning models for gesture recognition and intelligent VR avatars.</p>
+          <div class="member-contact-row">
+            <span>EMAIL: <a href="mailto:member5@gcet.edu.in">member5@gcet.edu.in</a></span>
+            <span>PHONE: +91 XXXXX XXXXX</span>
+          </div>
+        </div>
+
+        <!-- Member 6 -->
+        <div class="member-card">
+          <div class="member-avatar-box"><span class="avatar-placeholder-icon">06</span></div>
+          <div class="member-name">Team Member Name 6</div>
+          <div class="member-role">XR Game Engineer</div>
+          <div class="member-meta"><span class="meta-badge">2nd Year</span><span class="meta-badge">EEE</span></div>
+          <p class="member-desc">Engineers interactive gameplay mechanics, physics simulations, and haptic feedback systems.</p>
+          <div class="member-contact-row">
+            <span>EMAIL: <a href="mailto:member6@gcet.edu.in">member6@gcet.edu.in</a></span>
+            <span>PHONE: +91 XXXXX XXXXX</span>
+          </div>
+        </div>
+
+        <!-- Member 7 -->
+        <div class="member-card">
+          <div class="member-avatar-box"><span class="avatar-placeholder-icon">07</span></div>
+          <div class="member-name">Team Member Name 7</div>
+          <div class="member-role">Industrial Simulation Lead</div>
+          <div class="member-meta"><span class="meta-badge">3rd Year</span><span class="meta-badge">Mechanical</span></div>
+          <p class="member-desc">Builds CAD-to-VR visualization pipelines for engineering assembly training.</p>
+          <div class="member-contact-row">
+            <span>EMAIL: <a href="mailto:member7@gcet.edu.in">member7@gcet.edu.in</a></span>
+            <span>PHONE: +91 XXXXX XXXXX</span>
+          </div>
+        </div>
+
+        <!-- Member 8 -->
+        <div class="member-card">
+          <div class="member-avatar-box"><span class="avatar-placeholder-icon">08</span></div>
+          <div class="member-name">Team Member Name 8</div>
+          <div class="member-role">WebXR &amp; Frontend Dev</div>
+          <div class="member-meta"><span class="meta-badge">2nd Year</span><span class="meta-badge">CSE</span></div>
+          <p class="member-desc">Develops browser-based 3D WebXR applications, Three.js canvases, and lab web tools.</p>
+          <div class="member-contact-row">
+            <span>EMAIL: <a href="mailto:member8@gcet.edu.in">member8@gcet.edu.in</a></span>
+            <span>PHONE: +91 XXXXX XXXXX</span>
+          </div>
+        </div>
+
+        <!-- Member 9 -->
+        <div class="member-card">
+          <div class="member-avatar-box"><span class="avatar-placeholder-icon">09</span></div>
+          <div class="member-name">Team Member Name 9</div>
+          <div class="member-role">Digital Heritage AR Dev</div>
+          <div class="member-meta"><span class="meta-badge">3rd Year</span><span class="meta-badge">Civil</span></div>
+          <p class="member-desc">Leads mobile AR heritage walks, photogrammetry scanning, and architectural tours.</p>
+          <div class="member-contact-row">
+            <span>EMAIL: <a href="mailto:member9@gcet.edu.in">member9@gcet.edu.in</a></span>
+            <span>PHONE: +91 XXXXX XXXXX</span>
+          </div>
+        </div>
+
+        <!-- Member 10 -->
+        <div class="member-card">
+          <div class="member-avatar-box"><span class="avatar-placeholder-icon">10</span></div>
+          <div class="member-name">Team Member Name 10</div>
+          <div class="member-role">Research Publications Lead</div>
+          <div class="member-meta"><span class="meta-badge">4th Year</span><span class="meta-badge">ECE</span></div>
+          <p class="member-desc">Coordinates user study testing sessions, paper writing, and conference submission files.</p>
+          <div class="member-contact-row">
+            <span>EMAIL: <a href="mailto:member10@gcet.edu.in">member10@gcet.edu.in</a></span>
+            <span>PHONE: +91 XXXXX XXXXX</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
 
   <!-- =========================================================================
-       13. LAB LEADERSHIP & RESEARCH HEAD
-       - Full-width hero card (.head-card)
+       4. SITE FOOTER
        ========================================================================= -->
-  <section class="reveal">
-    <div class="section-label"><span class="dash"></span><span class="eyebrow">Lab Leadership &amp; Mentorship</span></div>
-
-    <div class="member-grid">
-      <!-- Lead Researcher & Lab Head Card (MD Akif) -->
-      <div class="member-card head-card">
-        <div class="member-name">MD Akif</div>
-        <div class="member-role">AR/VR Research Lab Lead Researcher &amp; Head</div>
-        <div class="member-meta">
-          <span class="meta-badge">Head of Lab</span>
-          <span class="meta-badge">Immersive Tech &amp; HCI Research</span>
-        </div>
-        <p class="member-desc">
-          Oversees overall lab direction, strategic research initiatives, interdisciplinary project teams, and global
-          academic collaborations.
-        </p>
-        <div class="member-contact-row">
-          <span>EMAIL: <a href="mailto:xrresearchlab@gcet.edu.in">xrresearchlab@gcet.edu.in</a></span>
-          <span>PHONE: <a href="tel:8763688312">+91 8763688312</a></span>
-        </div>
+  <footer class="cin-footer">
+    <div class="cin-footer-inner">
+      <div class="cin-footer-brand">
+        <span class="footer-xr">XR</span> RESEARCH LAB
       </div>
-    </div>
-  </section>
-
-  <!-- =========================================================================
-       14. STUDENT RESEARCHERS & TEAM MEMBERS
-       - Responsive 3-column member grid (.member-grid)
-       ========================================================================= -->
-  <section class="reveal">
-    <div class="section-label"><span class="dash"></span><span class="eyebrow">Student Researchers &amp; Team Members</span></div>
-    <p style="color: var(--text-muted); font-size: 16.5px; max-width: 800px; margin-bottom: 24px;">
-      Coordinating lab activities, research initiatives, workshops, 3D design, and development projects.
-    </p>
-
-    <div class="member-grid">
-      <!-- Member 1 -->
-      <div class="member-card">
-        <div class="member-avatar-box"><span class="avatar-placeholder-icon">MEMBER</span></div>
-        <div class="member-name">Team Member Name 1</div>
-        <div class="member-role">XR Developer / Research Lead</div>
-        <div class="member-meta"><span class="meta-badge">3rd Year</span><span class="meta-badge">CSE</span></div>
-        <p class="member-desc">Specializes in Unity VR development, spatial tracking, and interactive environment design.</p>
-        <div class="member-contact-row">
-          <span>EMAIL: <a href="mailto:member1@gcet.edu.in">member1@gcet.edu.in</a></span>
-          <span>PHONE: +91 XXXXX XXXXX</span>
-        </div>
+      <div class="cin-footer-info">
+        © 2026 AR/VR RESEARCH LAB — GEETHANJALI COLLEGE OF ENGINEERING &amp; TECHNOLOGY
       </div>
-
-      <!-- Member 2 -->
-      <div class="member-card">
-        <div class="member-avatar-box"><span class="avatar-placeholder-icon">MEMBER</span></div>
-        <div class="member-name">Team Member Name 2</div>
-        <div class="member-role">AR Prototyping Lead</div>
-        <div class="member-meta"><span class="meta-badge">3rd Year</span><span class="meta-badge">ECE</span></div>
-        <p class="member-desc">Focuses on AR optical overlays, sensor integration, and hardware test rigs.</p>
-        <div class="member-contact-row">
-          <span>EMAIL: <a href="mailto:member2@gcet.edu.in">member2@gcet.edu.in</a></span>
-          <span>PHONE: +91 XXXXX XXXXX</span>
-        </div>
+      <div class="cin-footer-contact">
+        <a href="mailto:xrresearchlab@gcet.edu.in">xrresearchlab@gcet.edu.in</a>
       </div>
-
-      <!-- Member 3 -->
-      <div class="member-card">
-        <div class="member-avatar-box"><span class="avatar-placeholder-icon">MEMBER</span></div>
-        <div class="member-name">Team Member Name 3</div>
-        <div class="member-role">Spatial UI/UX Designer</div>
-        <div class="member-meta"><span class="meta-badge">2nd Year</span><span class="meta-badge">IT</span></div>
-        <p class="member-desc">Crafts intuitive 3D spatial user interfaces, visual design systems, and interaction models.</p>
-        <div class="member-contact-row">
-          <span>EMAIL: <a href="mailto:member3@gcet.edu.in">member3@gcet.edu.in</a></span>
-          <span>PHONE: +91 XXXXX XXXXX</span>
-        </div>
+      <div class="cin-footer-social">
+        <a href="https://www.instagram.com/ar.vr.researchlab?igsh=MWM5bzhsd2VkNGFuag==" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
+        <a href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
+        <a href="https://youtube.com" target="_blank" rel="noopener" aria-label="YouTube">YouTube</a>
+        <a href="https://discord.com" target="_blank" rel="noopener" aria-label="Discord">Discord</a>
       </div>
-
-      <!-- Member 4 -->
-      <div class="member-card">
-        <div class="member-avatar-box"><span class="avatar-placeholder-icon">MEMBER</span></div>
-        <div class="member-name">Team Member Name 4</div>
-        <div class="member-role">3D Graphics Specialist</div>
-        <div class="member-meta"><span class="meta-badge">4th Year</span><span class="meta-badge">CSE</span></div>
-        <p class="member-desc">Develops photorealistic 3D assets, Blender shaders, and digital twin environments.</p>
-        <div class="member-contact-row">
-          <span>EMAIL: <a href="mailto:member4@gcet.edu.in">member4@gcet.edu.in</a></span>
-          <span>PHONE: +91 XXXXX XXXXX</span>
-        </div>
-      </div>
-
-      <!-- Member 5 -->
-      <div class="member-card">
-        <div class="member-avatar-box"><span class="avatar-placeholder-icon">MEMBER</span></div>
-        <div class="member-name">Team Member Name 5</div>
-        <div class="member-role">AI + XR Researcher</div>
-        <div class="member-meta"><span class="meta-badge">3rd Year</span><span class="meta-badge">AIML</span></div>
-        <p class="member-desc">Investigates machine learning models for gesture recognition and intelligent VR avatars.</p>
-        <div class="member-contact-row">
-          <span>EMAIL: <a href="mailto:member5@gcet.edu.in">member5@gcet.edu.in</a></span>
-          <span>PHONE: +91 XXXXX XXXXX</span>
-        </div>
-      </div>
-
-      <!-- Member 6 -->
-      <div class="member-card">
-        <div class="member-avatar-box"><span class="avatar-placeholder-icon">MEMBER</span></div>
-        <div class="member-name">Team Member Name 6</div>
-        <div class="member-role">XR Game Engineer</div>
-        <div class="member-meta"><span class="meta-badge">2nd Year</span><span class="meta-badge">EEE</span></div>
-        <p class="member-desc">Engineers interactive gameplay mechanics, physics simulations, and haptic feedback systems.</p>
-        <div class="member-contact-row">
-          <span>EMAIL: <a href="mailto:member6@gcet.edu.in">member6@gcet.edu.in</a></span>
-          <span>PHONE: +91 XXXXX XXXXX</span>
-        </div>
-      </div>
-
-      <!-- Member 7 -->
-      <div class="member-card">
-        <div class="member-avatar-box"><span class="avatar-placeholder-icon">MEMBER</span></div>
-        <div class="member-name">Team Member Name 7</div>
-        <div class="member-role">Industrial Simulation Lead</div>
-        <div class="member-meta"><span class="meta-badge">3rd Year</span><span class="meta-badge">Mechanical</span></div>
-        <p class="member-desc">Builds CAD-to-VR visualization pipelines for engineering assembly training.</p>
-        <div class="member-contact-row">
-          <span>EMAIL: <a href="mailto:member7@gcet.edu.in">member7@gcet.edu.in</a></span>
-          <span>PHONE: +91 XXXXX XXXXX</span>
-        </div>
-      </div>
-
-      <!-- Member 8 -->
-      <div class="member-card">
-        <div class="member-avatar-box"><span class="avatar-placeholder-icon">MEMBER</span></div>
-        <div class="member-name">Team Member Name 8</div>
-        <div class="member-role">WebXR &amp; Frontend Dev</div>
-        <div class="member-meta"><span class="meta-badge">2nd Year</span><span class="meta-badge">CSE</span></div>
-        <p class="member-desc">Develops browser-based 3D WebXR applications, Three.js canvases, and lab web tools.</p>
-        <div class="member-contact-row">
-          <span>EMAIL: <a href="mailto:member8@gcet.edu.in">member8@gcet.edu.in</a></span>
-          <span>PHONE: +91 XXXXX XXXXX</span>
-        </div>
-      </div>
-
-      <!-- Member 9 -->
-      <div class="member-card">
-        <div class="member-avatar-box"><span class="avatar-placeholder-icon">MEMBER</span></div>
-        <div class="member-name">Team Member Name 9</div>
-        <div class="member-role">Digital Heritage AR Dev</div>
-        <div class="member-meta"><span class="meta-badge">3rd Year</span><span class="meta-badge">Civil</span></div>
-        <p class="member-desc">Leads mobile AR heritage walks, photogrammetry scanning, and architectural tours.</p>
-        <div class="member-contact-row">
-          <span>EMAIL: <a href="mailto:member9@gcet.edu.in">member9@gcet.edu.in</a></span>
-          <span>PHONE: +91 XXXXX XXXXX</span>
-        </div>
-      </div>
-
-      <!-- Member 10 -->
-      <div class="member-card">
-        <div class="member-avatar-box"><span class="avatar-placeholder-icon">MEMBER</span></div>
-        <div class="member-name">Team Member Name 10</div>
-        <div class="member-role">Research Publications Lead</div>
-        <div class="member-meta"><span class="meta-badge">4th Year</span><span class="meta-badge">ECE</span></div>
-        <p class="member-desc">Coordinates user study testing sessions, paper writing, and conference submission files.</p>
-        <div class="member-contact-row">
-          <span>EMAIL: <a href="mailto:member10@gcet.edu.in">member10@gcet.edu.in</a></span>
-          <span>PHONE: +91 XXXXX XXXXX</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- =========================================================================
-       15. SITE FOOTER
-       ========================================================================= -->
-  <footer class="footer">
-    <div>© 2026 AR/VR RESEARCH LAB — GEETHANJALI COLLEGE OF ENGINEERING &amp; TECHNOLOGY</div>
-    <div class="footer-contact">
-      <span>Email: <a href="mailto:xrresearchlab@gcet.edu.in" style="color:var(--cyan-glow);">xrresearchlab@gcet.edu.in</a></span>
-      <span>Phone: <a href="tel:8763688312" style="color:var(--cyan-glow);">+91 8763688312</a></span>
     </div>
   </footer>
 
-  <!-- =========================================================================
-       16. PAGE SCRIPTS
-       - Intersection Observer for scroll-reveal animations
-       - Centralized xr-engine.js for 3D Three.js space background and theme engine
-       ========================================================================= -->
-  <script>
-    // Scroll Reveal Intersection Observer
-    const reveals = document.querySelectorAll('.reveal');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('in');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.15 });
-    reveals.forEach(r => observer.observe(r));
-  </script>
-
-  <!-- Spatial XR OS Engine Script -->
-  <script src="js/xr-engine.js"></script>
+  <!-- Page Scripts -->
+  <script src="js/homepage.js"></script>
+  <script src="js/about-scene.js"></script>
 </body>
 
 </html>

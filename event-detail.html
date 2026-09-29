@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Details — XR Research Lab</title>
+  <meta name="description" content="Event details at XR Research Lab.">
+
+  <link rel="icon" type="image/png" href="images/collegelogo.png">
+  <link rel="apple-touch-icon" href="images/collegelogo.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/homepage.css">
+  <link rel="stylesheet" href="css/subpages.css">
+  <link rel="stylesheet" href="css/xr-styles.css">
+</head>
+
+<body>
+
+  <!-- Cinematic Transparent Navigation -->
+  <header class="cin-header" id="cin-header">
+    <nav class="cin-nav">
+      <a href="index.html" class="cin-brand" aria-label="XR Research Lab Home">
+        <span class="brand-xr">XR</span>
+        <span class="brand-sep"></span>
+        <span class="brand-text">RESEARCH LAB</span>
+      </a>
+      <div class="cin-nav-links" id="cin-nav-links">
+        <a href="index.html" class="cin-nav-link">Home</a>
+        <a href="about.html" class="cin-nav-link">About Us</a>
+        <div class="cin-nav-dropdown" id="cin-explore">
+          <button class="cin-nav-link cin-dropdown-trigger" aria-expanded="false" aria-haspopup="true" id="explore-trigger">
+            Explore
+            <svg class="dropdown-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="cin-dropdown" id="cin-explore-dropdown" role="menu" aria-label="Explore submenu">
+            <a href="learn.html" class="cin-dropdown-item" role="menuitem"><span class="dropdown-indicator"></span> Learn</a>
+            <a href="milestones.html" class="cin-dropdown-item" role="menuitem"><span class="dropdown-indicator"></span> Milestones</a>
+          </div>
+        </div>
+        <div class="cin-nav-dropdown cin-nav-connect" id="cin-connect">
+          <button class="cin-nav-link cin-dropdown-trigger cin-connect-trigger active" aria-expanded="false" aria-haspopup="true" id="connect-trigger">
+            Connect
+            <svg class="dropdown-chevron connect-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="cin-dropdown" id="cin-dropdown" role="menu" aria-label="Connect submenu">
+            <a href="projects.html" class="cin-dropdown-item" role="menuitem"><span class="dropdown-indicator"></span> Ongoing Projects</a>
+            <a href="events.html" class="cin-dropdown-item active" role="menuitem"><span class="dropdown-indicator"></span> Upcoming Events</a>
+            <a href="research.html" class="cin-dropdown-item" role="menuitem"><span class="dropdown-indicator"></span> Research</a>
+          </div>
+        </div>
+      </div>
+      <button class="cin-hamburger" id="cin-hamburger" aria-label="Toggle Navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+    </nav>
+  </header>
+
+  <!-- Mobile Navigation Overlay -->
+  <div class="cin-mobile-overlay" id="cin-mobile-overlay" aria-hidden="true">
+    <div class="cin-mobile-menu">
+      <a href="index.html" class="cin-mobile-link">Home</a>
+      <a href="about.html" class="cin-mobile-link">About Us</a>
+      <div class="cin-mobile-accordion" id="cin-mobile-explore-wrap">
+        <button class="cin-mobile-link cin-mobile-accordion-trigger" id="mobile-explore-trigger" aria-expanded="false">
+          Explore <svg class="dropdown-chevron mobile-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="cin-mobile-dropdown" id="cin-mobile-explore-dropdown">
+          <a href="learn.html" class="cin-mobile-sub">Learn</a>
+          <a href="milestones.html" class="cin-mobile-sub">Milestones</a>
+        </div>
+      </div>
+      <div class="cin-mobile-accordion" id="cin-mobile-connect-wrap">
+        <button class="cin-mobile-link cin-mobile-accordion-trigger cin-mobile-connect-trigger" id="mobile-connect-trigger" aria-expanded="false">
+          Connect <svg class="dropdown-chevron connect-chevron mobile-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="cin-mobile-dropdown" id="cin-mobile-dropdown">
+          <a href="projects.html" class="cin-mobile-sub">Ongoing Projects</a>
+          <a href="events.html" class="cin-mobile-sub active">Upcoming Events</a>
+          <a href="research.html" class="cin-mobile-sub">Research</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="subpage-wrapper" id="event-detail-main">
+    <div style="text-align:center;padding:100px 0;color:var(--cin-text-dim)">
+      <div style="width:24px;height:24px;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--cin-accent-bright);border-radius:50%;animation:spin 0.6s linear infinite;margin:0 auto 16px"></div>
+      Loading event...
+    </div>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="cin-footer">
+    <div class="cin-footer-inner">
+      <div class="cin-footer-brand"><span class="footer-xr">XR</span> RESEARCH LAB</div>
+      <div class="cin-footer-info">© 2026 AR/VR RESEARCH LAB — GEETHANJALI COLLEGE OF ENGINEERING &amp; TECHNOLOGY</div>
+      <div class="cin-footer-contact"><a href="mailto:xrresearchlab@gcet.edu.in">xrresearchlab@gcet.edu.in</a></div>
+      <div class="cin-footer-social">
+        <a href="https://www.instagram.com/ar.vr.researchlab?igsh=MWM5bzhsd2VkNGFuag==" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
+        <a href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
+        <a href="https://youtube.com" target="_blank" rel="noopener" aria-label="YouTube">YouTube</a>
+        <a href="https://discord.com" target="_blank" rel="noopener" aria-label="Discord">Discord</a>
+      </div>
+    </div>
+  </footer>
+
+  <style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .event-detail-hero {
+      text-align: center;
+      max-width: 860px;
+      margin: 0 auto 40px;
+    }
+    .event-detail-hero img {
+      width: 100%;
+      max-height: 400px;
+      object-fit: cover;
+      border-radius: 16px;
+      margin-bottom: 32px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .event-detail-category {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      color: var(--cin-accent-bright);
+      background: rgba(59,130,246,0.12);
+      padding: 4px 12px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 16px;
+    }
+    .event-detail-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: clamp(28px,4vw,42px);
+      color: var(--cin-text);
+      margin-bottom: 20px;
+      line-height: 1.15;
+    }
+    .event-detail-meta-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 32px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--cin-text-secondary);
+    }
+    .event-detail-meta-bar span { display: flex; align-items: center; gap: 6px; }
+    .event-detail-section {
+      max-width: 760px;
+      margin: 0 auto 40px;
+    }
+    .event-detail-section h3 {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 18px;
+      color: var(--cin-text);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--cin-border);
+    }
+    .event-detail-desc {
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--cin-text-secondary);
+    }
+    .event-detail-highlights {
+      list-style: none;
+      padding: 0;
+    }
+    .event-detail-highlights li {
+      padding: 8px 0;
+      padding-left: 20px;
+      position: relative;
+      font-size: 14px;
+      color: var(--cin-text-secondary);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .event-detail-highlights li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 14px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--cin-accent);
+    }
+    .event-detail-speakers {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+      gap: 16px;
+    }
+    .speaker-card {
+      background: rgba(14,18,28,0.45);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .speaker-card h4 {
+      font-family: var(--font-display);
+      font-size: 15px;
+      color: var(--cin-text);
+      margin-bottom: 4px;
+    }
+    .speaker-card p {
+      font-size: 12px;
+      color: var(--cin-text-dim);
+    }
+    .event-detail-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 32px;
+      background: linear-gradient(135deg,#3B82F6 0%,#1D4ED8 100%);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      color: #fff;
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      box-shadow: 0 0 24px rgba(59,130,246,0.4);
+      transition: all 0.25s ease;
+    }
+    .event-detail-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 36px rgba(59,130,246,0.6);
+    }
+    .event-detail-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cin-accent);
+      margin-bottom: 24px;
+      transition: color 0.2s ease;
+    }
+    .event-detail-back:hover { color: var(--cin-accent-bright); }
+    .event-detail-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .event-detail-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--cin-text-dim);
+    }
+  </style>
+
+  <script src="js/homepage.js"></script>
+  <script>
+    (function() {
+      'use strict';
+
+      function escapeHtml(s) {
+        if (!s) return '';
+        const d = document.createElement('div');
+        d.textContent = s;
+        return d.innerHTML;
+      }
+
+      async function loadEventDetail() {
+        const slug = window.location.pathname.split('/events/')[1];
+        if (!slug) {
+          document.getElementById('event-detail-main').innerHTML = '<div style="text-align:center;padding:100px 0"><h2 style="color:var(--cin-text)">Event Not Found</h2><a href="events.html" style="color:var(--cin-accent);margin-top:16px;display:inline-block">← Back to Events</a></div>';
+          return;
+        }
+
+        try {
+          const res = await fetch('/api/events-public?slug=' + encodeURIComponent(decodeURIComponent(slug)));
+          if (!res.ok) throw new Error('Not found');
+          const data = await res.json();
+          const e = data.event;
+
+          document.title = `${e.title} — XR Research Lab`;
+
+          const date = e.start_datetime ? new Date(e.start_datetime).toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' }) : '';
+          const time = e.start_datetime ? new Date(e.start_datetime).toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' }) : '';
+          const endTime = e.end_datetime ? new Date(e.end_datetime).toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' }) : '';
+
+          let html = `
+            <a href="events.html" class="event-detail-back">← Back to Events</a>
+
+            <div class="event-detail-hero">
+              ${e.featured_image ? `<img src="${escapeHtml(e.featured_image)}" alt="${escapeHtml(e.title)}">` : ''}
+              ${e.category ? `<span class="event-detail-category">${escapeHtml(e.category)}</span>` : ''}
+              <h1 class="event-detail-title">${escapeHtml(e.title)}</h1>
+              <div class="event-detail-meta-bar">
+                ${date ? `<span>📅 ${date}</span>` : ''}
+                ${time ? `<span>🕐 ${time}${endTime ? ' — ' + endTime : ''}</span>` : ''}
+                ${e.location ? `<span>📍 ${escapeHtml(e.location)}</span>` : ''}
+                ${e.venue ? `<span>🏛️ ${escapeHtml(e.venue)}</span>` : ''}
+                ${e.research_division ? `<span>🔬 ${escapeHtml(e.research_division)}</span>` : ''}
+              </div>
+            </div>
+          `;
+
+          if (e.description || e.short_description) {
+            html += `<div class="event-detail-section"><h3>About This Event</h3><div class="event-detail-desc">${escapeHtml(e.description || e.short_description)}</div></div>`;
+          }
+
+          if (e.highlights && e.highlights.length) {
+            html += `<div class="event-detail-section"><h3>Key Highlights</h3><ul class="event-detail-highlights">${e.highlights.map(h => `<li>${escapeHtml(h)}</li>`).join('')}</ul></div>`;
+          }
+
+          if (e.speakers && e.speakers.length) {
+            html += `<div class="event-detail-section"><h3>Speakers</h3><div class="event-detail-speakers">${e.speakers.map(s => `<div class="speaker-card"><h4>${escapeHtml(s.name)}</h4>${s.role ? `<p>${escapeHtml(s.role)}</p>` : ''}${s.bio ? `<p style="margin-top:8px;color:var(--cin-text-secondary);font-size:13px">${escapeHtml(s.bio)}</p>` : ''}</div>`).join('')}</div></div>`;
+          }
+
+          if (e.organizer) {
+            html += `<div class="event-detail-section"><h3>Organized By</h3><p style="color:var(--cin-text-secondary);font-size:15px">${escapeHtml(e.organizer)}</p></div>`;
+          }
+
+          if (e.tags && e.tags.length) {
+            html += `<div class="event-detail-section"><h3>Tags</h3><div class="event-detail-tags">${e.tags.map(t => `<span class="event-detail-tag">${escapeHtml(t)}</span>`).join('')}</div></div>`;
+          }
+
+          if (e.registration_url || e.external_url) {
+            html += `<div class="event-detail-section" style="text-align:center;padding-top:20px">`;
+            if (e.registration_url) html += `<a href="${escapeHtml(e.registration_url)}" target="_blank" rel="noopener" class="event-detail-cta">Register Now →</a>`;
+            if (e.external_url) html += `<a href="${escapeHtml(e.external_url)}" target="_blank" rel="noopener" class="event-detail-cta" style="margin-left:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);box-shadow:none">Visit Event Page →</a>`;
+            html += `</div>`;
+          }
+
+          document.getElementById('event-detail-main').innerHTML = html;
+        } catch (err) {
+          document.getElementById('event-detail-main').innerHTML = `
+            <div style="text-align:center;padding:100px 0">
+              <h2 style="font-family:var(--font-display);color:var(--cin-text)">Event Not Found</h2>
+              <p style="color:var(--cin-text-dim);margin-top:12px">This event may have been removed or is not yet published.</p>
+              <a href="events.html" class="event-detail-back" style="margin-top:24px;display:inline-flex">← Back to Events</a>
+            </div>
+          `;
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', loadEventDetail);
+    })();
+  </script>
+
+</body>
+</html>
