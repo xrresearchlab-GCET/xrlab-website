@@ -27,17 +27,30 @@
   function $$(sel) { return document.querySelectorAll(sel); }
 
   async function apiCall(path, options = {}) {
+    if (window.location.protocol === 'file:') {
+      throw new Error('Running on file:// protocol. Netlify backend functions require a live web server or Netlify deployment.');
+    }
     const headers = { 'Content-Type': 'application/json', ...options.headers };
     if (csrfToken && options.method && options.method !== 'GET') {
       headers['X-CSRF-Token'] = csrfToken;
     }
-    const res = await fetch(`${API}/${path}`, {
-      credentials: 'include',
-      ...options,
-      headers,
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Request failed');
+    let res;
+    try {
+      res = await fetch(`${API}/${path}`, {
+        credentials: 'include',
+        ...options,
+        headers,
+      });
+    } catch (netErr) {
+      throw new Error(`Cannot reach /api/${path}. Ensure your site is deployed to Netlify or running locally with 'netlify dev'.`);
+    }
+    let data;
+    try {
+      data = await res.json();
+    } catch (parseErr) {
+      throw new Error(`Server returned an unreadable response (${res.status}).`);
+    }
+    if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
     return data;
   }
 
@@ -102,11 +115,41 @@
     loadDashboard();
   }
 
-  // Turnstile callback
+  // Turnstile callbacks
   window.onCaptchaSuccess = function (token) {
     captchaToken = token;
-    $('#login-submit-btn').disabled = false;
+    hideLoginError();
   };
+
+  window.onCaptchaExpired = function () {
+    captchaToken = '';
+    showLoginError('CAPTCHA expired. Please solve the security check again.');
+  };
+
+  window.onCaptchaError = function (errorCode) {
+    console.error('Turnstile CAPTCHA error:', errorCode);
+    showLoginError(`Cloudflare Turnstile CAPTCHA error (${errorCode || 'unknown'}). Please ensure your current domain (or localhost) is allowed in your Cloudflare Turnstile widget settings.`);
+  };
+
+  function checkEnvironment() {
+    if (window.location.protocol === 'file:') {
+      showLoginError('⚠️ You opened admin.html directly from your file system (file://). Netlify serverless functions and Cloudflare CAPTCHA cannot run from file://. Please view through your deployed Netlify site or via local dev server.');
+      return;
+    }
+
+    const widget = $('#turnstile-widget');
+    const sitekey = widget ? widget.getAttribute('data-sitekey') : '';
+    if (!sitekey) {
+      showLoginError('⚠️ Cloudflare Turnstile site key is missing in admin.html.');
+      return;
+    }
+
+    setTimeout(() => {
+      if (!captchaToken && !window.turnstile) {
+        showLoginError('⚠️ Cloudflare Turnstile script failed to load. Check your network or browser ad-blocker.');
+      }
+    }, 4000);
+  }
 
   // Login form (Step 1)
   function initLoginForm() {
@@ -119,12 +162,18 @@
       const password = $('#admin-password').value;
 
       if (!email || !password) {
-        showLoginError('Please fill in all fields');
+        showLoginError('Please enter both your admin email and password');
         return;
       }
 
       if (!captchaToken) {
-        showLoginError('Please complete the CAPTCHA');
+        showLoginError('Please complete the security check (CAPTCHA) above');
+        const tc = $('.turnstile-container');
+        if (tc) {
+          tc.style.outline = '2px solid rgba(239, 68, 68, 0.6)';
+          tc.style.borderRadius = '6px';
+          setTimeout(() => { tc.style.outline = 'none'; }, 2500);
+        }
         return;
       }
 
@@ -143,9 +192,8 @@
         showLoginError(err.message || 'Authentication failed');
         // Reset captcha
         if (window.turnstile) {
-          window.turnstile.reset();
+          try { window.turnstile.reset(); } catch (_) {}
           captchaToken = '';
-          $('#login-submit-btn').disabled = true;
         }
       } finally {
         setLoginLoading(false);
@@ -909,6 +957,7 @@
   // 8. INITIALIZATION
   // =========================================================================
   document.addEventListener('DOMContentLoaded', () => {
+    checkEnvironment();
     initLoginForm();
     initOTPForm();
     initLogout();
