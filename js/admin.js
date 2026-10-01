@@ -129,6 +129,8 @@
   window.onCaptchaSuccess = function (token) {
     captchaToken = token;
     hideLoginError();
+    const btn = $('#login-submit-btn');
+    if (btn) btn.disabled = false;
   };
 
   window.onCaptchaExpired = function () {

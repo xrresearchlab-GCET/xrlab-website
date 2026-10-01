@@ -7,35 +7,39 @@
   <title>Project Space — XR Research Lab</title>
   <meta name="description" content="Explore research projects, simulations, and digital experiences being developed at the XR Research Lab across engineering, healthcare, entertainment, and more.">
 
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="images/collegelogo.png">
   <link rel="apple-touch-icon" href="images/collegelogo.png">
 
+  <!-- Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="css/homepage.css">
   <link rel="stylesheet" href="css/subpages.css">
 
   <style>
-    /* ============================================ */
-    /* PROJECT SPACE — CINEMATIC STYLES             */
-    /* ============================================ */
+    /* =========================================================================
+       PROJECT SPACE — VERTICAL TAXONOMY & CINEMATIC LAYOUT
+       ========================================================================= */
 
-    .ps-hero {
+    /* Hero Header */
+    .ps-header-hero {
       position: relative;
-      padding: 140px 24px 60px;
+      padding: 140px 24px 40px;
       text-align: center;
       overflow: hidden;
     }
-    .ps-hero::before {
+    .ps-header-hero::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: radial-gradient(ellipse 60% 50% at 50% 20%, rgba(59,130,246,0.06) 0%, transparent 70%);
+      background: radial-gradient(ellipse 60% 40% at 50% 20%, rgba(59,130,246,0.08) 0%, transparent 70%);
       pointer-events: none;
     }
-    .ps-hero-badge {
+    .ps-header-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -45,252 +49,218 @@
       letter-spacing: 0.2em;
       color: var(--cin-accent-bright);
       background: rgba(59,130,246,0.08);
-      border: 1px solid rgba(59,130,246,0.15);
+      border: 1px solid rgba(59,130,246,0.18);
       padding: 6px 16px;
       border-radius: 24px;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
     }
-    .ps-hero-badge-dot {
+    .ps-header-badge-dot {
       width: 6px; height: 6px;
       background: var(--cin-accent-bright);
       border-radius: 50%;
       animation: psPulse 2s infinite;
     }
     @keyframes psPulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.85); }
     }
-    .ps-hero h1 {
+    .ps-header-hero h1 {
       font-family: var(--font-display);
       font-weight: 700;
-      font-size: clamp(36px, 6vw, 56px);
+      font-size: clamp(34px, 5.5vw, 54px);
       color: var(--cin-text);
       letter-spacing: -0.02em;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       line-height: 1.1;
     }
-    .ps-hero h1 span {
+    .ps-header-hero h1 span {
       background: linear-gradient(135deg, #60A5FA 0%, #818CF8 50%, #A78BFA 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    .ps-hero-lead {
+    .ps-header-lead {
       font-family: var(--font-body);
-      font-size: 16px;
+      font-size: 15px;
       color: var(--cin-text-secondary);
       max-width: 640px;
-      margin: 0 auto 36px;
+      margin: 0 auto;
       line-height: 1.7;
     }
 
-    /* Category Filter Tabs */
-    .ps-filters {
-      max-width: 1200px;
-      margin: 0 auto 40px;
+    /* Simulation Showcase Section (Unreal-style Hero) */
+    .ps-sim-wrapper {
+      max-width: 1400px;
+      margin: 40px auto 80px;
       padding: 0 24px;
     }
-    .ps-filter-row {
+    .ps-sim-hero {
+      position: relative;
+      height: 75vh;
+      min-height: 520px;
+      max-height: 720px;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.6), 0 0 32px rgba(59,130,246,0.08);
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-      margin-bottom: 16px;
+      flex-direction: column;
+      justify-content: flex-end;
     }
-    .ps-filter-btn {
-      font-family: var(--font-display);
+    .ps-sim-hero .cin-hero-content {
+      position: relative;
+      z-index: 10;
+      padding: 0 48px 140px;
+      max-width: 800px;
+    }
+    @media (max-width: 768px) {
+      .ps-sim-hero .cin-hero-content {
+        padding: 0 24px 120px;
+      }
+    }
+    .ps-sim-hero .cin-division-selector {
+      position: absolute;
+      bottom: 24px;
+      left: 0;
+      right: 0;
+      z-index: 15;
+    }
+
+    /* Vertical Category Section Styling */
+    .ps-section {
+      max-width: 1320px;
+      margin: 0 auto 90px;
+      padding: 0 24px;
+    }
+    .ps-section-header {
+      margin-bottom: 32px;
+      position: relative;
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .ps-section-badge {
+      display: inline-block;
+      font-family: var(--font-mono);
       font-size: 11px;
       font-weight: 600;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.16em;
+      color: var(--cin-accent-bright);
+      margin-bottom: 8px;
       text-transform: uppercase;
-      padding: 8px 18px;
-      border-radius: 6px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(14,18,28,0.4);
-      color: var(--cin-text-dim);
-      cursor: pointer;
-      transition: all 0.25s ease;
     }
-    .ps-filter-btn:hover {
-      background: rgba(59,130,246,0.1);
-      border-color: rgba(59,130,246,0.3);
-      color: var(--cin-accent-bright);
-    }
-    .ps-filter-btn.active {
-      background: rgba(59,130,246,0.15);
-      border-color: rgba(59,130,246,0.4);
-      color: var(--cin-accent-bright);
-      box-shadow: 0 0 12px rgba(59,130,246,0.15);
-    }
-
-    /* Division sub-filters */
-    .ps-division-row {
-      display: none;
-      justify-content: center;
-    }
-    .ps-division-row.visible {
-      display: flex;
-    }
-    .ps-division-btn {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      padding: 5px 12px;
-      border-radius: 4px;
-      border: 1px solid rgba(255,255,255,0.05);
-      background: rgba(255,255,255,0.02);
-      color: var(--cin-text-dim);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .ps-division-btn:hover,
-    .ps-division-btn.active {
-      background: rgba(139,92,246,0.1);
-      border-color: rgba(139,92,246,0.3);
-      color: #A78BFA;
-    }
-
-    /* Search bar */
-    .ps-search-wrap {
-      max-width: 480px;
-      margin: 0 auto 16px;
-      position: relative;
-    }
-    .ps-search-input {
-      width: 100%;
-      padding: 10px 16px 10px 40px;
-      font-family: var(--font-body);
-      font-size: 13px;
-      background: rgba(14,18,28,0.5);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 8px;
+    .ps-section-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: clamp(24px, 3.5vw, 32px);
       color: var(--cin-text);
-      outline: none;
-      transition: border-color 0.2s ease;
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
     }
-    .ps-search-input::placeholder { color: var(--cin-text-dim); }
-    .ps-search-input:focus { border-color: rgba(59,130,246,0.4); }
-    .ps-search-icon {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--cin-text-dim);
+    .ps-section-desc {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--cin-text-secondary);
+      max-width: 680px;
+      line-height: 1.6;
     }
 
-    /* Status filter pills */
-    .ps-status-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      justify-content: center;
+    /* 3-Column Card Grid (Matching Pic 4) */
+    .ps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 26px;
     }
-    .ps-status-pill {
+    @media (max-width: 520px) {
+      .ps-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Project Card (Pic 4 Style) */
+    .ps-card {
+      background: rgba(14, 18, 28, 0.6);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+      text-decoration: none;
+      color: inherit;
+    }
+    .ps-card:hover {
+      background: rgba(20, 26, 42, 0.75);
+      border-color: rgba(96, 165, 250, 0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), 0 0 24px rgba(59, 130, 246, 0.14);
+    }
+    .ps-card-media {
+      width: 100%;
+      height: 200px;
+      position: relative;
+      background: #090D16;
+      overflow: hidden;
+    }
+    .ps-card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .ps-card:hover .ps-card-img {
+      transform: scale(1.04);
+    }
+    .ps-card-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 50%, rgba(59,130,246,0.12) 0%, rgba(10,13,20,0.95) 75%);
+    }
+    .ps-card-placeholder svg {
+      opacity: 0.22;
+      color: var(--cin-accent-bright);
+    }
+    .ps-card-body {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .ps-card-tags-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .ps-tag-type {
       font-family: var(--font-mono);
       font-size: 9px;
       font-weight: 600;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.05);
-      background: rgba(255,255,255,0.02);
-      color: var(--cin-text-dim);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .ps-status-pill:hover,
-    .ps-status-pill.active {
-      background: rgba(59,130,246,0.08);
-      border-color: rgba(59,130,246,0.2);
-      color: var(--cin-accent-bright);
-    }
-
-    /* Project Cards Grid */
-    .ps-grid {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 24px 80px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 24px;
-    }
-    @media (max-width: 480px) {
-      .ps-grid { grid-template-columns: 1fr; }
-    }
-
-    /* Project Card */
-    .ps-card {
-      background: rgba(14,18,28,0.55);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 14px;
-      overflow: hidden;
-      transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-      text-decoration: none;
-      color: inherit;
-      display: flex;
-      flex-direction: column;
-    }
-    .ps-card:hover {
-      background: rgba(20,26,42,0.7);
-      border-color: rgba(96,165,250,0.35);
-      transform: translateY(-4px);
-      box-shadow: 0 16px 48px rgba(0,0,0,0.45), 0 0 20px rgba(59,130,246,0.12);
-    }
-    .ps-card-img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      display: block;
-    }
-    .ps-card-img-placeholder {
-      width: 100%;
-      height: 200px;
-      background: linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(14,18,28,0.8) 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .ps-card-img-placeholder svg { opacity: 0.15; }
-    .ps-card-body {
-      padding: 22px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    .ps-card-top-meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
-    .ps-card-type {
-      font-family: var(--font-mono);
-      font-size: 9px;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--cin-accent-bright);
-      background: rgba(59,130,246,0.12);
       padding: 3px 8px;
       border-radius: 4px;
+      background: rgba(59, 130, 246, 0.12);
+      color: var(--cin-accent-bright);
+      border: 1px solid rgba(59, 130, 246, 0.2);
     }
-    .ps-card-division {
+    .ps-tag-div {
       font-family: var(--font-mono);
       font-size: 9px;
       font-weight: 500;
-      letter-spacing: 0.08em;
-      color: #A78BFA;
-      background: rgba(139,92,246,0.1);
       padding: 3px 8px;
       border-radius: 4px;
+      background: rgba(167, 139, 250, 0.1);
+      color: #A78BFA;
+      border: 1px solid rgba(167, 139, 250, 0.2);
     }
-    .ps-card-status {
+    .ps-tag-status {
       font-family: var(--font-mono);
       font-size: 9px;
       font-weight: 600;
@@ -300,25 +270,26 @@
       border-radius: 4px;
       margin-left: auto;
     }
-    .ps-card-status.concept { color: #FCD34D; background: rgba(252,211,77,0.1); }
-    .ps-card-status.ongoing { color: #34D399; background: rgba(52,211,153,0.1); }
-    .ps-card-status.prototype { color: #60A5FA; background: rgba(96,165,250,0.1); }
-    .ps-card-status.completed { color: #A78BFA; background: rgba(167,139,250,0.1); }
-    .ps-card-status.archived { color: var(--cin-text-dim); background: rgba(255,255,255,0.04); }
+    .ps-tag-status.concept { color: #FCD34D; background: rgba(252,211,77,0.1); border: 1px solid rgba(252,211,77,0.25); }
+    .ps-tag-status.ongoing { color: #34D399; background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.25); }
+    .ps-tag-status.prototype { color: #60A5FA; background: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.25); }
+    .ps-tag-status.completed { color: #A78BFA; background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.25); }
+    .ps-tag-status.archived { color: var(--cin-text-dim); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
 
     .ps-card-title {
       font-family: var(--font-display);
       font-weight: 600;
-      font-size: 17px;
+      font-size: 18px;
       color: var(--cin-text);
-      margin-bottom: 8px;
       line-height: 1.3;
+      margin-bottom: 10px;
     }
     .ps-card-desc {
+      font-family: var(--font-body);
       font-size: 13px;
       color: var(--cin-text-secondary);
       line-height: 1.6;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
       flex: 1;
       display: -webkit-box;
       -webkit-line-clamp: 3;
@@ -329,7 +300,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 5px;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
     .ps-card-tech {
       font-family: var(--font-mono);
@@ -342,7 +313,7 @@
     }
     .ps-card-footer {
       padding-top: 14px;
-      border-top: 1px solid rgba(255,255,255,0.05);
+      border-top: 1px solid rgba(255,255,255,0.06);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -352,81 +323,125 @@
       font-size: 11px;
       color: var(--cin-text-dim);
     }
-    .ps-card-cta {
-      font-family: var(--font-display);
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--cin-accent-bright);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: color 0.2s ease;
-    }
-    .ps-card:hover .ps-card-cta { color: #93C5FD; }
-
-    .ps-card-launch {
+    .ps-btn-launch {
       display: inline-flex;
       align-items: center;
       gap: 6px;
       padding: 6px 14px;
-      background: rgba(52,211,153,0.1);
-      border: 1px solid rgba(52,211,153,0.25);
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.35);
       border-radius: 5px;
       color: #34D399;
       font-family: var(--font-display);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 600;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       text-decoration: none;
       transition: all 0.2s ease;
     }
-    .ps-card-launch:hover {
-      background: rgba(52,211,153,0.2);
-      border-color: rgba(52,211,153,0.4);
+    .ps-btn-launch:hover {
+      background: rgba(52, 211, 153, 0.22);
+      border-color: rgba(52, 211, 153, 0.5);
+      color: #6EE7B7;
     }
-
-    /* Loading / Empty / Error */
-    .ps-loading {
-      grid-column: 1 / -1;
-      text-align: center;
-      padding: 80px 0;
-      color: var(--cin-text-dim);
-    }
-    .ps-loading-spinner {
-      width: 28px; height: 28px;
-      border: 2px solid rgba(255,255,255,0.08);
-      border-top-color: var(--cin-accent-bright);
-      border-radius: 50%;
-      animation: psSpin 0.6s linear infinite;
-      margin: 0 auto 16px;
-    }
-    @keyframes psSpin { to { transform: rotate(360deg); } }
-    .ps-empty {
-      grid-column: 1 / -1;
-      text-align: center;
-      padding: 80px 24px;
-    }
-    .ps-empty h3 {
+    .ps-btn-view {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--cin-accent-bright);
       font-family: var(--font-display);
-      font-size: 20px;
-      color: var(--cin-text-secondary);
-      margin-bottom: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: color 0.2s ease;
     }
-    .ps-empty p {
-      font-size: 14px;
-      color: var(--cin-text-dim);
-      max-width: 400px;
-      margin: 0 auto;
+    .ps-card:hover .ps-btn-view {
+      color: #93C5FD;
     }
 
-    /* Reduced motion */
-    @media (prefers-reduced-motion: reduce) {
-      .ps-card { transition: none; }
-      .ps-card:hover { transform: none; }
-      .ps-hero-badge-dot { animation: none; }
+    /* Clean Dedicated Division View */
+    .ps-division-view {
+      max-width: 1320px;
+      margin: 120px auto 100px;
+      padding: 0 24px;
+      animation: fadeInView 0.35s ease-out;
+    }
+    @keyframes fadeInView {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .ps-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cin-accent-bright);
+      background: rgba(59,130,246,0.08);
+      border: 1px solid rgba(59,130,246,0.2);
+      padding: 8px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 32px;
+      transition: all 0.2s ease;
+    }
+    .ps-back-btn:hover {
+      background: rgba(59,130,246,0.18);
+      border-color: rgba(59,130,246,0.4);
+      transform: translateX(-2px);
+    }
+    .ps-clean-header {
+      margin-bottom: 40px;
+    }
+    .ps-clean-badge {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      color: #A78BFA;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+    .ps-clean-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: clamp(32px, 5vw, 48px);
+      color: var(--cin-text);
+      letter-spacing: -0.01em;
+      margin-bottom: 12px;
+    }
+    .ps-clean-desc {
+      font-family: var(--font-body);
+      font-size: 16px;
+      color: var(--cin-text-secondary);
+      max-width: 720px;
+      line-height: 1.7;
+    }
+
+    /* Empty state */
+    .ps-empty-box {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 24px;
+      background: rgba(255,255,255,0.015);
+      border: 1px dashed rgba(255,255,255,0.08);
+      border-radius: 12px;
+    }
+    .ps-empty-box h4 {
+      font-family: var(--font-display);
+      font-size: 16px;
+      color: var(--cin-text-secondary);
+      margin-bottom: 6px;
+    }
+    .ps-empty-box p {
+      font-size: 13px;
+      color: var(--cin-text-dim);
     }
   </style>
 </head>
@@ -509,63 +524,130 @@
     </div>
   </div>
 
-  <!-- Hero Section -->
-  <section class="ps-hero">
-    <div class="ps-hero-badge">
-      <span class="ps-hero-badge-dot"></span>
-      <span>XR RESEARCH LAB — PROJECT ARCHIVE</span>
-    </div>
-    <h1>PROJECT <span>SPACE</span></h1>
-    <p class="ps-hero-lead">
-      Explore the research, simulations, and digital experiences being developed inside the XR Research Lab across six pioneering scientific disciplines.
-    </p>
-  </section>
+  <!-- =========================================================================
+       MAIN VERTICAL VIEW (All Project Types in Sequential Order)
+       ========================================================================= -->
+  <main id="ps-vertical-view">
 
-  <!-- Filters -->
-  <div class="ps-filters" role="search" aria-label="Filter projects">
-    <!-- Search -->
-    <div class="ps-search-wrap">
-      <svg class="ps-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+    <!-- Top Hero Header -->
+    <section class="ps-header-hero">
+      <div class="ps-header-badge">
+        <span class="ps-header-badge-dot"></span>
+        <span>XR RESEARCH LAB // PROJECT SPACE</span>
+      </div>
+      <h1>EXPLORE OUR <span>PROJECT DOMAINS</span></h1>
+      <p class="ps-header-lead">
+        Interactive spatial computing, engineering digital twins, and immersive virtual environments developed across academic, industrial, and experimental tracks.
+      </p>
+    </section>
+
+    <!-- =======================================================================
+         1. EXPERIENTIAL / SIMULATION-BASED LEARNING (Unreal-Style Hero Component)
+         ======================================================================= -->
+    <div class="ps-sim-wrapper">
+      <div class="ps-section-header" style="margin-bottom: 24px;">
+        <span class="ps-section-badge">PROJECT DOMAIN // 01</span>
+        <h2 class="ps-section-title">Experiential &amp; Simulation-Based Learning</h2>
+        <p class="ps-section-desc">Six core research divisions engineering advanced spatial simulations, interactive CAD digital twins, and clinical VR environments.</p>
+      </div>
+
+      <!-- Unreal-style interactive hero component -->
+      <div class="cin-hero ps-sim-hero" id="cin-hero" data-anchor="divisions">
+        <div class="cin-hero-bg" id="cin-hero-bg" aria-hidden="true"></div>
+        <div class="cin-hero-overlay" aria-hidden="true"></div>
+        <div class="cin-hero-scanlines" aria-hidden="true"></div>
+
+        <div class="cin-hero-content">
+          <h2 class="cin-hero-title" id="hero-title" style="margin-bottom:12px;">ENGINEERING</h2>
+          <p class="cin-hero-desc" id="hero-desc">
+            Mechanical simulations, CAD model visualization, and structural digital twins built for real-time 3D engineering analysis.
+          </p>
+
+          <button type="button" class="cin-hero-cta" id="hero-cta" aria-label="Explore Projects in this Division">
+            <span class="cta-text">EXPLORE PROJECTS</span>
+            <span class="cta-arrow">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </button>
+        </div>
+
+        <!-- Division Capsule Selector -->
+        <div class="cin-division-selector" id="cin-division-selector">
+          <div class="cin-division-track" id="cin-division-track" role="tablist" aria-label="Research Divisions">
+            <!-- Capsules dynamically populated via JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =======================================================================
+         2. INDIVIDUAL PROJECTS (Regular Project Showcase Card Grid)
+         ======================================================================= -->
+    <section class="ps-section" id="sec-individual">
+      <div class="ps-section-header">
+        <span class="ps-section-badge">PROJECT DOMAIN // 02</span>
+        <h2 class="ps-section-title">Individual Projects</h2>
+        <p class="ps-section-desc">Independent student research, experimental prototypes, and specialized honors investigations.</p>
+      </div>
+      <div class="ps-grid" id="grid-individual">
+        <div class="ps-loading"><div class="ps-loading-spinner"></div>Loading individual projects...</div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         3. OUTSOURCING PROJECTS (Regular Project Showcase Card Grid)
+         ======================================================================= -->
+    <section class="ps-section" id="sec-outsourcing">
+      <div class="ps-section-header">
+        <span class="ps-section-badge">PROJECT DOMAIN // 03</span>
+        <h2 class="ps-section-title">Outsourcing &amp; Industry Projects</h2>
+        <p class="ps-section-desc">Commercial client engagements, spatial consultancy, and proprietary industry solutions.</p>
+      </div>
+      <div class="ps-grid" id="grid-outsourcing">
+        <div class="ps-loading"><div class="ps-loading-spinner"></div>Loading outsourcing projects...</div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         4. GROUP PROJECTS (Regular Project Showcase Card Grid)
+         ======================================================================= -->
+    <section class="ps-section" id="sec-group">
+      <div class="ps-section-header">
+        <span class="ps-section-badge">PROJECT DOMAIN // 04</span>
+        <h2 class="ps-section-title">Group Projects &amp; Hackathons</h2>
+        <p class="ps-section-desc">Cross-disciplinary cohort developments, student hackathon builds, and multi-team research.</p>
+      </div>
+      <div class="ps-grid" id="grid-group">
+        <div class="ps-loading"><div class="ps-loading-spinner"></div>Loading group projects...</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================================
+       CLEAN DEDICATED DIVISION PROJECTS VIEW
+       (Shown when clicking 'Explore Projects' in the Simulation showcase)
+       ========================================================================= -->
+  <div class="ps-division-view" id="ps-division-view" style="display: none;">
+    <button type="button" class="ps-back-btn" id="btn-back-to-vertical">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
       </svg>
-      <input type="search" class="ps-search-input" id="ps-search" placeholder="Search projects, technologies, divisions..." aria-label="Search projects">
+      BACK TO ALL PROJECT TYPES
+    </button>
+
+    <div class="ps-clean-header">
+      <div class="ps-clean-badge" id="clean-view-badge">SIMULATION // DIVISION SHOWCASE</div>
+      <h1 class="ps-clean-title" id="clean-view-title">ENGINEERING</h1>
+      <p class="ps-clean-desc" id="clean-view-desc">
+        Mechanical simulations, CAD model visualization, and structural digital twins built for real-time 3D engineering analysis.
+      </p>
     </div>
 
-    <!-- Type filters -->
-    <div class="ps-filter-row" id="ps-type-filters">
-      <button class="ps-filter-btn active" data-type="">ALL PROJECTS</button>
-      <button class="ps-filter-btn" data-type="experiential">EXPERIENTIAL / SIMULATION</button>
-      <button class="ps-filter-btn" data-type="individual">INDIVIDUAL</button>
-      <button class="ps-filter-btn" data-type="outsourcing">OUTSOURCING</button>
-      <button class="ps-filter-btn" data-type="group">GROUP</button>
-    </div>
-
-    <!-- Division sub-filters (shown when Experiential is selected) -->
-    <div class="ps-filter-row ps-division-row" id="ps-division-filters">
-      <button class="ps-division-btn active" data-division="">All Divisions</button>
-      <button class="ps-division-btn" data-division="Engineering">Engineering</button>
-      <button class="ps-division-btn" data-division="Placements">Placements</button>
-      <button class="ps-division-btn" data-division="Healthcare">Healthcare</button>
-      <button class="ps-division-btn" data-division="Tourism & Culture">Tourism & Culture</button>
-      <button class="ps-division-btn" data-division="Entertainment">Entertainment</button>
-      <button class="ps-division-btn" data-division="Building & Infrastructure">Building & Infrastructure</button>
-    </div>
-
-    <!-- Status filters -->
-    <div class="ps-filter-row ps-status-row" id="ps-status-filters">
-      <button class="ps-status-pill active" data-status="">All Status</button>
-      <button class="ps-status-pill" data-status="ongoing">Ongoing</button>
-      <button class="ps-status-pill" data-status="concept">Concept</button>
-      <button class="ps-status-pill" data-status="prototype">Prototype</button>
-      <button class="ps-status-pill" data-status="completed">Completed</button>
-    </div>
-  </div>
-
-  <!-- Projects Grid -->
-  <div class="ps-grid" id="ps-grid">
-    <div class="ps-loading">
-      <div class="ps-loading-spinner"></div>
-      Loading projects...
+    <div class="ps-grid" id="grid-clean-division">
+      <!-- Only division projects rendered here -->
     </div>
   </div>
 
@@ -584,25 +666,60 @@
     </div>
   </footer>
 
+  <!-- Scripts -->
   <script src="js/homepage.js"></script>
   <script>
-    (function() {
+    (function () {
       'use strict';
 
-      // State
-      let allProjects = [];
-      let activeType = '';
-      let activeDivision = '';
-      let activeStatus = '';
-      let searchTerm = '';
-      let searchTimeout = null;
+      // 6 Core Research Divisions (matching homepage engine)
+      const divisionsData = [
+        {
+          key: 'engineering',
+          title: 'ENGINEERING',
+          divisionName: 'Engineering',
+          description: 'Mechanical simulations, CAD model visualization, and structural digital twins built for real-time 3D engineering analysis.',
+          gradient: 'linear-gradient(135deg, #0a1628 0%, #0f1f3d 30%, #0b1223 60%, #060a12 100%)',
+        },
+        {
+          key: 'placements',
+          title: 'PLACEMENTS',
+          divisionName: 'Placements',
+          description: 'Industry-ready training, technical skill showcases, and career placement portfolios in spatial technology.',
+          gradient: 'linear-gradient(135deg, #0d1117 0%, #161b22 30%, #0f1318 60%, #080a0e 100%)',
+        },
+        {
+          key: 'healthcare',
+          title: 'HEALTHCARE',
+          divisionName: 'Healthcare',
+          description: 'Surgical VR training, medical anatomy visualization, and AR-assisted clinical simulations for next-generation healthcare.',
+          gradient: 'linear-gradient(135deg, #0a1220 0%, #0d1a2d 30%, #091018 60%, #060910 100%)',
+        },
+        {
+          key: 'tourism',
+          title: 'TOURISM & CULTURE',
+          divisionName: 'Tourism & Culture',
+          description: 'Heritage site preservation, virtual museum walkthroughs, and interactive cultural spatial experiences.',
+          gradient: 'linear-gradient(135deg, #120e0a 0%, #1a150d 30%, #0f0c08 60%, #0a0806 100%)',
+        },
+        {
+          key: 'entertainment',
+          title: 'ENTERTAINMENT',
+          divisionName: 'Entertainment',
+          description: 'Interactive 3D spatial gaming, Holo-Stage performance simulators, and live WebGL audio-visual experiences.',
+          gradient: 'linear-gradient(135deg, #12081a 0%, #1a0d24 30%, #0f0814 60%, #08050a 100%)',
+        },
+        {
+          key: 'building',
+          title: 'BUILDING & INFRASTRUCTURE',
+          divisionName: 'Building & Infrastructure',
+          description: 'BIM architecture walkthroughs, civil engineering visualization, and smart city digital twins.',
+          gradient: 'linear-gradient(135deg, #0e0f12 0%, #14161c 30%, #0b0c0f 60%, #07080a 100%)',
+        }
+      ];
 
-      const TYPE_LABELS = {
-        experiential: 'EXPERIENTIAL',
-        individual: 'INDIVIDUAL',
-        outsourcing: 'OUTSOURCING',
-        group: 'GROUP',
-      };
+      let activeDivisionIndex = 0;
+      let allProjects = [];
 
       function escapeHtml(s) {
         if (!s) return '';
@@ -611,188 +728,292 @@
         return d.innerHTML;
       }
 
-      // Fetch projects from API
-      async function loadProjects() {
-        try {
-          const params = new URLSearchParams();
-          if (activeType) params.set('project_type', activeType);
-          if (activeDivision) params.set('research_division', activeDivision);
-          if (activeStatus) params.set('status', activeStatus);
-          if (searchTerm) params.set('search', searchTerm);
+      // =========================================================================
+      // 1. UNREAL-STYLE SIMULATION SHOWCASE LOGIC
+      // =========================================================================
+      function initSimulationHero() {
+        const bgContainer = document.getElementById('cin-hero-bg');
+        const track = document.getElementById('cin-division-track');
+        if (!bgContainer || !track) return;
 
-          const res = await fetch('/api/projects-public?' + params.toString());
+        // Build background placeholders
+        bgContainer.innerHTML = '';
+        divisionsData.forEach((div, index) => {
+          const el = document.createElement('div');
+          el.className = 'bg-placeholder' + (index === 0 ? ' active' : '');
+          el.style.background = div.gradient;
+          el.dataset.index = index;
+          bgContainer.appendChild(el);
+        });
+
+        // Build capsule selector buttons
+        track.innerHTML = '';
+        divisionsData.forEach((div, index) => {
+          const btn = document.createElement('button');
+          btn.className = 'cin-division-item' + (index === 0 ? ' active' : '');
+          btn.setAttribute('role', 'tab');
+          btn.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+          btn.dataset.index = index;
+
+          const num = String(index + 1).padStart(2, '0');
+          btn.innerHTML = `
+            <span class="division-number">${num}</span>
+            <span class="division-name">${div.title}</span>
+          `;
+
+          btn.addEventListener('click', () => {
+            selectDivision(index);
+          });
+
+          track.appendChild(btn);
+        });
+
+        // CTA button clicks -> Opens clean division view
+        const ctaBtn = document.getElementById('hero-cta');
+        if (ctaBtn) {
+          ctaBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const currentDiv = divisionsData[activeDivisionIndex];
+            openCleanDivisionView(currentDiv);
+          });
+        }
+
+        selectDivision(0);
+      }
+
+      function selectDivision(index) {
+        activeDivisionIndex = index;
+        const div = divisionsData[index];
+
+        const titleEl = document.getElementById('hero-title');
+        const descEl = document.getElementById('hero-desc');
+        if (titleEl) titleEl.textContent = div.title;
+        if (descEl) descEl.textContent = div.description;
+
+        // Update backgrounds
+        const bgItems = document.querySelectorAll('#cin-hero-bg .bg-placeholder');
+        bgItems.forEach((b, i) => {
+          b.classList.toggle('active', i === index);
+        });
+
+        // Update capsules
+        const capsules = document.querySelectorAll('#cin-division-track .cin-division-item');
+        capsules.forEach((c, i) => {
+          const isActive = (i === index);
+          c.classList.toggle('active', isActive);
+          c.setAttribute('aria-selected', isActive ? 'true' : 'false');
+          if (isActive) {
+            c.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          }
+        });
+      }
+
+      // =========================================================================
+      // 2. PROJECT CARD BUILDER (Pic 4 Style)
+      // =========================================================================
+      function renderProjectCard(p) {
+        const typeLabels = {
+          experiential: 'EXPERIENTIAL',
+          individual: 'INDIVIDUAL',
+          outsourcing: 'OUTSOURCING',
+          group: 'GROUP',
+        };
+        const typeLabel = typeLabels[p.project_type] || (p.project_type || '').toUpperCase();
+        const detailUrl = 'project-detail.html?slug=' + encodeURIComponent(p.slug);
+
+        const imgHtml = (p.concept_image_url && p.concept_image_url.trim())
+          ? `<img src="${escapeHtml(p.concept_image_url)}" alt="${escapeHtml(p.title)}" class="ps-card-img" loading="lazy">`
+          : `<div class="ps-card-placeholder">
+               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                 <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+               </svg>
+             </div>`;
+
+        const techs = p.technologies || [];
+        const techsHtml = techs.length
+          ? `<div class="ps-card-techs">${techs.slice(0, 4).map(t => `<span class="ps-card-tech">${escapeHtml(t)}</span>`).join('')}</div>`
+          : '';
+
+        let actionBtnHtml = '';
+        if (p.webgl_url && p.webgl_url.trim()) {
+          actionBtnHtml = `<a href="${escapeHtml(p.webgl_url)}" target="_blank" rel="noopener noreferrer" class="ps-btn-launch">▶ LAUNCH EXPERIENCE</a>`;
+        } else {
+          actionBtnHtml = `<a href="${detailUrl}" class="ps-btn-view">VIEW PROJECT →</a>`;
+        }
+
+        return `
+          <div class="ps-card">
+            <div class="ps-card-media">
+              ${imgHtml}
+            </div>
+            <div class="ps-card-body">
+              <div class="ps-card-tags-row">
+                <span class="ps-tag-type">${escapeHtml(typeLabel)}</span>
+                ${p.research_division ? `<span class="ps-tag-div">${escapeHtml(p.research_division)}</span>` : ''}
+                <span class="ps-tag-status ${p.status}">${escapeHtml((p.status || '').toUpperCase())}</span>
+              </div>
+              <h3 class="ps-card-title">${escapeHtml(p.title)}</h3>
+              <p class="ps-card-desc">${escapeHtml(p.short_description || p.description || '')}</p>
+              ${techsHtml}
+              <div class="ps-card-footer">
+                <span class="ps-card-year">${p.year || 2026}</span>
+                ${actionBtnHtml}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // =========================================================================
+      // 3. FETCH ALL PROJECTS & RENDER VERTICAL SECTIONS
+      // =========================================================================
+      async function loadAllProjects() {
+        try {
+          const res = await fetch('/api/projects-public');
           const data = await res.json();
           allProjects = data.projects || [];
-          renderProjects();
+
+          renderVerticalSections();
+          checkUrlState();
         } catch (err) {
-          document.getElementById('ps-grid').innerHTML = `
-            <div class="ps-empty">
-              <h3>Unable to Load Projects</h3>
-              <p>Please check your connection and try again.</p>
-            </div>
-          `;
+          console.error('Failed to load projects:', err);
+          document.getElementById('grid-individual').innerHTML = `<div class="ps-empty-box"><h4>Unable to load projects</h4><p>Please refresh the page.</p></div>`;
+          document.getElementById('grid-outsourcing').innerHTML = `<div class="ps-empty-box"><h4>Unable to load projects</h4><p>Please refresh the page.</p></div>`;
+          document.getElementById('grid-group').innerHTML = `<div class="ps-empty-box"><h4>Unable to load projects</h4><p>Please refresh the page.</p></div>`;
         }
       }
 
-      function renderProjects() {
-        const grid = document.getElementById('ps-grid');
-        if (!allProjects.length) {
+      function renderVerticalSections() {
+        // 1. Individual projects
+        const indProjects = allProjects.filter(p => p.project_type === 'individual');
+        const gridInd = document.getElementById('grid-individual');
+        if (gridInd) {
+          if (!indProjects.length) {
+            gridInd.innerHTML = `<div class="ps-empty-box"><h4>No individual projects published yet</h4><p>Student research publications are updated quarterly.</p></div>`;
+          } else {
+            gridInd.innerHTML = indProjects.map(renderProjectCard).join('');
+          }
+        }
+
+        // 2. Outsourcing projects
+        const outProjects = allProjects.filter(p => p.project_type === 'outsourcing');
+        const gridOut = document.getElementById('grid-outsourcing');
+        if (gridOut) {
+          if (!outProjects.length) {
+            gridOut.innerHTML = `<div class="ps-empty-box"><h4>No outsourcing projects published yet</h4><p>Proprietary enterprise projects undergo client clearance before publication.</p></div>`;
+          } else {
+            gridOut.innerHTML = outProjects.map(renderProjectCard).join('');
+          }
+        }
+
+        // 3. Group projects
+        const grpProjects = allProjects.filter(p => p.project_type === 'group');
+        const gridGrp = document.getElementById('grid-group');
+        if (gridGrp) {
+          if (!grpProjects.length) {
+            gridGrp.innerHTML = `<div class="ps-empty-box"><h4>No group projects published yet</h4><p>Interdisciplinary research projects will appear here.</p></div>`;
+          } else {
+            gridGrp.innerHTML = grpProjects.map(renderProjectCard).join('');
+          }
+        }
+      }
+
+      // =========================================================================
+      // 4. CLEAN DEDICATED DIVISION VIEW (REFRESH INTO EMPTY VIEW WITH PROJECTS)
+      // =========================================================================
+      function openCleanDivisionView(divObj) {
+        const verticalView = document.getElementById('ps-vertical-view');
+        const divisionView = document.getElementById('ps-division-view');
+        if (!verticalView || !divisionView) return;
+
+        // Hide main vertical view, show clean division view
+        verticalView.style.display = 'none';
+        divisionView.style.display = 'block';
+
+        // Update clean view header
+        document.getElementById('clean-view-badge').textContent = `SIMULATION // ${divObj.title}`;
+        document.getElementById('clean-view-title').textContent = `${divObj.title}`;
+        document.getElementById('clean-view-desc').textContent = divObj.description;
+
+        // Filter projects for this division
+        const matchingProjects = allProjects.filter(p => {
+          return (p.research_division && p.research_division.toLowerCase() === divObj.divisionName.toLowerCase());
+        });
+
+        const grid = document.getElementById('grid-clean-division');
+        if (!matchingProjects.length) {
           grid.innerHTML = `
-            <div class="ps-empty">
-              <h3>No Projects Found</h3>
-              <p>No projects match your current filters. Try broadening your search or selecting a different category.</p>
+            <div class="ps-empty-box">
+              <h4>No simulation projects found for ${escapeHtml(divObj.title)}</h4>
+              <p>Research models for this division are currently in active development.</p>
             </div>
           `;
-          return;
+        } else {
+          grid.innerHTML = matchingProjects.map(renderProjectCard).join('');
         }
 
-        grid.innerHTML = allProjects.map(p => {
-          const typeLabel = TYPE_LABELS[p.project_type] || p.project_type;
-          const techs = (p.technologies || []).slice(0, 5);
-          const hasWebGL = p.webgl_url && p.webgl_url.trim();
+        // Update browser URL without reloading
+        const newUrl = window.location.pathname + '?division=' + encodeURIComponent(divObj.divisionName);
+        window.history.pushState({ division: divObj.divisionName }, '', newUrl);
 
-          return `
-            <a href="/project-space/${encodeURIComponent(p.slug)}" class="ps-card" aria-label="View project: ${escapeHtml(p.title)}">
-              ${p.concept_image_url
-                ? `<img class="ps-card-img" src="${escapeHtml(p.concept_image_url)}" alt="" loading="lazy">`
-                : `<div class="ps-card-img-placeholder"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>`
-              }
-              <div class="ps-card-body">
-                <div class="ps-card-top-meta">
-                  <span class="ps-card-type">${escapeHtml(typeLabel)}</span>
-                  ${p.research_division ? `<span class="ps-card-division">${escapeHtml(p.research_division)}</span>` : ''}
-                  <span class="ps-card-status ${p.status}">${escapeHtml(p.status)}</span>
-                </div>
-                <h2 class="ps-card-title">${escapeHtml(p.title)}</h2>
-                ${p.short_description ? `<p class="ps-card-desc">${escapeHtml(p.short_description)}</p>` : ''}
-                ${techs.length ? `<div class="ps-card-techs">${techs.map(t => `<span class="ps-card-tech">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
-                <div class="ps-card-footer">
-                  <span class="ps-card-year">${p.year || ''}</span>
-                  ${hasWebGL
-                    ? `<span class="ps-card-launch">▶ LAUNCH EXPERIENCE</span>`
-                    : `<span class="ps-card-cta">VIEW PROJECT →</span>`
-                  }
-                </div>
-              </div>
-            </a>
-          `;
-        }).join('');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
-      // Filter handlers
-      function initFilters() {
-        // Type filters
-        document.querySelectorAll('#ps-type-filters .ps-filter-btn').forEach(btn => {
-          btn.addEventListener('click', () => {
-            document.querySelectorAll('#ps-type-filters .ps-filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            activeType = btn.dataset.type;
-            activeDivision = '';
+      function closeCleanDivisionView() {
+        const verticalView = document.getElementById('ps-vertical-view');
+        const divisionView = document.getElementById('ps-division-view');
+        if (!verticalView || !divisionView) return;
 
-            // Show/hide division sub-filters
-            const divRow = document.getElementById('ps-division-filters');
-            if (activeType === 'experiential') {
-              divRow.classList.add('visible');
-            } else {
-              divRow.classList.remove('visible');
-            }
-            // Reset division filter
-            document.querySelectorAll('#ps-division-filters .ps-division-btn').forEach(b => b.classList.remove('active'));
-            document.querySelector('#ps-division-filters .ps-division-btn[data-division=""]').classList.add('active');
+        divisionView.style.display = 'none';
+        verticalView.style.display = 'block';
 
-            loadProjects();
-          });
-        });
+        const cleanUrl = window.location.pathname;
+        window.history.pushState({}, '', cleanUrl);
 
-        // Division sub-filters
-        document.querySelectorAll('#ps-division-filters .ps-division-btn').forEach(btn => {
-          btn.addEventListener('click', () => {
-            document.querySelectorAll('#ps-division-filters .ps-division-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            activeDivision = btn.dataset.division;
-            loadProjects();
-          });
-        });
-
-        // Status filters
-        document.querySelectorAll('#ps-status-filters .ps-status-pill').forEach(btn => {
-          btn.addEventListener('click', () => {
-            document.querySelectorAll('#ps-status-filters .ps-status-pill').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            activeStatus = btn.dataset.status;
-            loadProjects();
-          });
-        });
-
-        // Search
-        const searchInput = document.getElementById('ps-search');
-        searchInput.addEventListener('input', () => {
-          clearTimeout(searchTimeout);
-          searchTimeout = setTimeout(() => {
-            searchTerm = searchInput.value.trim();
-            loadProjects();
-          }, 400);
-        });
+        // Smooth scroll back to simulation section
+        const simWrap = document.querySelector('.ps-sim-wrapper');
+        if (simWrap) simWrap.scrollIntoView({ behavior: 'smooth' });
       }
 
-      function readUrlParams() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const type = urlParams.get('type') || urlParams.get('project_type');
-        const div = urlParams.get('division') || urlParams.get('research_division');
-        const stat = urlParams.get('status');
-        const q = urlParams.get('search') || urlParams.get('q');
-
-        if (type) {
-          activeType = type;
-          const btn = document.querySelector(`#ps-type-filters .ps-filter-btn[data-type="${type}"]`);
-          if (btn) {
-            document.querySelectorAll('#ps-type-filters .ps-filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+      function checkUrlState() {
+        const params = new URLSearchParams(window.location.search);
+        const divParam = params.get('division') || params.get('research_division');
+        if (divParam) {
+          const match = divisionsData.find(d => d.divisionName.toLowerCase() === divParam.toLowerCase());
+          if (match) {
+            openCleanDivisionView(match);
           }
-          if (type === 'experiential') {
-            document.getElementById('ps-division-filters')?.classList.add('visible');
-          }
-        }
-
-        if (div) {
-          activeDivision = div;
-          if (!activeType) {
-            activeType = 'experiential';
-            document.querySelector('#ps-type-filters .ps-filter-btn[data-type="experiential"]')?.classList.add('active');
-            document.querySelector('#ps-type-filters .ps-filter-btn[data-type=""]')?.classList.remove('active');
-            document.getElementById('ps-division-filters')?.classList.add('visible');
-          }
-          const divBtns = document.querySelectorAll('#ps-division-filters .ps-division-btn');
-          divBtns.forEach(b => {
-            if (b.dataset.division.toLowerCase() === div.toLowerCase()) {
-              divBtns.forEach(x => x.classList.remove('active'));
-              b.classList.add('active');
-              activeDivision = b.dataset.division;
-            }
-          });
-        }
-
-        if (stat) {
-          activeStatus = stat;
-          const statBtn = document.querySelector(`#ps-status-filters .ps-status-pill[data-status="${stat}"]`);
-          if (statBtn) {
-            document.querySelectorAll('#ps-status-filters .ps-status-pill').forEach(b => b.classList.remove('active'));
-            statBtn.classList.add('active');
-          }
-        }
-
-        if (q) {
-          searchTerm = q;
-          const sInput = document.getElementById('ps-search');
-          if (sInput) sInput.value = q;
         }
       }
 
-      document.addEventListener('DOMContentLoaded', () => {
-        initFilters();
-        readUrlParams();
-        loadProjects();
+      // Handle browser back/forward buttons
+      window.addEventListener('popstate', (e) => {
+        const params = new URLSearchParams(window.location.search);
+        const divParam = params.get('division');
+        if (divParam) {
+          const match = divisionsData.find(d => d.divisionName.toLowerCase() === divParam.toLowerCase());
+          if (match) openCleanDivisionView(match);
+        } else {
+          const verticalView = document.getElementById('ps-vertical-view');
+          const divisionView = document.getElementById('ps-division-view');
+          if (verticalView && divisionView) {
+            divisionView.style.display = 'none';
+            verticalView.style.display = 'block';
+          }
+        }
       });
+
+      // DOM Ready
+      document.addEventListener('DOMContentLoaded', () => {
+        initSimulationHero();
+        loadAllProjects();
+
+        const backBtn = document.getElementById('btn-back-to-vertical');
+        if (backBtn) {
+          backBtn.addEventListener('click', closeCleanDivisionView);
+        }
+      });
+
     })();
   </script>
 
