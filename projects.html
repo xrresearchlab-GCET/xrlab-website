@@ -1,21 +1,505 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ongoing Projects — XR Research Lab</title>
-  <meta name="description" content="Explore ongoing AR/VR and spatial computing projects at XR Research Lab.">
+  <meta name="description" content="Explore ongoing AR/VR, spatial computing, and digital twin research projects actively being engineered at the XR Research Lab.">
+
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="images/collegelogo.png">
+  <link rel="apple-touch-icon" href="images/collegelogo.png">
+
+  <!-- Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="css/homepage.css">
+  <link rel="stylesheet" href="css/subpages.css">
+
+  <style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .op-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 28px;
+    }
+    @media (max-width: 480px) {
+      .op-grid { grid-template-columns: 1fr; }
+    }
+
+    .op-card {
+      background: rgba(14, 18, 28, 0.55);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    .op-card:hover {
+      background: rgba(20, 26, 42, 0.7);
+      border-color: rgba(96, 165, 250, 0.35);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45), 0 0 20px rgba(59, 130, 246, 0.12);
+    }
+
+    .op-card-img-wrap {
+      position: relative;
+      width: 100%;
+      height: 210px;
+      overflow: hidden;
+      background: #090d16;
+    }
+    .op-card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .op-card:hover .op-card-img {
+      transform: scale(1.04);
+    }
+    .op-card-img-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(139,92,246,0.06) 100%);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      color: rgba(255,255,255,0.25);
+    }
+
+    .op-card-body {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .op-badge-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .op-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 4px;
+    }
+    .op-badge-division {
+      color: #A78BFA;
+      background: rgba(139, 92, 246, 0.12);
+      border: 1px solid rgba(139, 92, 246, 0.25);
+    }
+    .op-badge-status {
+      margin-left: auto;
+      color: #34D399;
+      background: rgba(52, 211, 153, 0.1);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+
+    .op-card-title {
+      font-family: var(--font-display);
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--cin-text);
+      line-height: 1.25;
+      margin-bottom: 10px;
+    }
+    .op-card-title a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .op-card-title a:hover {
+      color: var(--cin-accent-bright);
+    }
+
+    .op-card-desc {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--cin-text-secondary);
+      margin-bottom: 16px;
+      flex: 1;
+    }
+
+    .op-outcome-box {
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--cin-text-dim);
+      background: rgba(255, 255, 255, 0.02);
+      border-left: 2px solid var(--cin-accent);
+      padding: 8px 12px;
+      border-radius: 0 6px 6px 0;
+      margin-bottom: 16px;
+    }
+    .op-outcome-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cin-accent-bright);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .op-tech-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+    .op-tech-pill {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(59, 130, 246, 0.06);
+      border: 1px solid rgba(59, 130, 246, 0.15);
+      color: var(--cin-accent-bright);
+    }
+
+    .op-card-footer {
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: auto;
+    }
+
+    .op-btn-details {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cin-accent-bright);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s ease;
+    }
+    .op-btn-details:hover {
+      color: #93C5FD;
+    }
+
+    .op-launch-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      border-radius: 6px;
+      color: #34D399;
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .op-launch-btn:hover {
+      background: rgba(52, 211, 153, 0.22);
+      border-color: rgba(52, 211, 153, 0.5);
+    }
+
+    .op-dev-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #FCD34D;
+      background: rgba(252, 211, 77, 0.08);
+      border: 1px solid rgba(252, 211, 77, 0.2);
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    .op-loading, .op-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 80px 24px;
+      color: var(--cin-text-dim);
+    }
+    .op-spinner {
+      width: 28px;
+      height: 28px;
+      border: 2px solid rgba(255, 255, 255, 0.08);
+      border-top-color: var(--cin-accent-bright);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin: 0 auto 16px;
+    }
+  </style>
 </head>
+
 <body>
-  <div class="cin-placeholder-page">
-    <h1>Ongoing Projects</h1>
-    <p>Active research and development projects across all XR divisions will be showcased here.</p>
-    <a href="index.html" class="back-link">← Back to Home</a>
+
+  <!-- Cinematic Transparent Navigation -->
+  <header class="cin-header" id="cin-header">
+    <nav class="cin-nav">
+      <a href="index.html" class="cin-brand" aria-label="XR Research Lab Home">
+        <span class="brand-xr">XR</span>
+        <span class="brand-sep"></span>
+        <span class="brand-text">RESEARCH LAB</span>
+      </a>
+
+      <div class="cin-nav-links" id="cin-nav-links">
+        <a href="index.html" class="cin-nav-link">Home</a>
+        <a href="about.html" class="cin-nav-link">About Us</a>
+        <a href="project-space.html" class="cin-nav-link">Project Space</a>
+
+        <div class="cin-nav-dropdown" id="cin-explore">
+          <button class="cin-nav-link cin-dropdown-trigger" aria-expanded="false" aria-haspopup="true" id="explore-trigger">
+            Explore
+            <svg class="dropdown-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="cin-dropdown" id="cin-explore-dropdown" role="menu" aria-label="Explore submenu">
+            <a href="learn.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Learn
+            </a>
+            <a href="milestones.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Milestones
+            </a>
+          </div>
+        </div>
+
+        <div class="cin-nav-dropdown cin-nav-connect" id="cin-connect">
+          <button class="cin-nav-link cin-dropdown-trigger cin-connect-trigger active" aria-expanded="false" aria-haspopup="true" id="connect-trigger">
+            Connect
+            <svg class="dropdown-chevron connect-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="cin-dropdown" id="cin-dropdown" role="menu" aria-label="Connect submenu">
+            <a href="projects.html" class="cin-dropdown-item active" role="menuitem">
+              <span class="dropdown-indicator"></span> Ongoing Projects
+            </a>
+            <a href="events.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Upcoming Events
+            </a>
+            <a href="research.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Research
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <button class="cin-hamburger" id="cin-hamburger" aria-label="Toggle Navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Mobile Navigation Overlay -->
+  <div class="cin-mobile-overlay" id="cin-mobile-overlay" aria-hidden="true">
+    <div class="cin-mobile-menu">
+      <a href="index.html" class="cin-mobile-link">Home</a>
+      <a href="about.html" class="cin-mobile-link">About Us</a>
+      <a href="project-space.html" class="cin-mobile-link">Project Space</a>
+
+      <div class="cin-mobile-accordion" id="cin-mobile-explore-wrap">
+        <button class="cin-mobile-link cin-mobile-accordion-trigger" id="mobile-explore-trigger" aria-expanded="false">
+          Explore
+          <svg class="dropdown-chevron mobile-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="cin-mobile-dropdown" id="cin-mobile-explore-dropdown">
+          <a href="learn.html" class="cin-mobile-sub">Learn</a>
+          <a href="milestones.html" class="cin-mobile-sub">Milestones</a>
+        </div>
+      </div>
+
+      <div class="cin-mobile-accordion" id="cin-mobile-connect-wrap">
+        <button class="cin-mobile-link cin-mobile-accordion-trigger cin-mobile-connect-trigger" id="mobile-connect-trigger" aria-expanded="false">
+          Connect
+          <svg class="dropdown-chevron connect-chevron mobile-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="cin-mobile-dropdown" id="cin-mobile-dropdown">
+          <a href="projects.html" class="cin-mobile-sub active">Ongoing Projects</a>
+          <a href="events.html" class="cin-mobile-sub">Upcoming Events</a>
+          <a href="research.html" class="cin-mobile-sub">Research</a>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <!-- Main Container -->
+  <main class="subpage-wrapper">
+    <div class="subpage-hero">
+      <div class="subpage-badge">
+        <span class="subpage-badge-dot"></span>
+        <span>CONNECT // ACTIVE LAB INITIATIVES</span>
+      </div>
+      <h1 class="subpage-title">ONGOING <span class="gradient-text">PROJECTS</span></h1>
+      <p class="subpage-lead">
+        Active research tracks, spatial computing prototypes, and digital twin architectures currently in development across our six multidisciplinary divisions.
+      </p>
+    </div>
+
+    <!-- Ongoing Projects Grid -->
+    <section class="subpage-section">
+      <div class="section-label-bar">
+        <span class="section-label-num">◆</span>
+        <span class="section-label-title">ACTIVE RESEARCH PIPELINE</span>
+      </div>
+
+      <div class="op-grid" id="op-container">
+        <div class="op-loading">
+          <div class="op-spinner"></div>
+          <div>Loading ongoing projects...</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="cin-footer">
+    <div class="cin-footer-inner">
+      <div class="cin-footer-brand">
+        <span class="footer-xr">XR</span> RESEARCH LAB
+      </div>
+      <div class="cin-footer-info">
+        © 2026 AR/VR RESEARCH LAB — GEETHANJALI COLLEGE OF ENGINEERING &amp; TECHNOLOGY
+      </div>
+      <div class="cin-footer-contact">
+        <a href="mailto:xrresearchlab@gcet.edu.in">xrresearchlab@gcet.edu.in</a>
+      </div>
+      <div class="cin-footer-social">
+        <a href="https://www.instagram.com/ar.vr.researchlab?igsh=MWM5bzhsd2VkNGFuag==" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
+        <a href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
+        <a href="https://youtube.com" target="_blank" rel="noopener" aria-label="YouTube">YouTube</a>
+        <a href="https://discord.com" target="_blank" rel="noopener" aria-label="Discord">Discord</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/homepage.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      function escapeHtml(s) {
+        if (!s) return '';
+        var d = document.createElement('div');
+        d.textContent = s;
+        return d.innerHTML;
+      }
+
+      async function loadOngoingProjects() {
+        var container = document.getElementById('op-container');
+        if (!container) return;
+
+        try {
+          var res = await fetch('/api/projects-public?status=ongoing');
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          var data = await res.json();
+          var projects = data.projects || [];
+
+          if (!projects.length) {
+            container.innerHTML = `
+              <div class="op-empty">
+                <h3 style="font-family:var(--font-display);font-size:20px;color:var(--cin-text);margin-bottom:8px">No Ongoing Projects Listed</h3>
+                <p style="color:var(--cin-text-dim);font-size:14px;margin-bottom:20px">All active developments are currently being synchronized or archived.</p>
+                <a href="project-space.html" class="op-btn-details" style="display:inline-flex;border:1px solid rgba(59,130,246,0.3);padding:8px 18px;border-radius:6px;background:rgba(59,130,246,0.1)">EXPLORE ALL IN PROJECT SPACE →</a>
+              </div>
+            `;
+            return;
+          }
+
+          var html = projects.map(function (p) {
+            var techs = p.technologies || [];
+            var team = p.team_members || [];
+            var detailUrl = 'project-detail.html?slug=' + encodeURIComponent(p.slug);
+
+            var imgHtml = p.concept_image_url
+              ? `<img class="op-card-img" src="${escapeHtml(p.concept_image_url)}" alt="${escapeHtml(p.title)}" loading="lazy">`
+              : `<div class="op-card-img-placeholder"><span>XR LAB // CONCEPT</span></div>`;
+
+            var techsHtml = techs.length
+              ? `<div class="op-tech-pills">${techs.slice(0, 4).map(function (t) { return `<span class="op-tech-pill">${escapeHtml(t)}</span>`; }).join('')}</div>`
+              : '';
+
+            var outcomeHtml = p.expected_outcome
+              ? `<div class="op-outcome-box"><span class="op-outcome-label">Expected Outcome</span>${escapeHtml(p.expected_outcome)}</div>`
+              : '';
+
+            var actionBtnHtml = (p.webgl_url && p.webgl_url.trim())
+              ? `<a href="${escapeHtml(p.webgl_url)}" target="_blank" rel="noopener noreferrer" class="op-launch-btn">▶ LAUNCH EXPERIENCE</a>`
+              : `<span class="op-dev-badge">🔧 IN DEVELOPMENT</span>`;
+
+            return `
+              <div class="op-card">
+                <div class="op-card-img-wrap">
+                  ${imgHtml}
+                </div>
+                <div class="op-card-body">
+                  <div class="op-badge-row">
+                    ${p.research_division ? `<span class="op-badge op-badge-division">${escapeHtml(p.research_division)}</span>` : ''}
+                    <span class="op-badge op-badge-status">ONGOING</span>
+                  </div>
+                  <h3 class="op-card-title">
+                    <a href="${detailUrl}">${escapeHtml(p.title)}</a>
+                  </h3>
+                  <p class="op-card-desc">${escapeHtml(p.short_description || p.description || '')}</p>
+                  ${outcomeHtml}
+                  ${techsHtml}
+                  <div class="op-card-footer">
+                    ${actionBtnHtml}
+                    <a href="${detailUrl}" class="op-btn-details">
+                      DETAILS
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          container.innerHTML = html;
+        } catch (err) {
+          console.error('Error fetching ongoing projects:', err);
+          container.innerHTML = `
+            <div class="op-empty">
+              <h3 style="color:#F87171;font-family:var(--font-display)">Unable to load ongoing projects</h3>
+              <p style="color:var(--cin-text-dim);margin-top:8px">Please check connection or browse via <a href="project-space.html" style="color:var(--cin-accent-bright)">Project Space</a>.</p>
+            </div>
+          `;
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', loadOngoingProjects);
+    })();
+  </script>
 </body>
 </html>

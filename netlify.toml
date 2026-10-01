@@ -45,6 +45,12 @@
   to = "/event-detail.html"
   status = 200
 
+# SPA-style redirect for project detail pages
+[[redirects]]
+  from = "/project-space/*"
+  to = "/project-detail.html"
+  status = 200
+
 # Redirect /api/* to Netlify functions
 [[redirects]]
   from = "/api/*"

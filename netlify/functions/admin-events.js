@@ -8,8 +8,6 @@
  */
 
 const { z } = require('zod');
-const { JSDOM } = require('jsdom');
-const createDOMPurify = require('dompurify');
 const {
   getSupabase, respond, respondError, handleOptions,
   validateSession, validateCSRF, checkRateLimit,
@@ -17,9 +15,27 @@ const {
   auditLog, getClientIP,
 } = require('./utils/shared');
 
-// DOMPurify for server-side HTML sanitization
-const window = new JSDOM('').window;
-const DOMPurify = createDOMPurify(window);
+// Lightweight server-side HTML sanitizer (no JSDOM dependency)
+// Strips all tags except a safe allow-list
+function sanitizeHtml(html, allowedTags = []) {
+  if (typeof html !== 'string') return '';
+  // Remove script/style tags and their contents entirely
+  let clean = html.replace(/<script[\s\S]*?<\/script>/gi, '');
+  clean = clean.replace(/<style[\s\S]*?<\/style>/gi, '');
+  // Remove event handlers (on*)
+  clean = clean.replace(/\s+on\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]*)/gi, '');
+  // Remove dangerous attributes
+  clean = clean.replace(/\s+(javascript|data|vbscript)\s*:/gi, ' blocked:');
+  if (allowedTags.length === 0) {
+    // Strip ALL tags
+    return clean.replace(/<[^>]*>/g, '');
+  }
+  // Keep only allowed tags, strip all others
+  const tagPattern = new RegExp(
+    `<(?!\/?(?:${allowedTags.join('|')})\\b)[^>]*>`, 'gi'
+  );
+  return clean.replace(tagPattern, '');
+}
 
 // ============================================
 // Zod Schemas
@@ -51,6 +67,15 @@ const EventCreateSchema = z.object({
   milestone_title: z.string().max(200).optional().default(''),
   milestone_description: z.string().max(5000).optional().default(''),
   milestone_content: z.object({}).passthrough().optional().default({}),
+  event_report_url: z.string().max(2000).optional().default(''),
+  video_url: z.string().max(2000).optional().default(''),
+  presentation_url: z.string().max(2000).optional().default(''),
+  external_article_url: z.string().max(2000).optional().default(''),
+  achievement: z.string().max(5000).optional().default(''),
+  outcome: z.string().max(5000).optional().default(''),
+  impact: z.string().max(5000).optional().default(''),
+  participant_count: z.number().int().min(0).max(100000).optional().nullable(),
+  key_takeaways: z.array(z.string().max(500)).optional().default([]),
 });
 
 const StatusUpdateSchema = z.object({
@@ -66,23 +91,28 @@ function sanitizeEventData(data) {
 
   // Sanitize text fields
   if (sanitized.title) sanitized.title = sanitizeText(sanitized.title, 200);
-  if (sanitized.short_description) sanitized.short_description = DOMPurify.sanitize(sanitizeText(sanitized.short_description, 500), { ALLOWED_TAGS: [] });
-  if (sanitized.description) sanitized.description = DOMPurify.sanitize(sanitizeText(sanitized.description, 10000), { ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'ul', 'ol', 'li', 'h3', 'h4'] });
+  if (sanitized.short_description) sanitized.short_description = sanitizeHtml(sanitizeText(sanitized.short_description, 500));
+  if (sanitized.description) sanitized.description = sanitizeHtml(sanitizeText(sanitized.description, 10000), ['p', 'br', 'strong', 'em', 'ul', 'ol', 'li', 'h3', 'h4']);
   if (sanitized.location) sanitized.location = sanitizeText(sanitized.location, 300);
   if (sanitized.venue) sanitized.venue = sanitizeText(sanitized.venue, 300);
   if (sanitized.organizer) sanitized.organizer = sanitizeText(sanitized.organizer, 200);
   if (sanitized.category) sanitized.category = sanitizeText(sanitized.category, 100);
   if (sanitized.research_division) sanitized.research_division = sanitizeText(sanitized.research_division, 100);
+  if (sanitized.milestone_title) sanitized.milestone_title = sanitizeText(sanitized.milestone_title, 200);
+  if (sanitized.milestone_description) sanitized.milestone_description = sanitizeHtml(sanitizeText(sanitized.milestone_description, 5000));
+  if (sanitized.achievement) sanitized.achievement = sanitizeHtml(sanitizeText(sanitized.achievement, 5000));
+  if (sanitized.outcome) sanitized.outcome = sanitizeHtml(sanitizeText(sanitized.outcome, 5000));
+  if (sanitized.impact) sanitized.impact = sanitizeHtml(sanitizeText(sanitized.impact, 5000));
 
   // Validate URLs
-  if (sanitized.registration_url && !validateUrl(sanitized.registration_url)) {
-    sanitized.registration_url = '';
-  }
-  if (sanitized.external_url && !validateUrl(sanitized.external_url)) {
-    sanitized.external_url = '';
-  }
-  if (sanitized.featured_image && !validateUrl(sanitized.featured_image)) {
-    sanitized.featured_image = '';
+  const urlFields = [
+    'registration_url', 'external_url', 'featured_image',
+    'event_report_url', 'video_url', 'presentation_url', 'external_article_url'
+  ];
+  for (const field of urlFields) {
+    if (sanitized[field] && !validateUrl(sanitized[field])) {
+      sanitized[field] = '';
+    }
   }
 
   // Sanitize gallery URLs
@@ -95,7 +125,7 @@ function sanitizeEventData(data) {
     sanitized.speakers = sanitized.speakers.map(s => ({
       name: sanitizeText(s.name || '', 200),
       role: sanitizeText(s.role || '', 200),
-      bio: DOMPurify.sanitize(sanitizeText(s.bio || '', 1000), { ALLOWED_TAGS: [] }),
+      bio: sanitizeHtml(sanitizeText(s.bio || '', 1000)),
     }));
   }
 
@@ -107,6 +137,11 @@ function sanitizeEventData(data) {
   // Sanitize tags
   if (Array.isArray(sanitized.tags)) {
     sanitized.tags = sanitized.tags.map(t => sanitizeText(t, 50));
+  }
+
+  // Sanitize key_takeaways
+  if (Array.isArray(sanitized.key_takeaways)) {
+    sanitized.key_takeaways = sanitized.key_takeaways.map(k => sanitizeText(k, 500));
   }
 
   return sanitized;

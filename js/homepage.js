@@ -272,14 +272,9 @@
     heroTitle.textContent = division.title;
     heroDesc.textContent = division.description;
 
-    // Update CTA link
-    if (division.projects.length > 0 && division.projects[0].demoUrl) {
-      heroCta.href = division.projects[0].demoUrl;
-      heroCta.querySelector('.cta-text').textContent = 'LAUNCH DEMO';
-    } else {
-      heroCta.href = '#';
-      heroCta.querySelector('.cta-text').textContent = 'EXPLORE PROJECTS';
-    }
+    // Update CTA link to Project Space filtered by division
+    heroCta.href = `project-space.html?type=experiential&division=${encodeURIComponent(division.title)}`;
+    heroCta.querySelector('.cta-text').textContent = 'EXPLORE IN PROJECT SPACE';
   }
 
 

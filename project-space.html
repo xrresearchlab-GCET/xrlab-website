@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Space — XR Research Lab</title>
+  <meta name="description" content="Explore research projects, simulations, and digital experiences being developed at the XR Research Lab across engineering, healthcare, entertainment, and more.">
+
+  <link rel="icon" type="image/png" href="images/collegelogo.png">
+  <link rel="apple-touch-icon" href="images/collegelogo.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/homepage.css">
+  <link rel="stylesheet" href="css/subpages.css">
+
+  <style>
+    /* ============================================ */
+    /* PROJECT SPACE — CINEMATIC STYLES             */
+    /* ============================================ */
+
+    .ps-hero {
+      position: relative;
+      padding: 140px 24px 60px;
+      text-align: center;
+      overflow: hidden;
+    }
+    .ps-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 20%, rgba(59,130,246,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .ps-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      color: var(--cin-accent-bright);
+      background: rgba(59,130,246,0.08);
+      border: 1px solid rgba(59,130,246,0.15);
+      padding: 6px 16px;
+      border-radius: 24px;
+      margin-bottom: 28px;
+    }
+    .ps-hero-badge-dot {
+      width: 6px; height: 6px;
+      background: var(--cin-accent-bright);
+      border-radius: 50%;
+      animation: psPulse 2s infinite;
+    }
+    @keyframes psPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    .ps-hero h1 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: clamp(36px, 6vw, 56px);
+      color: var(--cin-text);
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+      line-height: 1.1;
+    }
+    .ps-hero h1 span {
+      background: linear-gradient(135deg, #60A5FA 0%, #818CF8 50%, #A78BFA 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .ps-hero-lead {
+      font-family: var(--font-body);
+      font-size: 16px;
+      color: var(--cin-text-secondary);
+      max-width: 640px;
+      margin: 0 auto 36px;
+      line-height: 1.7;
+    }
+
+    /* Category Filter Tabs */
+    .ps-filters {
+      max-width: 1200px;
+      margin: 0 auto 40px;
+      padding: 0 24px;
+    }
+    .ps-filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .ps-filter-btn {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 8px 18px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(14,18,28,0.4);
+      color: var(--cin-text-dim);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .ps-filter-btn:hover {
+      background: rgba(59,130,246,0.1);
+      border-color: rgba(59,130,246,0.3);
+      color: var(--cin-accent-bright);
+    }
+    .ps-filter-btn.active {
+      background: rgba(59,130,246,0.15);
+      border-color: rgba(59,130,246,0.4);
+      color: var(--cin-accent-bright);
+      box-shadow: 0 0 12px rgba(59,130,246,0.15);
+    }
+
+    /* Division sub-filters */
+    .ps-division-row {
+      display: none;
+      justify-content: center;
+    }
+    .ps-division-row.visible {
+      display: flex;
+    }
+    .ps-division-btn {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      padding: 5px 12px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.02);
+      color: var(--cin-text-dim);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ps-division-btn:hover,
+    .ps-division-btn.active {
+      background: rgba(139,92,246,0.1);
+      border-color: rgba(139,92,246,0.3);
+      color: #A78BFA;
+    }
+
+    /* Search bar */
+    .ps-search-wrap {
+      max-width: 480px;
+      margin: 0 auto 16px;
+      position: relative;
+    }
+    .ps-search-input {
+      width: 100%;
+      padding: 10px 16px 10px 40px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      background: rgba(14,18,28,0.5);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      color: var(--cin-text);
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+    .ps-search-input::placeholder { color: var(--cin-text-dim); }
+    .ps-search-input:focus { border-color: rgba(59,130,246,0.4); }
+    .ps-search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--cin-text-dim);
+    }
+
+    /* Status filter pills */
+    .ps-status-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+    }
+    .ps-status-pill {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.02);
+      color: var(--cin-text-dim);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ps-status-pill:hover,
+    .ps-status-pill.active {
+      background: rgba(59,130,246,0.08);
+      border-color: rgba(59,130,246,0.2);
+      color: var(--cin-accent-bright);
+    }
+
+    /* Project Cards Grid */
+    .ps-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 24px;
+    }
+    @media (max-width: 480px) {
+      .ps-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Project Card */
+    .ps-card {
+      background: rgba(14,18,28,0.55);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+    }
+    .ps-card:hover {
+      background: rgba(20,26,42,0.7);
+      border-color: rgba(96,165,250,0.35);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.45), 0 0 20px rgba(59,130,246,0.12);
+    }
+    .ps-card-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+    }
+    .ps-card-img-placeholder {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(14,18,28,0.8) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ps-card-img-placeholder svg { opacity: 0.15; }
+    .ps-card-body {
+      padding: 22px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .ps-card-top-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .ps-card-type {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--cin-accent-bright);
+      background: rgba(59,130,246,0.12);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .ps-card-division {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: #A78BFA;
+      background: rgba(139,92,246,0.1);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .ps-card-status {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-left: auto;
+    }
+    .ps-card-status.concept { color: #FCD34D; background: rgba(252,211,77,0.1); }
+    .ps-card-status.ongoing { color: #34D399; background: rgba(52,211,153,0.1); }
+    .ps-card-status.prototype { color: #60A5FA; background: rgba(96,165,250,0.1); }
+    .ps-card-status.completed { color: #A78BFA; background: rgba(167,139,250,0.1); }
+    .ps-card-status.archived { color: var(--cin-text-dim); background: rgba(255,255,255,0.04); }
+
+    .ps-card-title {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 17px;
+      color: var(--cin-text);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+    .ps-card-desc {
+      font-size: 13px;
+      color: var(--cin-text-secondary);
+      line-height: 1.6;
+      margin-bottom: 14px;
+      flex: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .ps-card-techs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 14px;
+    }
+    .ps-card-tech {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      padding: 2px 7px;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: var(--cin-text-dim);
+    }
+    .ps-card-footer {
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .ps-card-year {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--cin-text-dim);
+    }
+    .ps-card-cta {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cin-accent-bright);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s ease;
+    }
+    .ps-card:hover .ps-card-cta { color: #93C5FD; }
+
+    .ps-card-launch {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(52,211,153,0.1);
+      border: 1px solid rgba(52,211,153,0.25);
+      border-radius: 5px;
+      color: #34D399;
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .ps-card-launch:hover {
+      background: rgba(52,211,153,0.2);
+      border-color: rgba(52,211,153,0.4);
+    }
+
+    /* Loading / Empty / Error */
+    .ps-loading {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 80px 0;
+      color: var(--cin-text-dim);
+    }
+    .ps-loading-spinner {
+      width: 28px; height: 28px;
+      border: 2px solid rgba(255,255,255,0.08);
+      border-top-color: var(--cin-accent-bright);
+      border-radius: 50%;
+      animation: psSpin 0.6s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes psSpin { to { transform: rotate(360deg); } }
+    .ps-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 80px 24px;
+    }
+    .ps-empty h3 {
+      font-family: var(--font-display);
+      font-size: 20px;
+      color: var(--cin-text-secondary);
+      margin-bottom: 10px;
+    }
+    .ps-empty p {
+      font-size: 14px;
+      color: var(--cin-text-dim);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .ps-card { transition: none; }
+      .ps-card:hover { transform: none; }
+      .ps-hero-badge-dot { animation: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <header class="cin-header" id="cin-header">
+    <nav class="cin-nav">
+      <a href="index.html" class="cin-brand" aria-label="XR Research Lab Home">
+        <span class="brand-xr">XR</span>
+        <span class="brand-sep"></span>
+        <span class="brand-text">RESEARCH LAB</span>
+      </a>
+
+      <div class="cin-nav-links" id="cin-nav-links">
+        <a href="index.html" class="cin-nav-link">Home</a>
+        <a href="about.html" class="cin-nav-link">About Us</a>
+        <a href="project-space.html" class="cin-nav-link active" aria-current="page">Project Space</a>
+
+        <div class="cin-nav-dropdown" id="cin-explore">
+          <button class="cin-nav-link cin-dropdown-trigger" aria-expanded="false" aria-haspopup="true" id="explore-trigger">
+            Explore
+            <svg class="dropdown-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="cin-dropdown" id="cin-explore-dropdown" role="menu" aria-label="Explore submenu">
+            <a href="learn.html" class="cin-dropdown-item" role="menuitem"><span class="dropdown-indicator"></span> Learn</a>
+            <a href="milestones.html" class="cin-dropdown-item" role="menuitem"><span class="dropdown-indicator"></span> Milestones</a>
+          </div>
+        </div>
+
+        <div class="cin-nav-dropdown cin-nav-connect" id="cin-connect">
+          <button class="cin-nav-link cin-dropdown-trigger cin-connect-trigger" aria-expanded="false" aria-haspopup="true" id="connect-trigger">
+            Connect
+            <svg class="dropdown-chevron connect-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="cin-dropdown" id="cin-dropdown" role="menu" aria-label="Connect submenu">
+            <a href="projects.html" class="cin-dropdown-item" role="menuitem"><span class="dropdown-indicator"></span> Ongoing Projects</a>
+            <a href="events.html" class="cin-dropdown-item" role="menuitem"><span class="dropdown-indicator"></span> Upcoming Events</a>
+            <a href="research.html" class="cin-dropdown-item" role="menuitem"><span class="dropdown-indicator"></span> Research</a>
+          </div>
+        </div>
+      </div>
+
+      <button class="cin-hamburger" id="cin-hamburger" aria-label="Toggle Navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Mobile Navigation Overlay -->
+  <div class="cin-mobile-overlay" id="cin-mobile-overlay" aria-hidden="true">
+    <div class="cin-mobile-menu">
+      <a href="index.html" class="cin-mobile-link">Home</a>
+      <a href="about.html" class="cin-mobile-link">About Us</a>
+      <a href="project-space.html" class="cin-mobile-link active">Project Space</a>
+      <div class="cin-mobile-accordion" id="cin-mobile-explore-wrap">
+        <button class="cin-mobile-link cin-mobile-accordion-trigger" id="mobile-explore-trigger" aria-expanded="false">
+          Explore <svg class="dropdown-chevron mobile-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="cin-mobile-dropdown" id="cin-mobile-explore-dropdown">
+          <a href="learn.html" class="cin-mobile-sub">Learn</a>
+          <a href="milestones.html" class="cin-mobile-sub">Milestones</a>
+        </div>
+      </div>
+      <div class="cin-mobile-accordion" id="cin-mobile-connect-wrap">
+        <button class="cin-mobile-link cin-mobile-accordion-trigger cin-mobile-connect-trigger" id="mobile-connect-trigger" aria-expanded="false">
+          Connect <svg class="dropdown-chevron connect-chevron mobile-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="cin-mobile-dropdown" id="cin-mobile-dropdown">
+          <a href="projects.html" class="cin-mobile-sub">Ongoing Projects</a>
+          <a href="events.html" class="cin-mobile-sub">Upcoming Events</a>
+          <a href="research.html" class="cin-mobile-sub">Research</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="ps-hero">
+    <div class="ps-hero-badge">
+      <span class="ps-hero-badge-dot"></span>
+      <span>XR RESEARCH LAB — PROJECT ARCHIVE</span>
+    </div>
+    <h1>PROJECT <span>SPACE</span></h1>
+    <p class="ps-hero-lead">
+      Explore the research, simulations, and digital experiences being developed inside the XR Research Lab across six pioneering scientific disciplines.
+    </p>
+  </section>
+
+  <!-- Filters -->
+  <div class="ps-filters" role="search" aria-label="Filter projects">
+    <!-- Search -->
+    <div class="ps-search-wrap">
+      <svg class="ps-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+      </svg>
+      <input type="search" class="ps-search-input" id="ps-search" placeholder="Search projects, technologies, divisions..." aria-label="Search projects">
+    </div>
+
+    <!-- Type filters -->
+    <div class="ps-filter-row" id="ps-type-filters">
+      <button class="ps-filter-btn active" data-type="">ALL PROJECTS</button>
+      <button class="ps-filter-btn" data-type="experiential">EXPERIENTIAL / SIMULATION</button>
+      <button class="ps-filter-btn" data-type="individual">INDIVIDUAL</button>
+      <button class="ps-filter-btn" data-type="outsourcing">OUTSOURCING</button>
+      <button class="ps-filter-btn" data-type="group">GROUP</button>
+    </div>
+
+    <!-- Division sub-filters (shown when Experiential is selected) -->
+    <div class="ps-filter-row ps-division-row" id="ps-division-filters">
+      <button class="ps-division-btn active" data-division="">All Divisions</button>
+      <button class="ps-division-btn" data-division="Engineering">Engineering</button>
+      <button class="ps-division-btn" data-division="Placements">Placements</button>
+      <button class="ps-division-btn" data-division="Healthcare">Healthcare</button>
+      <button class="ps-division-btn" data-division="Tourism & Culture">Tourism & Culture</button>
+      <button class="ps-division-btn" data-division="Entertainment">Entertainment</button>
+      <button class="ps-division-btn" data-division="Building & Infrastructure">Building & Infrastructure</button>
+    </div>
+
+    <!-- Status filters -->
+    <div class="ps-filter-row ps-status-row" id="ps-status-filters">
+      <button class="ps-status-pill active" data-status="">All Status</button>
+      <button class="ps-status-pill" data-status="ongoing">Ongoing</button>
+      <button class="ps-status-pill" data-status="concept">Concept</button>
+      <button class="ps-status-pill" data-status="prototype">Prototype</button>
+      <button class="ps-status-pill" data-status="completed">Completed</button>
+    </div>
+  </div>
+
+  <!-- Projects Grid -->
+  <div class="ps-grid" id="ps-grid">
+    <div class="ps-loading">
+      <div class="ps-loading-spinner"></div>
+      Loading projects...
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="cin-footer">
+    <div class="cin-footer-inner">
+      <div class="cin-footer-brand"><span class="footer-xr">XR</span> RESEARCH LAB</div>
+      <div class="cin-footer-info">© 2026 AR/VR RESEARCH LAB — GEETHANJALI COLLEGE OF ENGINEERING &amp; TECHNOLOGY</div>
+      <div class="cin-footer-contact"><a href="mailto:xrresearchlab@gcet.edu.in">xrresearchlab@gcet.edu.in</a></div>
+      <div class="cin-footer-social">
+        <a href="https://www.instagram.com/ar.vr.researchlab?igsh=MWM5bzhsd2VkNGFuag==" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
+        <a href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
+        <a href="https://youtube.com" target="_blank" rel="noopener" aria-label="YouTube">YouTube</a>
+        <a href="https://discord.com" target="_blank" rel="noopener" aria-label="Discord">Discord</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/homepage.js"></script>
+  <script>
+    (function() {
+      'use strict';
+
+      // State
+      let allProjects = [];
+      let activeType = '';
+      let activeDivision = '';
+      let activeStatus = '';
+      let searchTerm = '';
+      let searchTimeout = null;
+
+      const TYPE_LABELS = {
+        experiential: 'EXPERIENTIAL',
+        individual: 'INDIVIDUAL',
+        outsourcing: 'OUTSOURCING',
+        group: 'GROUP',
+      };
+
+      function escapeHtml(s) {
+        if (!s) return '';
+        const d = document.createElement('div');
+        d.textContent = s;
+        return d.innerHTML;
+      }
+
+      // Fetch projects from API
+      async function loadProjects() {
+        try {
+          const params = new URLSearchParams();
+          if (activeType) params.set('project_type', activeType);
+          if (activeDivision) params.set('research_division', activeDivision);
+          if (activeStatus) params.set('status', activeStatus);
+          if (searchTerm) params.set('search', searchTerm);
+
+          const res = await fetch('/api/projects-public?' + params.toString());
+          const data = await res.json();
+          allProjects = data.projects || [];
+          renderProjects();
+        } catch (err) {
+          document.getElementById('ps-grid').innerHTML = `
+            <div class="ps-empty">
+              <h3>Unable to Load Projects</h3>
+              <p>Please check your connection and try again.</p>
+            </div>
+          `;
+        }
+      }
+
+      function renderProjects() {
+        const grid = document.getElementById('ps-grid');
+        if (!allProjects.length) {
+          grid.innerHTML = `
+            <div class="ps-empty">
+              <h3>No Projects Found</h3>
+              <p>No projects match your current filters. Try broadening your search or selecting a different category.</p>
+            </div>
+          `;
+          return;
+        }
+
+        grid.innerHTML = allProjects.map(p => {
+          const typeLabel = TYPE_LABELS[p.project_type] || p.project_type;
+          const techs = (p.technologies || []).slice(0, 5);
+          const hasWebGL = p.webgl_url && p.webgl_url.trim();
+
+          return `
+            <a href="/project-space/${encodeURIComponent(p.slug)}" class="ps-card" aria-label="View project: ${escapeHtml(p.title)}">
+              ${p.concept_image_url
+                ? `<img class="ps-card-img" src="${escapeHtml(p.concept_image_url)}" alt="" loading="lazy">`
+                : `<div class="ps-card-img-placeholder"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>`
+              }
+              <div class="ps-card-body">
+                <div class="ps-card-top-meta">
+                  <span class="ps-card-type">${escapeHtml(typeLabel)}</span>
+                  ${p.research_division ? `<span class="ps-card-division">${escapeHtml(p.research_division)}</span>` : ''}
+                  <span class="ps-card-status ${p.status}">${escapeHtml(p.status)}</span>
+                </div>
+                <h2 class="ps-card-title">${escapeHtml(p.title)}</h2>
+                ${p.short_description ? `<p class="ps-card-desc">${escapeHtml(p.short_description)}</p>` : ''}
+                ${techs.length ? `<div class="ps-card-techs">${techs.map(t => `<span class="ps-card-tech">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+                <div class="ps-card-footer">
+                  <span class="ps-card-year">${p.year || ''}</span>
+                  ${hasWebGL
+                    ? `<span class="ps-card-launch">▶ LAUNCH EXPERIENCE</span>`
+                    : `<span class="ps-card-cta">VIEW PROJECT →</span>`
+                  }
+                </div>
+              </div>
+            </a>
+          `;
+        }).join('');
+      }
+
+      // Filter handlers
+      function initFilters() {
+        // Type filters
+        document.querySelectorAll('#ps-type-filters .ps-filter-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#ps-type-filters .ps-filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeType = btn.dataset.type;
+            activeDivision = '';
+
+            // Show/hide division sub-filters
+            const divRow = document.getElementById('ps-division-filters');
+            if (activeType === 'experiential') {
+              divRow.classList.add('visible');
+            } else {
+              divRow.classList.remove('visible');
+            }
+            // Reset division filter
+            document.querySelectorAll('#ps-division-filters .ps-division-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('#ps-division-filters .ps-division-btn[data-division=""]').classList.add('active');
+
+            loadProjects();
+          });
+        });
+
+        // Division sub-filters
+        document.querySelectorAll('#ps-division-filters .ps-division-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#ps-division-filters .ps-division-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeDivision = btn.dataset.division;
+            loadProjects();
+          });
+        });
+
+        // Status filters
+        document.querySelectorAll('#ps-status-filters .ps-status-pill').forEach(btn => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#ps-status-filters .ps-status-pill').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeStatus = btn.dataset.status;
+            loadProjects();
+          });
+        });
+
+        // Search
+        const searchInput = document.getElementById('ps-search');
+        searchInput.addEventListener('input', () => {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            searchTerm = searchInput.value.trim();
+            loadProjects();
+          }, 400);
+        });
+      }
+
+      function readUrlParams() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const type = urlParams.get('type') || urlParams.get('project_type');
+        const div = urlParams.get('division') || urlParams.get('research_division');
+        const stat = urlParams.get('status');
+        const q = urlParams.get('search') || urlParams.get('q');
+
+        if (type) {
+          activeType = type;
+          const btn = document.querySelector(`#ps-type-filters .ps-filter-btn[data-type="${type}"]`);
+          if (btn) {
+            document.querySelectorAll('#ps-type-filters .ps-filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+          }
+          if (type === 'experiential') {
+            document.getElementById('ps-division-filters')?.classList.add('visible');
+          }
+        }
+
+        if (div) {
+          activeDivision = div;
+          if (!activeType) {
+            activeType = 'experiential';
+            document.querySelector('#ps-type-filters .ps-filter-btn[data-type="experiential"]')?.classList.add('active');
+            document.querySelector('#ps-type-filters .ps-filter-btn[data-type=""]')?.classList.remove('active');
+            document.getElementById('ps-division-filters')?.classList.add('visible');
+          }
+          const divBtns = document.querySelectorAll('#ps-division-filters .ps-division-btn');
+          divBtns.forEach(b => {
+            if (b.dataset.division.toLowerCase() === div.toLowerCase()) {
+              divBtns.forEach(x => x.classList.remove('active'));
+              b.classList.add('active');
+              activeDivision = b.dataset.division;
+            }
+          });
+        }
+
+        if (stat) {
+          activeStatus = stat;
+          const statBtn = document.querySelector(`#ps-status-filters .ps-status-pill[data-status="${stat}"]`);
+          if (statBtn) {
+            document.querySelectorAll('#ps-status-filters .ps-status-pill').forEach(b => b.classList.remove('active'));
+            statBtn.classList.add('active');
+          }
+        }
+
+        if (q) {
+          searchTerm = q;
+          const sInput = document.getElementById('ps-search');
+          if (sInput) sInput.value = q;
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        initFilters();
+        readUrlParams();
+        loadProjects();
+      });
+    })();
+  </script>
+
+</body>
+</html>

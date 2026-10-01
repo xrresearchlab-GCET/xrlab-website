@@ -17,6 +17,8 @@
   let currentSection = 'dashboard';
   let allEvents = [];
   let editingEventId = null;
+  let allProjects = [];
+  let editingProjectId = null;
 
   const API = '/api';
 
@@ -26,9 +28,17 @@
   function $(sel) { return document.querySelector(sel); }
   function $$(sel) { return document.querySelectorAll(sel); }
 
-  async function apiCall(path, options = {}) {
+  async function apiCall(path, options = {}, maybeBody = null) {
     if (window.location.protocol === 'file:') {
       throw new Error('Running on file:// protocol. Netlify backend functions require a live web server or Netlify deployment.');
+    }
+    if (typeof options === 'string') {
+      options = {
+        method: options,
+        body: maybeBody ? JSON.stringify(maybeBody) : undefined,
+      };
+    } else if (options && options.body && typeof options.body !== 'string') {
+      options.body = JSON.stringify(options.body);
     }
     const headers = { 'Content-Type': 'application/json', ...options.headers };
     if (csrfToken && options.method && options.method !== 'GET') {
@@ -376,9 +386,13 @@
 
     switch (section) {
       case 'dashboard': loadDashboard(); break;
+      case 'projects': loadProjects(); break;
+      case 'create-project': loadCreateProject(); break;
       case 'events': loadEvents(); break;
       case 'create': loadCreateEvent(); break;
       case 'security': loadSecurity(); break;
+      case 'news': loadNews(); break;
+      case 'settings': loadSettings(); break;
       default: loadDashboard();
     }
   }
@@ -392,62 +406,117 @@
       <div class="admin-main-header">
         <div>
           <h1 class="admin-main-title">Dashboard</h1>
-          <p class="admin-main-subtitle">XR RESEARCH LAB // EVENT MANAGEMENT OVERVIEW</p>
+          <p class="admin-main-subtitle">XR RESEARCH LAB // SYSTEM & CONTENT OVERVIEW</p>
         </div>
-        <button class="admin-btn admin-btn-secondary admin-btn-small" onclick="window.adminApp.switchSection('create')">
-          + CREATE EVENT
-        </button>
+        <div style="display:flex;gap:8px">
+          <button class="admin-btn admin-btn-secondary admin-btn-small" onclick="window.adminApp.switchSection('create-project')">
+            + ADD PROJECT
+          </button>
+          <button class="admin-btn admin-btn-primary admin-btn-small" onclick="window.adminApp.switchSection('create')">
+            + CREATE EVENT
+          </button>
+        </div>
       </div>
       <div class="admin-stats-grid" id="dash-stats">
         <div class="admin-stat-card"><div class="admin-stat-label">LOADING</div><div class="admin-stat-value"><div class="admin-spinner"></div></div></div>
       </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:24px;margin-top:32px">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <h3 style="font-family:var(--font-display);font-size:15px;color:var(--cin-text)">Recently Added Projects</h3>
+            <button class="admin-btn admin-btn-ghost admin-btn-tiny" onclick="window.adminApp.switchSection('projects')">View All</button>
+          </div>
+          <div id="dash-recent-projects"></div>
+        </div>
+
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <h3 style="font-family:var(--font-display);font-size:15px;color:var(--cin-text)">Recently Added Events</h3>
+            <button class="admin-btn admin-btn-ghost admin-btn-tiny" onclick="window.adminApp.switchSection('events')">View All</button>
+          </div>
+          <div id="dash-recent-events"></div>
+        </div>
+      </div>
+
       <div style="margin-top:32px">
-        <h3 style="font-family:var(--font-display);font-size:16px;margin-bottom:16px;color:var(--cin-text)">Recent Events</h3>
-        <div id="dash-recent"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <h3 style="font-family:var(--font-display);font-size:15px;color:var(--cin-text)">Recently Published Milestones</h3>
+          <button class="admin-btn admin-btn-ghost admin-btn-tiny" onclick="window.adminApp.switchSection('events')">View Milestones</button>
+        </div>
+        <div id="dash-recent-milestones"></div>
       </div>
     `;
 
     try {
-      const data = await apiCall('admin-events');
-      allEvents = data.events || [];
+      const [evtData, projData] = await Promise.allSettled([
+        apiCall('admin-events'),
+        apiCall('admin-projects'),
+      ]);
+      allEvents = evtData.status === 'fulfilled' ? (evtData.value.events || []) : [];
+      allProjects = projData.status === 'fulfilled' ? (projData.value.projects || []) : [];
       renderDashStats();
-      renderRecentEvents();
+      renderDashboardPanels();
     } catch (err) {
       main.innerHTML += `<div class="admin-message error">${escapeHtml(err.message)}</div>`;
     }
   }
 
   function renderDashStats() {
-    const stats = {
-      total: allEvents.length,
-      draft: allEvents.filter(e => e.status === 'draft').length,
-      upcoming: allEvents.filter(e => e.status === 'upcoming').length,
-      ongoing: allEvents.filter(e => e.status === 'ongoing').length,
-      completed: allEvents.filter(e => e.status === 'completed').length,
-      milestones: allEvents.filter(e => e.milestone_enabled).length,
-    };
+    const totalProjects = allProjects.length;
+    const ongoingProjects = allProjects.filter(p => p.status === 'ongoing').length;
+    const completedProjects = allProjects.filter(p => p.status === 'completed').length;
+    const upcomingEvents = allEvents.filter(e => e.status === 'upcoming').length;
+    const completedEvents = allEvents.filter(e => e.status === 'completed').length;
+    const milestones = allEvents.filter(e => e.milestone_enabled).length;
+    const draftItems = allEvents.filter(e => e.status === 'draft').length + allProjects.filter(p => !p.published).length;
 
     const el = $('#dash-stats');
     if (!el) return;
     el.innerHTML = `
-      <div class="admin-stat-card"><div class="admin-stat-label">TOTAL EVENTS</div><div class="admin-stat-value accent">${stats.total}</div></div>
-      <div class="admin-stat-card"><div class="admin-stat-label">DRAFTS</div><div class="admin-stat-value">${stats.draft}</div></div>
-      <div class="admin-stat-card"><div class="admin-stat-label">UPCOMING</div><div class="admin-stat-value">${stats.upcoming}</div></div>
-      <div class="admin-stat-card"><div class="admin-stat-label">ONGOING</div><div class="admin-stat-value">${stats.ongoing}</div></div>
-      <div class="admin-stat-card"><div class="admin-stat-label">COMPLETED</div><div class="admin-stat-value">${stats.completed}</div></div>
-      <div class="admin-stat-card"><div class="admin-stat-label">MILESTONES</div><div class="admin-stat-value">${stats.milestones}</div></div>
+      <div class="admin-stat-card"><div class="admin-stat-label">TOTAL PROJECTS</div><div class="admin-stat-value accent">${totalProjects}</div></div>
+      <div class="admin-stat-card" style="border-color:rgba(52,211,153,0.25)"><div class="admin-stat-label">ONGOING PROJECTS</div><div class="admin-stat-value" style="color:#34D399">${ongoingProjects}</div></div>
+      <div class="admin-stat-card" style="border-color:rgba(167,139,250,0.25)"><div class="admin-stat-label">COMPLETED PROJECTS</div><div class="admin-stat-value" style="color:#A78BFA">${completedProjects}</div></div>
+      <div class="admin-stat-card"><div class="admin-stat-label">UPCOMING EVENTS</div><div class="admin-stat-value accent">${upcomingEvents}</div></div>
+      <div class="admin-stat-card"><div class="admin-stat-label">COMPLETED EVENTS</div><div class="admin-stat-value">${completedEvents}</div></div>
+      <div class="admin-stat-card" style="border-color:rgba(252,211,77,0.25)"><div class="admin-stat-label">MILESTONES</div><div class="admin-stat-value" style="color:#FCD34D">${milestones}</div></div>
+      <div class="admin-stat-card"><div class="admin-stat-label">DRAFT ITEMS</div><div class="admin-stat-value" style="color:var(--cin-text-dim)">${draftItems}</div></div>
     `;
   }
 
-  function renderRecentEvents() {
-    const el = $('#dash-recent');
-    if (!el) return;
-    const recent = allEvents.slice(0, 5);
-    if (!recent.length) {
-      el.innerHTML = `<div class="admin-empty-state"><h3>No events yet</h3><p>Create your first event to get started.</p></div>`;
-      return;
+  function renderDashboardPanels() {
+    // 1. Recent Projects
+    const projEl = $('#dash-recent-projects');
+    if (projEl) {
+      const recentProjects = allProjects.slice(0, 5);
+      if (!recentProjects.length) {
+        projEl.innerHTML = `<div class="admin-empty-state"><h3>No projects yet</h3><p>Create your first project.</p></div>`;
+      } else {
+        projEl.innerHTML = recentProjects.map(p => renderProjectRow(p)).join('');
+      }
     }
-    el.innerHTML = recent.map(e => renderEventRow(e)).join('');
+
+    // 2. Recent Events
+    const evtEl = $('#dash-recent-events');
+    if (evtEl) {
+      const recentEvents = allEvents.slice(0, 5);
+      if (!recentEvents.length) {
+        evtEl.innerHTML = `<div class="admin-empty-state"><h3>No events yet</h3><p>Create your first event.</p></div>`;
+      } else {
+        evtEl.innerHTML = recentEvents.map(e => renderEventRow(e)).join('');
+      }
+    }
+
+    // 3. Recent Milestones
+    const mileEl = $('#dash-recent-milestones');
+    if (mileEl) {
+      const recentMilestones = allEvents.filter(e => e.milestone_enabled).slice(0, 5);
+      if (!recentMilestones.length) {
+        mileEl.innerHTML = `<div class="admin-empty-state"><h3>No published milestones</h3><p>When events complete, choose "Publish as Milestone" to showcase them here.</p></div>`;
+      } else {
+        mileEl.innerHTML = recentMilestones.map(e => renderEventRow(e)).join('');
+      }
+    }
   }
 
   // =========================================================================
@@ -471,6 +540,7 @@
         <button class="admin-tab" data-filter="upcoming">UPCOMING</button>
         <button class="admin-tab" data-filter="ongoing">ONGOING</button>
         <button class="admin-tab" data-filter="completed">COMPLETED</button>
+        <button class="admin-tab" data-filter="milestone">★ MILESTONES</button>
         <button class="admin-tab" data-filter="cancelled">CANCELLED</button>
         <button class="admin-tab" data-filter="archived">ARCHIVED</button>
       </div>
@@ -501,7 +571,11 @@
     const el = $('#events-list');
     if (!el) return;
     let events = allEvents;
-    if (filter) events = events.filter(e => e.status === filter);
+    if (filter === 'milestone') {
+      events = events.filter(e => e.milestone_enabled);
+    } else if (filter) {
+      events = events.filter(e => e.status === filter);
+    }
 
     if (!events.length) {
       el.innerHTML = `<div class="admin-empty-state"><h3>No ${filter || ''} events</h3></div>`;
@@ -515,11 +589,15 @@
     return `
       <div class="admin-event-row">
         <div class="admin-event-info">
-          <div class="admin-event-title">${escapeHtml(e.title)}</div>
+          <div class="admin-event-title">
+            ${escapeHtml(e.title)}
+            ${e.milestone_enabled ? '<span style="font-size:10px;color:#FCD34D;background:rgba(252,211,77,0.12);padding:2px 6px;border-radius:3px;margin-left:8px;font-family:var(--font-mono)">★ MILESTONE</span>' : ''}
+          </div>
           <div class="admin-event-meta">
             <span>${formatDate(e.start_datetime)}</span>
             <span>${escapeHtml(e.category || '—')}</span>
             <span>${escapeHtml(e.location || '—')}</span>
+            ${e.event_report_url ? '<span style="color:var(--cin-accent-bright)">📄 Report Linked</span>' : ''}
           </div>
         </div>
         <span class="admin-status-badge ${e.status}">${e.status}</span>
@@ -532,6 +610,7 @@
           </button>
           ${e.status === 'draft' ? `<button class="admin-btn admin-btn-icon" onclick="window.adminApp.publishEvent('${e.id}')" title="Publish"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>` : ''}
           ${['upcoming', 'ongoing'].includes(e.status) ? `<button class="admin-btn admin-btn-icon" onclick="window.adminApp.completeEvent('${e.id}')" title="Mark Completed"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button>` : ''}
+          ${e.status === 'completed' && !e.milestone_enabled ? `<button class="admin-btn admin-btn-icon" onclick="window.adminApp.publishAsMilestone('${e.id}')" title="Publish as Milestone" style="color:#FCD34D"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>` : ''}
           <button class="admin-btn admin-btn-icon" onclick="window.adminApp.deleteEvent('${e.id}','${escapeHtml(e.title).replace(/'/g, "\\'")}')" title="Delete" style="color:#f87171">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
           </button>
@@ -685,22 +764,60 @@
 
         <!-- Milestone Settings -->
         <div class="admin-form-section">
-          <h3 class="admin-form-section-title">Milestone Settings</h3>
-          <p class="admin-form-section-desc">CONTROL WHETHER THIS EVENT APPEARS IN EXPLORE → MILESTONES</p>
+          <h3 class="admin-form-section-title">Milestone & Impact Settings</h3>
+          <p class="admin-form-section-desc">CONTROL WHETHER THIS EVENT APPEARS IN EXPLORE → MILESTONES WITH ACADEMIC OUTCOMES</p>
 
           <label class="admin-toggle">
             <input type="checkbox" id="evt-milestone" ${e.milestone_enabled ? 'checked' : ''}>
             <span>Publish to Explore Milestones</span>
           </label>
 
-          <div style="margin-top:16px" id="milestone-fields" ${e.milestone_enabled ? '' : 'style="display:none"'}>
-            <div class="admin-field">
-              <label>Milestone Title (optional override)</label>
-              <input type="text" id="evt-milestone-title" value="${escapeHtml(e.milestone_title || '')}" placeholder="Leave blank to use event title">
-            </div>
-            <div class="admin-field">
-              <label>Milestone Description</label>
-              <textarea id="evt-milestone-desc" placeholder="Summary of achievements and outcomes...">${escapeHtml(e.milestone_description || '')}</textarea>
+          <div style="margin-top:20px" id="milestone-fields" ${e.milestone_enabled ? '' : 'style="display:none"'}>
+            <div class="admin-form-grid">
+              <div class="admin-field full-width">
+                <label>Milestone Title (optional override)</label>
+                <input type="text" id="evt-milestone-title" value="${escapeHtml(e.milestone_title || '')}" placeholder="Leave blank to use event title">
+              </div>
+              <div class="admin-field full-width">
+                <label>Milestone Description / Summary</label>
+                <textarea id="evt-milestone-desc" placeholder="Summary of achievements and outcomes...">${escapeHtml(e.milestone_description || '')}</textarea>
+              </div>
+              <div class="admin-field">
+                <label>Event Report URL (Google Drive / PDF)</label>
+                <input type="url" id="evt-report-url" value="${escapeHtml(e.event_report_url || '')}" placeholder="https://drive.google.com/file/d/.../view">
+              </div>
+              <div class="admin-field">
+                <label>Participant Count</label>
+                <input type="number" id="evt-participants" min="0" value="${e.participant_count || ''}" placeholder="e.g., 150">
+              </div>
+              <div class="admin-field">
+                <label>Video Recording URL (YouTube/Vimeo)</label>
+                <input type="url" id="evt-video-url" value="${escapeHtml(e.video_url || '')}" placeholder="https://youtube.com/watch?v=...">
+              </div>
+              <div class="admin-field">
+                <label>Slide Deck URL (Google Slides/PDF)</label>
+                <input type="url" id="evt-pres-url" value="${escapeHtml(e.presentation_url || '')}" placeholder="https://docs.google.com/presentation/...">
+              </div>
+              <div class="admin-field full-width">
+                <label>External Article / Press Coverage URL</label>
+                <input type="url" id="evt-article-url" value="${escapeHtml(e.external_article_url || '')}" placeholder="https://...">
+              </div>
+              <div class="admin-field">
+                <label>Key Achievement</label>
+                <input type="text" id="evt-achievement" value="${escapeHtml(e.achievement || '')}" placeholder="e.g., 1st Prize, National Hackathon">
+              </div>
+              <div class="admin-field">
+                <label>Outcome</label>
+                <input type="text" id="evt-outcome" value="${escapeHtml(e.outcome || '')}" placeholder="e.g., 4 Research Prototypes Deployed">
+              </div>
+              <div class="admin-field full-width">
+                <label>Impact Statement</label>
+                <input type="text" id="evt-impact" value="${escapeHtml(e.impact || '')}" placeholder="e.g., Trained 120+ undergraduates in Spatial Computing">
+              </div>
+              <div class="admin-field full-width">
+                <label>Key Takeaways (one per line)</label>
+                <textarea id="evt-key-takeaways" placeholder="Spatial audio integration enhances VR immersion&#10;Unity WebGL export allows zero-install browser deployment">${(e.key_takeaways || []).join('\n')}</textarea>
+              </div>
             </div>
           </div>
         </div>
@@ -758,6 +875,15 @@
       milestone_enabled: $('#evt-milestone').checked,
       milestone_title: $('#evt-milestone-title')?.value.trim() || '',
       milestone_description: $('#evt-milestone-desc')?.value.trim() || '',
+      event_report_url: $('#evt-report-url')?.value.trim() || '',
+      video_url: $('#evt-video-url')?.value.trim() || '',
+      presentation_url: $('#evt-pres-url')?.value.trim() || '',
+      external_article_url: $('#evt-article-url')?.value.trim() || '',
+      achievement: $('#evt-achievement')?.value.trim() || '',
+      outcome: $('#evt-outcome')?.value.trim() || '',
+      impact: $('#evt-impact')?.value.trim() || '',
+      participant_count: $('#evt-participants')?.value ? parseInt($('#evt-participants').value, 10) : null,
+      key_takeaways: $('#evt-key-takeaways')?.value.split('\n').map(t => t.trim()).filter(Boolean) || [],
     };
 
     if (!eventData.title) {
@@ -870,6 +996,28 @@
         alert('Error: ' + err.message);
       }
     },
+    publishAsMilestone: async (id) => {
+      const evt = allEvents.find(e => e.id === id);
+      if (!evt) return;
+      const reportUrl = prompt('Publish this completed event as an Explore Milestone?\n\nEnter Event Report URL (Google Drive or external HTTPS link) or leave as is:', evt.event_report_url || '');
+      if (reportUrl === null) return; // User cancelled
+      try {
+        await apiCall(`admin-events?id=${id}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            ...evt,
+            milestone_enabled: true,
+            event_report_url: reportUrl.trim() || evt.event_report_url || '',
+            milestone_title: evt.milestone_title || evt.title,
+            milestone_description: evt.milestone_description || evt.short_description || evt.description,
+          }),
+        });
+        alert('Published as Milestone successfully!');
+        loadEvents('milestone');
+      } catch (err) {
+        alert('Error publishing milestone: ' + err.message);
+      }
+    },
     deleteEvent: async (id, title) => {
       if (!confirm(`Delete "${title}"? This action cannot be undone.`)) return;
       if (!confirm('Are you absolutely sure?')) return;
@@ -954,7 +1102,491 @@
   }
 
   // =========================================================================
-  // 8. INITIALIZATION
+  // 8. PROJECTS LIST
+  // =========================================================================
+  async function loadProjects(filterType) {
+    const main = $('#admin-main');
+    main.innerHTML = `
+      <div class="admin-main-header">
+        <div>
+          <h1 class="admin-main-title">Projects</h1>
+          <p class="admin-main-subtitle">MANAGE ALL PROJECTS</p>
+        </div>
+        <button class="admin-btn admin-btn-secondary admin-btn-small" onclick="window.adminApp.switchSection('create-project')">
+          + ADD PROJECT
+        </button>
+      </div>
+      <div class="admin-tabs" id="project-tabs">
+        <button class="admin-tab active" data-filter="">ALL</button>
+        <button class="admin-tab" data-filter="experiential">EXPERIENTIAL</button>
+        <button class="admin-tab" data-filter="individual">INDIVIDUAL</button>
+        <button class="admin-tab" data-filter="outsourcing">OUTSOURCING</button>
+        <button class="admin-tab" data-filter="group">GROUP</button>
+        <button class="admin-tab" data-filter="status:ongoing">ONGOING</button>
+        <button class="admin-tab" data-filter="status:completed">COMPLETED</button>
+        <button class="admin-tab" data-filter="status:prototype">PROTOTYPE</button>
+        <button class="admin-tab" data-filter="status:draft">UNPUBLISHED</button>
+      </div>
+      <div class="admin-events-list" id="projects-list">
+        <div style="text-align:center;padding:40px"><div class="admin-spinner" style="margin:0 auto"></div></div>
+      </div>
+    `;
+
+    $$('#project-tabs .admin-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        $$('#project-tabs .admin-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        renderProjectsList(tab.dataset.filter);
+      });
+    });
+
+    try {
+      const data = await apiCall('admin-projects');
+      allProjects = data.projects || [];
+      renderProjectsList(filterType || '');
+    } catch (err) {
+      $('#projects-list').innerHTML = `<div class="admin-message error">${escapeHtml(err.message)}</div>`;
+    }
+  }
+
+  function renderProjectsList(filter) {
+    const list = $('#projects-list');
+    if (!list) return;
+    let filtered = allProjects;
+    if (filter) {
+      if (filter.startsWith('status:')) {
+        const s = filter.replace('status:', '');
+        if (s === 'draft') {
+          filtered = allProjects.filter(p => !p.published);
+        } else {
+          filtered = allProjects.filter(p => p.status === s);
+        }
+      } else {
+        filtered = allProjects.filter(p => p.project_type === filter);
+      }
+    }
+    if (!filtered.length) {
+      list.innerHTML = `<div class="admin-empty-state"><h3>No projects found</h3><p>Create your first project to get started.</p></div>`;
+      return;
+    }
+    list.innerHTML = filtered.map(p => renderProjectRow(p)).join('');
+  }
+
+  function renderProjectRow(p) {
+    const statusColors = { concept: '#FCD34D', ongoing: '#34D399', prototype: '#60A5FA', completed: '#A78BFA', archived: '#6B7280' };
+    const typeLabels = { experiential: 'EXP', individual: 'IND', outsourcing: 'OUT', group: 'GRP' };
+    const color = statusColors[p.status] || '#6B7280';
+
+    return `
+      <div class="admin-event-row" data-id="${p.id}">
+        <div class="admin-event-status" style="background:${color}1A;border-color:${color}4D">
+          <span style="color:${color};font-size:10px;letter-spacing:0.1em">${(p.status || '').toUpperCase()}</span>
+        </div>
+        <div class="admin-event-info">
+          <h3 class="admin-event-name">${escapeHtml(p.title)}</h3>
+          <p class="admin-event-meta">
+            <span style="background:rgba(59,130,246,0.1);color:var(--cin-accent-bright);padding:1px 6px;border-radius:3px;font-size:9px;letter-spacing:0.08em">${typeLabels[p.project_type] || p.project_type}</span>
+            ${p.research_division ? `<span style="background:rgba(139,92,246,0.1);color:#A78BFA;padding:1px 6px;border-radius:3px;font-size:9px">${escapeHtml(p.research_division)}</span>` : ''}
+            ${p.published ? '<span style="color:#34D399">● Published</span>' : '<span style="color:var(--cin-text-dim)">○ Unpublished</span>'}
+            ${p.year ? `<span>${p.year}</span>` : ''}
+          </p>
+        </div>
+        <div class="admin-event-actions">
+          <button class="admin-btn admin-btn-ghost admin-btn-tiny" onclick="window.adminApp.editProject('${p.id}')">Edit</button>
+          <button class="admin-btn admin-btn-ghost admin-btn-tiny" style="color:${p.published ? '#F87171' : '#34D399'}" onclick="window.adminApp.toggleProjectPublish('${p.id}', ${!p.published})">${p.published ? 'Unpublish' : 'Publish'}</button>
+          <button class="admin-btn admin-btn-ghost admin-btn-tiny" style="color:#F87171" onclick="window.adminApp.deleteProject('${p.id}', '${escapeHtml(p.title)}')">Delete</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // =========================================================================
+  // 9. CREATE / EDIT PROJECT FORM
+  // =========================================================================
+  function loadCreateProject(prefillData) {
+    editingProjectId = prefillData ? prefillData.id : null;
+    const p = prefillData || {};
+    const isEdit = !!editingProjectId;
+
+    const main = $('#admin-main');
+    main.innerHTML = `
+      <div class="admin-main-header">
+        <div>
+          <h1 class="admin-main-title">${isEdit ? 'Edit Project' : 'Add New Project'}</h1>
+          <p class="admin-main-subtitle">${isEdit ? 'UPDATE PROJECT DETAILS' : 'CREATE A NEW PROJECT ENTRY'}</p>
+        </div>
+        <button class="admin-btn admin-btn-ghost admin-btn-small" onclick="window.adminApp.switchSection('projects')">← Back to Projects</button>
+      </div>
+      <form id="project-form" class="admin-form">
+        <div class="admin-message" id="project-form-msg" style="display:none"></div>
+
+        <div class="admin-form-section">
+          <h3 class="admin-form-heading">Basic Information</h3>
+          <div class="admin-form-grid">
+            <div class="admin-field full">
+              <label class="admin-label">Project Title *</label>
+              <input type="text" class="admin-input" name="title" required maxlength="200" value="${escapeHtml(p.title || '')}" placeholder="e.g., VR Campus Navigation System">
+            </div>
+            <div class="admin-field">
+              <label class="admin-label">Project Type *</label>
+              <select class="admin-input" name="project_type" required id="proj-type-select">
+                <option value="experiential" ${p.project_type === 'experiential' ? 'selected' : ''}>Experiential / Simulation Based</option>
+                <option value="individual" ${p.project_type === 'individual' ? 'selected' : ''}>Individual</option>
+                <option value="outsourcing" ${p.project_type === 'outsourcing' ? 'selected' : ''}>Outsourcing</option>
+                <option value="group" ${p.project_type === 'group' ? 'selected' : ''}>Group</option>
+              </select>
+            </div>
+            <div class="admin-field" id="proj-division-field" style="display:${(!p.project_type || p.project_type === 'experiential') ? 'block' : 'none'}">
+              <label class="admin-label">Research Division</label>
+              <select class="admin-input" name="research_division">
+                <option value="">— Select Division —</option>
+                <option value="Engineering" ${p.research_division === 'Engineering' ? 'selected' : ''}>Engineering</option>
+                <option value="Placements" ${p.research_division === 'Placements' ? 'selected' : ''}>Placements</option>
+                <option value="Healthcare" ${p.research_division === 'Healthcare' ? 'selected' : ''}>Healthcare</option>
+                <option value="Tourism & Culture" ${p.research_division === 'Tourism & Culture' ? 'selected' : ''}>Tourism & Culture</option>
+                <option value="Entertainment" ${p.research_division === 'Entertainment' ? 'selected' : ''}>Entertainment</option>
+                <option value="Building & Infrastructure" ${p.research_division === 'Building & Infrastructure' ? 'selected' : ''}>Building & Infrastructure</option>
+              </select>
+            </div>
+            <div class="admin-field">
+              <label class="admin-label">Status</label>
+              <select class="admin-input" name="status">
+                <option value="concept" ${p.status === 'concept' ? 'selected' : ''}>Concept</option>
+                <option value="ongoing" ${(p.status === 'ongoing' || !p.status) ? 'selected' : ''}>Ongoing</option>
+                <option value="prototype" ${p.status === 'prototype' ? 'selected' : ''}>Prototype</option>
+                <option value="completed" ${p.status === 'completed' ? 'selected' : ''}>Completed</option>
+                <option value="archived" ${p.status === 'archived' ? 'selected' : ''}>Archived</option>
+              </select>
+            </div>
+            <div class="admin-field">
+              <label class="admin-label">Year</label>
+              <input type="number" class="admin-input" name="year" min="2020" max="2100" value="${p.year || new Date().getFullYear()}" placeholder="2026">
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-form-section">
+          <h3 class="admin-form-heading">Descriptions</h3>
+          <div class="admin-form-grid">
+            <div class="admin-field full">
+              <label class="admin-label">Short Description</label>
+              <input type="text" class="admin-input" name="short_description" maxlength="500" value="${escapeHtml(p.short_description || '')}" placeholder="Brief summary (shown in cards)">
+            </div>
+            <div class="admin-field full">
+              <label class="admin-label">Full Description</label>
+              <textarea class="admin-input admin-textarea" name="description" maxlength="20000" placeholder="Detailed project description...">${escapeHtml(p.description || '')}</textarea>
+            </div>
+            <div class="admin-field full">
+              <label class="admin-label">Objectives</label>
+              <textarea class="admin-input admin-textarea" name="objectives" maxlength="5000" placeholder="Project objectives...">${escapeHtml(p.objectives || '')}</textarea>
+            </div>
+            <div class="admin-field full">
+              <label class="admin-label">Expected Outcome</label>
+              <textarea class="admin-input admin-textarea" name="expected_outcome" maxlength="5000" placeholder="Expected results...">${escapeHtml(p.expected_outcome || '')}</textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-form-section">
+          <h3 class="admin-form-heading">Team & Attribution</h3>
+          <div class="admin-form-grid">
+            <div class="admin-field full">
+              <label class="admin-label">Team Members (comma-separated)</label>
+              <input type="text" class="admin-input" name="team_members" value="${escapeHtml((p.team_members || []).join(', '))}" placeholder="Member 1, Member 2, Member 3">
+            </div>
+            <div class="admin-field">
+              <label class="admin-label">Mentor / Faculty</label>
+              <input type="text" class="admin-input" name="mentor" maxlength="200" value="${escapeHtml(p.mentor || '')}" placeholder="Faculty name">
+            </div>
+            <div class="admin-field" id="proj-student-field" style="display:${p.project_type === 'individual' ? 'block' : 'none'}">
+              <label class="admin-label">Student Name</label>
+              <input type="text" class="admin-input" name="student_name" maxlength="200" value="${escapeHtml(p.student_name || '')}" placeholder="Student researcher name">
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-form-section" id="proj-outsourcing-section" style="display:${p.project_type === 'outsourcing' ? 'block' : 'none'}">
+          <h3 class="admin-form-heading">Outsourcing Details</h3>
+          <div class="admin-form-grid">
+            <div class="admin-field">
+              <label class="admin-label">Client / Organization Name</label>
+              <input type="text" class="admin-input" name="client_name" maxlength="200" value="${escapeHtml(p.client_name || '')}" placeholder="Client organization">
+            </div>
+            <div class="admin-field">
+              <label class="admin-label">Show Client Publicly?</label>
+              <select class="admin-input" name="show_client_publicly">
+                <option value="false" ${!p.show_client_publicly ? 'selected' : ''}>No — Keep Private</option>
+                <option value="true" ${p.show_client_publicly ? 'selected' : ''}>Yes — Display on Site</option>
+              </select>
+            </div>
+            <div class="admin-field full">
+              <label class="admin-label">Scope</label>
+              <textarea class="admin-input admin-textarea" name="scope" maxlength="5000" placeholder="Project scope...">${escapeHtml(p.scope || '')}</textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-form-section">
+          <h3 class="admin-form-heading">Technologies & Tags</h3>
+          <div class="admin-form-grid">
+            <div class="admin-field full">
+              <label class="admin-label">Technologies (comma-separated)</label>
+              <input type="text" class="admin-input" name="technologies" value="${escapeHtml((p.technologies || []).join(', '))}" placeholder="Unity, C#, WebGL, Three.js">
+            </div>
+            <div class="admin-field full">
+              <label class="admin-label">Tags (comma-separated)</label>
+              <input type="text" class="admin-input" name="tags" value="${escapeHtml((p.tags || []).join(', '))}" placeholder="VR, Medical, Simulation">
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-form-section">
+          <h3 class="admin-form-heading">Resource URLs</h3>
+          <p style="font-size:12px;color:var(--cin-text-dim);margin-bottom:16px">External links only. Supabase stores URLs — not the files themselves.</p>
+          <div class="admin-form-grid">
+            <div class="admin-field">
+              <label class="admin-label">Concept / Cover Image URL</label>
+              <input type="url" class="admin-input" name="concept_image_url" value="${escapeHtml(p.concept_image_url || '')}" placeholder="https://...">
+            </div>
+            <div class="admin-field">
+              <label class="admin-label">WebGL Build URL</label>
+              <input type="url" class="admin-input" name="webgl_url" value="${escapeHtml(p.webgl_url || '')}" placeholder="https://... or relative path">
+            </div>
+            <div class="admin-field">
+              <label class="admin-label">Demo Video URL</label>
+              <input type="url" class="admin-input" name="demo_video_url" value="${escapeHtml(p.demo_video_url || '')}" placeholder="https://youtube.com/...">
+            </div>
+            <div class="admin-field">
+              <label class="admin-label">GitHub URL</label>
+              <input type="url" class="admin-input" name="github_url" value="${escapeHtml(p.github_url || '')}" placeholder="https://github.com/...">
+            </div>
+            <div class="admin-field">
+              <label class="admin-label">Documentation URL</label>
+              <input type="url" class="admin-input" name="documentation_url" value="${escapeHtml(p.documentation_url || '')}" placeholder="https://...">
+            </div>
+            <div class="admin-field">
+              <label class="admin-label">Report URL</label>
+              <input type="url" class="admin-input" name="report_url" value="${escapeHtml(p.report_url || '')}" placeholder="https://drive.google.com/...">
+            </div>
+            <div class="admin-field">
+              <label class="admin-label">Additional Resource URL</label>
+              <input type="url" class="admin-input" name="additional_resource_url" value="${escapeHtml(p.additional_resource_url || '')}" placeholder="https://...">
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-form-section">
+          <h3 class="admin-form-heading">Publishing</h3>
+          <div class="admin-form-grid">
+            <div class="admin-field">
+              <label class="admin-label">Publish to Project Space?</label>
+              <select class="admin-input" name="published">
+                <option value="false" ${!p.published ? 'selected' : ''}>No — Save as Draft</option>
+                <option value="true" ${p.published ? 'selected' : ''}>Yes — Publish Now</option>
+              </select>
+            </div>
+            <div class="admin-field">
+              <label class="admin-label">Featured Project?</label>
+              <select class="admin-input" name="featured">
+                <option value="false" ${!p.featured ? 'selected' : ''}>No</option>
+                <option value="true" ${p.featured ? 'selected' : ''}>Yes — Show First</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-form-actions">
+          <button type="submit" class="admin-btn admin-btn-primary">${isEdit ? 'UPDATE PROJECT' : 'CREATE PROJECT'}</button>
+          <button type="button" class="admin-btn admin-btn-ghost" onclick="window.adminApp.switchSection('projects')">CANCEL</button>
+        </div>
+      </form>
+    `;
+
+    // Toggle conditional fields based on project type
+    const typeSelect = document.getElementById('proj-type-select');
+    typeSelect.addEventListener('change', () => {
+      const t = typeSelect.value;
+      document.getElementById('proj-division-field').style.display = t === 'experiential' ? 'block' : 'none';
+      document.getElementById('proj-student-field').style.display = t === 'individual' ? 'block' : 'none';
+      document.getElementById('proj-outsourcing-section').style.display = t === 'outsourcing' ? 'block' : 'none';
+    });
+
+    // Form submit
+    document.getElementById('project-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById('project-form-msg');
+
+      const formData = new FormData(e.target);
+      const body = {};
+      for (const [key, val] of formData.entries()) {
+        body[key] = val;
+      }
+
+      // Parse arrays
+      body.technologies = body.technologies ? body.technologies.split(',').map(s => s.trim()).filter(Boolean) : [];
+      body.tags = body.tags ? body.tags.split(',').map(s => s.trim()).filter(Boolean) : [];
+      body.team_members = body.team_members ? body.team_members.split(',').map(s => s.trim()).filter(Boolean) : [];
+
+      // Parse booleans
+      body.published = body.published === 'true';
+      body.featured = body.featured === 'true';
+      body.show_client_publicly = body.show_client_publicly === 'true';
+
+      // Parse year
+      body.year = body.year ? parseInt(body.year) : null;
+
+      try {
+        msg.style.display = 'none';
+        const submitBtn = e.target.querySelector('[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = isEdit ? 'UPDATING...' : 'CREATING...';
+
+        let result;
+        if (isEdit) {
+          result = await apiCall('admin-projects?id=' + editingProjectId, 'PUT', body);
+        } else {
+          result = await apiCall('admin-projects', 'POST', body);
+        }
+
+        msg.className = 'admin-message success';
+        msg.textContent = isEdit ? 'Project updated successfully!' : 'Project created successfully!';
+        msg.style.display = '';
+
+        submitBtn.disabled = false;
+        submitBtn.textContent = isEdit ? 'UPDATE PROJECT' : 'CREATE PROJECT';
+
+        setTimeout(() => loadProjects(), 1500);
+      } catch (err) {
+        msg.className = 'admin-message error';
+        msg.textContent = err.message || 'An error occurred';
+        msg.style.display = '';
+        const submitBtn = e.target.querySelector('[type="submit"]');
+        submitBtn.disabled = false;
+        submitBtn.textContent = isEdit ? 'UPDATE PROJECT' : 'CREATE PROJECT';
+      }
+    });
+  }
+
+  // Edit project
+  window.adminApp = window.adminApp || {};
+  window.adminApp.editProject = async function(id) {
+    try {
+      const data = await apiCall('admin-projects?id=' + id);
+      loadCreateProject(data.project);
+    } catch (err) {
+      alert('Error loading project: ' + err.message);
+    }
+  };
+
+  // Toggle publish
+  window.adminApp.toggleProjectPublish = async function(id, publish) {
+    try {
+      await apiCall('admin-projects', 'POST', { _action: 'update_status', id, status: allProjects.find(p => p.id === id)?.status || 'ongoing', published: publish });
+      loadProjects();
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+  };
+
+  // Delete project
+  window.adminApp.deleteProject = async function(id, title) {
+    if (!confirm(`Delete project "${title}"? This action cannot be undone.`)) return;
+    try {
+      await apiCall('admin-projects?id=' + id, 'DELETE');
+      loadProjects();
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+  };
+
+  // =========================================================================
+  // 10. NEWS & SETTINGS
+  // =========================================================================
+  function loadNews() {
+    const main = $('#admin-main');
+    main.innerHTML = `
+      <div class="admin-main-header">
+        <div>
+          <h1 class="admin-main-title">Lab News & Announcements</h1>
+          <p class="admin-main-subtitle">RESEARCH BROADCASTS & MEDIA HIGHLIGHTS</p>
+        </div>
+      </div>
+      <div class="admin-security-grid">
+        <div class="admin-security-card" style="grid-column: 1 / -1">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <h3 style="margin:0">Active News Integration</h3>
+            <span class="admin-status-badge upcoming">Connected</span>
+          </div>
+          <p style="color:var(--cin-text-secondary);font-size:13px;line-height:1.6;margin-bottom:20px">
+            Lab news and media announcements are synchronized directly with events and academic milestones. When an event is marked with category "Seminar", "Conference", "Research Presentation", or published to Milestones, it is automatically featured across public feeds.
+          </p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:16px">
+            <div style="background:rgba(255,255,255,0.02);border:1px solid var(--cin-border);border-radius:8px;padding:16px">
+              <div style="font-family:var(--font-mono);font-size:11px;color:var(--cin-accent-bright);margin-bottom:6px">PUBLISH ANNOUNCEMENT</div>
+              <p style="font-size:12px;color:var(--cin-text-secondary);margin-bottom:12px">Post an event or research milestone with category "Research Presentation" or "Webinar".</p>
+              <button class="admin-btn admin-btn-secondary admin-btn-tiny" onclick="window.adminApp.switchSection('create')">+ Post Announcement</button>
+            </div>
+            <div style="background:rgba(255,255,255,0.02);border:1px solid var(--cin-border);border-radius:8px;padding:16px">
+              <div style="font-family:var(--font-mono);font-size:11px;color:#34D399;margin-bottom:6px">PRESS & ARTICLES</div>
+              <p style="font-size:12px;color:var(--cin-text-secondary);margin-bottom:12px">Attach external news/press URLs to project detail pages and milestone records.</p>
+              <button class="admin-btn admin-btn-secondary admin-btn-tiny" onclick="window.adminApp.switchSection('projects')">Manage Projects</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function loadSettings() {
+    const main = $('#admin-main');
+    main.innerHTML = `
+      <div class="admin-main-header">
+        <div>
+          <h1 class="admin-main-title">Lab Settings</h1>
+          <p class="admin-main-subtitle">SYSTEM STATUS, ARCHITECTURE & CONFIGURATION</p>
+        </div>
+      </div>
+      <div class="admin-security-grid">
+        <div class="admin-security-card">
+          <h3>Architecture & Hosting</h3>
+          <div style="font-size:13px;color:var(--cin-text-secondary);line-height:1.8">
+            <div><strong>Hosting:</strong> Netlify CDN + Edge Network</div>
+            <div><strong>Serverless Functions:</strong> Netlify Functions (Node.js 18+)</div>
+            <div><strong>Database:</strong> Supabase PostgreSQL (Text & URLs only)</div>
+            <div><strong>Asset Storage:</strong> Google Drive / GitHub / YouTube</div>
+            <div><strong>Bot Mitigation:</strong> Cloudflare Turnstile</div>
+            <div><strong>Email Dispatch:</strong> Resend API</div>
+          </div>
+        </div>
+
+        <div class="admin-security-card">
+          <h3>Database & Storage Policy</h3>
+          <div style="font-size:13px;color:var(--cin-text-secondary);line-height:1.8">
+            <div><strong>Supabase Quota Protection:</strong> Strict zero-binary storage policy.</div>
+            <div><strong>Build Deliverables:</strong> WebGL builds served from external HTTPS or GitHub Pages.</div>
+            <div><strong>Event Reports:</strong> Linked via Google Drive or academic archives.</div>
+            <div><strong>Videos:</strong> Embedded via YouTube / Vimeo.</div>
+          </div>
+        </div>
+
+        <div class="admin-security-card" style="grid-column: 1 / -1">
+          <h3>Required Environment Variables (Netlify)</h3>
+          <div style="font-family:var(--font-mono);font-size:12px;background:rgba(0,0,0,0.4);border:1px solid var(--cin-border);border-radius:8px;padding:16px;color:var(--cin-text-secondary);line-height:1.8">
+            <div><span style="color:var(--cin-accent-bright)">ADMIN_EMAIL</span> — Administrator email for OTP delivery</div>
+            <div><span style="color:var(--cin-accent-bright)">ADMIN_PASSWORD_HASH</span> — Bcrypt hash of admin master password</div>
+            <div><span style="color:var(--cin-accent-bright)">SUPABASE_URL</span> — Supabase project API endpoint</div>
+            <div><span style="color:var(--cin-accent-bright)">SUPABASE_SERVICE_ROLE_KEY</span> — Supabase Service Role secret key</div>
+            <div><span style="color:var(--cin-accent-bright)">JWT_SECRET</span> — High-entropy secret for admin session tokens</div>
+            <div><span style="color:var(--cin-accent-bright)">TURNSTILE_SECRET_KEY</span> — Cloudflare Turnstile verification secret</div>
+            <div><span style="color:var(--cin-accent-bright)">RESEND_API_KEY</span> — Resend transactional email API token</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // =========================================================================
+  // 11. INITIALIZATION
   // =========================================================================
   document.addEventListener('DOMContentLoaded', () => {
     checkEnvironment();

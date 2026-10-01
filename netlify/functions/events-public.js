@@ -17,7 +17,7 @@ exports.handler = async (event) => {
 
     let query = supabase
       .from('events')
-      .select('id, title, slug, short_description, description, category, research_division, start_datetime, end_datetime, location, venue, registration_url, external_url, organizer, status, featured_image, gallery, speakers, highlights, tags, milestone_enabled, milestone_title, milestone_description, milestone_content, published_at, completed_at');
+      .select('id, title, slug, short_description, description, category, research_division, start_datetime, end_datetime, location, venue, registration_url, external_url, organizer, status, featured_image, gallery, speakers, highlights, tags, milestone_enabled, milestone_title, milestone_description, milestone_content, event_report_url, video_url, presentation_url, external_article_url, participant_count, achievement, outcome, impact, key_takeaways, published_at, completed_at');
 
     // Single event by slug
     if (slug) {

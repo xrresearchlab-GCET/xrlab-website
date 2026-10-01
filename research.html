@@ -1,21 +1,174 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Research — XR Research Lab</title>
-  <meta name="description" content="Published research, papers, and academic contributions from XR Research Lab.">
+  <title>Research Publications & Papers — XR Research Lab</title>
+  <meta name="description" content="Published research, papers, and academic contributions in spatial computing, AR/VR, and digital twins from the XR Research Lab.">
+
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="images/collegelogo.png">
+  <link rel="apple-touch-icon" href="images/collegelogo.png">
+
+  <!-- Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="css/homepage.css">
+  <link rel="stylesheet" href="css/subpages.css">
 </head>
+
 <body>
-  <div class="cin-placeholder-page">
-    <h1>Research</h1>
-    <p>Research publications, findings, and academic contributions from the XR Research Lab will be featured here.</p>
-    <a href="index.html" class="back-link">← Back to Home</a>
+
+  <!-- Cinematic Transparent Navigation -->
+  <header class="cin-header" id="cin-header">
+    <nav class="cin-nav">
+      <a href="index.html" class="cin-brand" aria-label="XR Research Lab Home">
+        <span class="brand-xr">XR</span>
+        <span class="brand-sep"></span>
+        <span class="brand-text">RESEARCH LAB</span>
+      </a>
+
+      <div class="cin-nav-links" id="cin-nav-links">
+        <a href="index.html" class="cin-nav-link">Home</a>
+        <a href="about.html" class="cin-nav-link">About Us</a>
+        <a href="project-space.html" class="cin-nav-link">Project Space</a>
+
+        <div class="cin-nav-dropdown" id="cin-explore">
+          <button class="cin-nav-link cin-dropdown-trigger" aria-expanded="false" aria-haspopup="true" id="explore-trigger">
+            Explore
+            <svg class="dropdown-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="cin-dropdown" id="cin-explore-dropdown" role="menu" aria-label="Explore submenu">
+            <a href="learn.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Learn
+            </a>
+            <a href="milestones.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Milestones
+            </a>
+          </div>
+        </div>
+
+        <div class="cin-nav-dropdown cin-nav-connect" id="cin-connect">
+          <button class="cin-nav-link cin-dropdown-trigger cin-connect-trigger active" aria-expanded="false" aria-haspopup="true" id="connect-trigger">
+            Connect
+            <svg class="dropdown-chevron connect-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="cin-dropdown" id="cin-dropdown" role="menu" aria-label="Connect submenu">
+            <a href="projects.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Ongoing Projects
+            </a>
+            <a href="events.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Upcoming Events
+            </a>
+            <a href="research.html" class="cin-dropdown-item active" role="menuitem">
+              <span class="dropdown-indicator"></span> Research
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <button class="cin-hamburger" id="cin-hamburger" aria-label="Toggle Navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Mobile Navigation Overlay -->
+  <div class="cin-mobile-overlay" id="cin-mobile-overlay" aria-hidden="true">
+    <div class="cin-mobile-menu">
+      <a href="index.html" class="cin-mobile-link">Home</a>
+      <a href="about.html" class="cin-mobile-link">About Us</a>
+      <a href="project-space.html" class="cin-mobile-link">Project Space</a>
+
+      <div class="cin-mobile-accordion" id="cin-mobile-explore-wrap">
+        <button class="cin-mobile-link cin-mobile-accordion-trigger" id="mobile-explore-trigger" aria-expanded="false">
+          Explore
+          <svg class="dropdown-chevron mobile-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="cin-mobile-dropdown" id="cin-mobile-explore-dropdown">
+          <a href="learn.html" class="cin-mobile-sub">Learn</a>
+          <a href="milestones.html" class="cin-mobile-sub">Milestones</a>
+        </div>
+      </div>
+
+      <div class="cin-mobile-accordion" id="cin-mobile-connect-wrap">
+        <button class="cin-mobile-link cin-mobile-accordion-trigger cin-mobile-connect-trigger" id="mobile-connect-trigger" aria-expanded="false">
+          Connect
+          <svg class="dropdown-chevron connect-chevron mobile-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="cin-mobile-dropdown" id="cin-mobile-dropdown">
+          <a href="projects.html" class="cin-mobile-sub">Ongoing Projects</a>
+          <a href="events.html" class="cin-mobile-sub">Upcoming Events</a>
+          <a href="research.html" class="cin-mobile-sub active">Research</a>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <!-- Main Container -->
+  <main class="subpage-wrapper">
+    <div class="subpage-hero">
+      <div class="subpage-badge">
+        <span class="subpage-badge-dot"></span>
+        <span>ACADEMIC CONTRIBUTIONS // PUBLICATIONS</span>
+      </div>
+      <h1 class="subpage-title">RESEARCH & <span class="gradient-text">PUBLICATIONS</span></h1>
+      <p class="subpage-lead">
+        Peer-reviewed publications, patent disclosures, conference papers, and theoretical research findings produced by the faculty and researchers of the XR Research Lab.
+      </p>
+    </div>
+
+    <section class="subpage-section">
+      <div class="section-label-bar">
+        <span class="section-label-num">◆</span>
+        <span class="section-label-title">ARCHIVE IN PROGRESS</span>
+      </div>
+
+      <div style="background:rgba(14,18,28,0.55);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:48px 24px;text-align:center;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">
+        <h3 style="font-family:var(--font-display);font-size:20px;color:var(--cin-text);margin-bottom:12px">Publications & Papers Under Archival</h3>
+        <p style="color:var(--cin-text-secondary);font-size:14px;max-width:540px;margin:0 auto 28px;line-height:1.7">
+          Our upcoming peer-reviewed papers on spatial computing interfaces, surgical VR accuracy, and BIM digital twins are currently being indexed into the laboratory's public research repository.
+        </p>
+        <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
+          <a href="project-space.html" style="font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#fff;background:var(--cin-accent);padding:10px 22px;border-radius:6px;text-decoration:none">EXPLORE PROJECT SPACE</a>
+          <a href="index.html" style="font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--cin-text-secondary);background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:10px 22px;border-radius:6px;text-decoration:none">BACK TO HOME</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="cin-footer">
+    <div class="cin-footer-inner">
+      <div class="cin-footer-brand">
+        <span class="footer-xr">XR</span> RESEARCH LAB
+      </div>
+      <div class="cin-footer-info">
+        © 2026 AR/VR RESEARCH LAB — GEETHANJALI COLLEGE OF ENGINEERING &amp; TECHNOLOGY
+      </div>
+      <div class="cin-footer-contact">
+        <a href="mailto:xrresearchlab@gcet.edu.in">xrresearchlab@gcet.edu.in</a>
+      </div>
+      <div class="cin-footer-social">
+        <a href="https://www.instagram.com/ar.vr.researchlab?igsh=MWM5bzhsd2VkNGFuag==" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
+        <a href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
+        <a href="https://youtube.com" target="_blank" rel="noopener" aria-label="YouTube">YouTube</a>
+        <a href="https://discord.com" target="_blank" rel="noopener" aria-label="Discord">Discord</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/homepage.js"></script>
 </body>
 </html>
