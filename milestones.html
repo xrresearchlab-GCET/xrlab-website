@@ -255,42 +255,49 @@
 
       async function loadMilestones() {
         try {
-          var res = await fetch('/api/events-public?milestone=true');
+          var res = await fetch('/api/milestones-public');
           var data = await res.json();
-          var events = data.events || [];
+          var milestones = data.milestones || [];
 
-          if (!events.length) return;
+          // Fallback to events milestone query if no direct milestones found
+          if (!milestones.length) {
+            var fallbackRes = await fetch('/api/events-public?milestone=true');
+            var fallbackData = await fallbackRes.json();
+            milestones = fallbackData.events || [];
+          }
+
+          if (!milestones.length) return;
 
           var section = document.getElementById('dynamic-milestones-section');
           var container = document.getElementById('dynamic-milestones');
           if (!section || !container) return;
 
-          var html = events.map(function(e) {
-            var year = e.completed_at ? new Date(e.completed_at).getFullYear() : (e.start_datetime ? new Date(e.start_datetime).getFullYear() : '');
-            var tag = escapeHtml(e.category || e.research_division || 'EVENT MILESTONE');
+          var html = milestones.map(function(e) {
+            var year = e.completed_date ? new Date(e.completed_date).getFullYear() : (e.completed_at ? new Date(e.completed_at).getFullYear() : (e.start_datetime ? new Date(e.start_datetime).getFullYear() : ''));
+            var tag = escapeHtml(e.category || e.research_division || (e.milestone_type ? e.milestone_type.replace(/_/g, ' ') : 'COMPLETED EVENT'));
             var title = escapeHtml(e.milestone_title || e.title);
-            var desc = escapeHtml(e.milestone_description || e.short_description || e.description || '');
-            var highlights = e.highlights || [];
+            var desc = escapeHtml(e.short_description || e.milestone_description || e.description || '');
+            var takeaways = e.key_takeaways || e.highlights || [];
 
             var actionLinks = [];
             if (e.event_report_url) {
               actionLinks.push('<a href="' + escapeHtml(e.event_report_url) + '" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.3);border-radius:6px;color:var(--cin-accent-bright);font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;transition:all 0.2s ease;">📄 VIEW EVENT REPORT</a>');
             }
             if (e.video_url) {
-              actionLinks.push('<a href="' + escapeHtml(e.video_url) + '" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:6px;color:#F87171;font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;">🎬 VIDEO</a>');
+              actionLinks.push('<a href="' + escapeHtml(e.video_url) + '" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:6px;color:#F87171;font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;">🎬 VIDEO RECORDING</a>');
             }
             if (e.presentation_url) {
-              actionLinks.push('<a href="' + escapeHtml(e.presentation_url) + '" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);border-radius:6px;color:#A78BFA;font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;">📊 PRESENTATION</a>');
+              actionLinks.push('<a href="' + escapeHtml(e.presentation_url) + '" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);border-radius:6px;color:#A78BFA;font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;">📊 SLIDE DECK</a>');
             }
             if (e.external_article_url) {
               actionLinks.push('<a href="' + escapeHtml(e.external_article_url) + '" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);border-radius:6px;color:#34D399;font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;">🔗 NEWS ARTICLE</a>');
             }
 
             var extraDetails = '';
-            if (e.achievement) extraDetails += '<div style="margin-top:8px;font-size:13px;color:var(--cin-text-secondary)"><strong style="color:var(--cin-text)">Achievement:</strong> ' + escapeHtml(e.achievement) + '</div>';
+            if (e.achievement) extraDetails += '<div style="margin-top:8px;font-size:13px;color:var(--cin-text-secondary)"><strong style="color:var(--cin-text)">Achievement / Award:</strong> ' + escapeHtml(e.achievement) + '</div>';
             if (e.outcome) extraDetails += '<div style="margin-top:4px;font-size:13px;color:var(--cin-text-secondary)"><strong style="color:var(--cin-text)">Outcome:</strong> ' + escapeHtml(e.outcome) + '</div>';
             if (e.impact) extraDetails += '<div style="margin-top:4px;font-size:13px;color:var(--cin-text-secondary)"><strong style="color:var(--cin-text)">Impact:</strong> ' + escapeHtml(e.impact) + '</div>';
-            if (e.participant_count) extraDetails += '<div style="margin-top:6px;font-family:var(--font-mono);font-size:11px;color:var(--cin-accent-bright)">👥 ' + e.participant_count + ' PARTICIPANTS</div>';
+            if (e.participant_count) extraDetails += '<div style="margin-top:6px;font-family:var(--font-mono);font-size:11px;color:var(--cin-accent-bright)">👥 ' + e.participant_count + ' ATTENDEES / PARTICIPANTS</div>';
 
             return '<div class="timeline-item">' +
               '<div class="timeline-marker">' +
@@ -302,7 +309,7 @@
                 '<h2 class="timeline-title">' + title + '</h2>' +
                 '<p class="timeline-text">' + desc + '</p>' +
                 extraDetails +
-                (highlights.length ? '<ul style="margin-top:10px;padding-left:18px;color:var(--cin-text-dim);font-size:13px">' + highlights.map(function(h) { return '<li style="margin-bottom:3px">' + escapeHtml(h) + '</li>'; }).join('') + '</ul>' : '') +
+                (takeaways.length ? '<div style="margin-top:10px;font-size:12px;font-weight:600;color:var(--cin-text);text-transform:uppercase;letter-spacing:0.05em">Key Takeaways &amp; Findings:</div><ul style="margin-top:4px;padding-left:18px;color:var(--cin-text-dim);font-size:13px">' + takeaways.map(function(h) { return '<li style="margin-bottom:3px">' + escapeHtml(h) + '</li>'; }).join('') + '</ul>' : '') +
                 (actionLinks.length ? '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)">' + actionLinks.join('') + '</div>' : '') +
               '</div>' +
             '</div>';

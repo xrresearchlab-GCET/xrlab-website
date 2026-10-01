@@ -19,6 +19,8 @@
   let editingEventId = null;
   let allProjects = [];
   let editingProjectId = null;
+  let allMilestones = [];
+  let editingMilestoneId = null;
 
   const API = '/api';
 
@@ -392,6 +394,8 @@
       case 'create-project': loadCreateProject(); break;
       case 'events': loadEvents(); break;
       case 'create': loadCreateEvent(); break;
+      case 'milestones': loadMilestones(); break;
+      case 'create-milestone': loadCreateMilestone(); break;
       case 'security': loadSecurity(); break;
       case 'news': loadNews(); break;
       case 'settings': loadSettings(); break;
@@ -413,6 +417,9 @@
         <div style="display:flex;gap:8px">
           <button class="admin-btn admin-btn-secondary admin-btn-small" onclick="window.adminApp.switchSection('create-project')">
             + ADD PROJECT
+          </button>
+          <button class="admin-btn admin-btn-secondary admin-btn-small" onclick="window.adminApp.switchSection('create-milestone')">
+            + ADD MILESTONE
           </button>
           <button class="admin-btn admin-btn-primary admin-btn-small" onclick="window.adminApp.switchSection('create')">
             + CREATE EVENT
@@ -443,20 +450,22 @@
 
       <div style="margin-top:32px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-          <h3 style="font-family:var(--font-display);font-size:15px;color:var(--cin-text)">Recently Published Milestones</h3>
-          <button class="admin-btn admin-btn-ghost admin-btn-tiny" onclick="window.adminApp.switchSection('events')">View Milestones</button>
+          <h3 style="font-family:var(--font-display);font-size:15px;color:var(--cin-text)">Recently Completed Event Milestones</h3>
+          <button class="admin-btn admin-btn-ghost admin-btn-tiny" onclick="window.adminApp.switchSection('milestones')">View All Milestones</button>
         </div>
         <div id="dash-recent-milestones"></div>
       </div>
     `;
 
     try {
-      const [evtData, projData] = await Promise.allSettled([
+      const [evtData, projData, mileData] = await Promise.allSettled([
         apiCall('admin-events'),
         apiCall('admin-projects'),
+        apiCall('admin-milestones'),
       ]);
       allEvents = evtData.status === 'fulfilled' ? (evtData.value.events || []) : [];
       allProjects = projData.status === 'fulfilled' ? (projData.value.projects || []) : [];
+      allMilestones = mileData.status === 'fulfilled' ? (mileData.value.milestones || []) : [];
       renderDashStats();
       renderDashboardPanels();
     } catch (err) {
@@ -470,8 +479,10 @@
     const completedProjects = allProjects.filter(p => p.status === 'completed').length;
     const upcomingEvents = allEvents.filter(e => e.status === 'upcoming').length;
     const completedEvents = allEvents.filter(e => e.status === 'completed').length;
-    const milestones = allEvents.filter(e => e.milestone_enabled).length;
-    const draftItems = allEvents.filter(e => e.status === 'draft').length + allProjects.filter(p => !p.published).length;
+    const totalMilestones = allMilestones.length;
+    const draftItems = allEvents.filter(e => e.status === 'draft').length + 
+                       allProjects.filter(p => !p.published).length + 
+                       allMilestones.filter(m => !m.published).length;
 
     const el = $('#dash-stats');
     if (!el) return;
@@ -481,7 +492,7 @@
       <div class="admin-stat-card" style="border-color:rgba(167,139,250,0.25)"><div class="admin-stat-label">COMPLETED PROJECTS</div><div class="admin-stat-value" style="color:#A78BFA">${completedProjects}</div></div>
       <div class="admin-stat-card"><div class="admin-stat-label">UPCOMING EVENTS</div><div class="admin-stat-value accent">${upcomingEvents}</div></div>
       <div class="admin-stat-card"><div class="admin-stat-label">COMPLETED EVENTS</div><div class="admin-stat-value">${completedEvents}</div></div>
-      <div class="admin-stat-card" style="border-color:rgba(252,211,77,0.25)"><div class="admin-stat-label">MILESTONES</div><div class="admin-stat-value" style="color:#FCD34D">${milestones}</div></div>
+      <div class="admin-stat-card" style="border-color:rgba(252,211,77,0.25)"><div class="admin-stat-label">MILESTONES</div><div class="admin-stat-value" style="color:#FCD34D">${totalMilestones}</div></div>
       <div class="admin-stat-card"><div class="admin-stat-label">DRAFT ITEMS</div><div class="admin-stat-value" style="color:var(--cin-text-dim)">${draftItems}</div></div>
     `;
   }
@@ -512,11 +523,11 @@
     // 3. Recent Milestones
     const mileEl = $('#dash-recent-milestones');
     if (mileEl) {
-      const recentMilestones = allEvents.filter(e => e.milestone_enabled).slice(0, 5);
+      const recentMilestones = allMilestones.slice(0, 5);
       if (!recentMilestones.length) {
-        mileEl.innerHTML = `<div class="admin-empty-state"><h3>No published milestones</h3><p>When events complete, choose "Publish as Milestone" to showcase them here.</p></div>`;
+        mileEl.innerHTML = `<div class="admin-empty-state"><h3>No completed event milestones yet</h3><p>Add completed events and academic outcomes to showcase lab achievements.</p></div>`;
       } else {
-        mileEl.innerHTML = recentMilestones.map(e => renderEventRow(e)).join('');
+        mileEl.innerHTML = recentMilestones.map(m => renderMilestoneRow(m)).join('');
       }
     }
   }
@@ -542,7 +553,6 @@
         <button class="admin-tab" data-filter="upcoming">UPCOMING</button>
         <button class="admin-tab" data-filter="ongoing">ONGOING</button>
         <button class="admin-tab" data-filter="completed">COMPLETED</button>
-        <button class="admin-tab" data-filter="milestone">★ MILESTONES</button>
         <button class="admin-tab" data-filter="cancelled">CANCELLED</button>
         <button class="admin-tab" data-filter="archived">ARCHIVED</button>
       </div>
@@ -573,9 +583,7 @@
     const el = $('#events-list');
     if (!el) return;
     let events = allEvents;
-    if (filter === 'milestone') {
-      events = events.filter(e => e.milestone_enabled);
-    } else if (filter) {
+    if (filter) {
       events = events.filter(e => e.status === filter);
     }
 
@@ -593,13 +601,11 @@
         <div class="admin-event-info">
           <div class="admin-event-title">
             ${escapeHtml(e.title)}
-            ${e.milestone_enabled ? '<span style="font-size:10px;color:#FCD34D;background:rgba(252,211,77,0.12);padding:2px 6px;border-radius:3px;margin-left:8px;font-family:var(--font-mono)">★ MILESTONE</span>' : ''}
           </div>
           <div class="admin-event-meta">
             <span>${formatDate(e.start_datetime)}</span>
             <span>${escapeHtml(e.category || '—')}</span>
             <span>${escapeHtml(e.location || '—')}</span>
-            ${e.event_report_url ? '<span style="color:var(--cin-accent-bright)">📄 Report Linked</span>' : ''}
           </div>
         </div>
         <span class="admin-status-badge ${e.status}">${e.status}</span>
@@ -612,7 +618,7 @@
           </button>
           ${e.status === 'draft' ? `<button class="admin-btn admin-btn-icon" onclick="window.adminApp.publishEvent('${e.id}')" title="Publish"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>` : ''}
           ${['upcoming', 'ongoing'].includes(e.status) ? `<button class="admin-btn admin-btn-icon" onclick="window.adminApp.completeEvent('${e.id}')" title="Mark Completed"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button>` : ''}
-          ${e.status === 'completed' && !e.milestone_enabled ? `<button class="admin-btn admin-btn-icon" onclick="window.adminApp.publishAsMilestone('${e.id}')" title="Publish as Milestone" style="color:#FCD34D"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>` : ''}
+          ${e.status === 'completed' ? `<button class="admin-btn admin-btn-icon" onclick="window.adminApp.createMilestoneFromEvent('${e.id}')" title="Add Completed Event to Milestones" style="color:#FCD34D"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>` : ''}
           <button class="admin-btn admin-btn-icon" onclick="window.adminApp.deleteEvent('${e.id}','${escapeHtml(e.title).replace(/'/g, "\\'")}')" title="Delete" style="color:#f87171">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
           </button>
@@ -764,66 +770,6 @@
           </div>
         </div>
 
-        <!-- Milestone Settings -->
-        <div class="admin-form-section">
-          <h3 class="admin-form-section-title">Milestone & Impact Settings</h3>
-          <p class="admin-form-section-desc">CONTROL WHETHER THIS EVENT APPEARS IN EXPLORE → MILESTONES WITH ACADEMIC OUTCOMES</p>
-
-          <label class="admin-toggle">
-            <input type="checkbox" id="evt-milestone" ${e.milestone_enabled ? 'checked' : ''}>
-            <span>Publish to Explore Milestones</span>
-          </label>
-
-          <div style="margin-top:20px" id="milestone-fields" ${e.milestone_enabled ? '' : 'style="display:none"'}>
-            <div class="admin-form-grid">
-              <div class="admin-field full-width">
-                <label>Milestone Title (optional override)</label>
-                <input type="text" id="evt-milestone-title" value="${escapeHtml(e.milestone_title || '')}" placeholder="Leave blank to use event title">
-              </div>
-              <div class="admin-field full-width">
-                <label>Milestone Description / Summary</label>
-                <textarea id="evt-milestone-desc" placeholder="Summary of achievements and outcomes...">${escapeHtml(e.milestone_description || '')}</textarea>
-              </div>
-              <div class="admin-field">
-                <label>Event Report URL (Google Drive / PDF)</label>
-                <input type="url" id="evt-report-url" value="${escapeHtml(e.event_report_url || '')}" placeholder="https://drive.google.com/file/d/.../view">
-              </div>
-              <div class="admin-field">
-                <label>Participant Count</label>
-                <input type="number" id="evt-participants" min="0" value="${e.participant_count || ''}" placeholder="e.g., 150">
-              </div>
-              <div class="admin-field">
-                <label>Video Recording URL (YouTube/Vimeo)</label>
-                <input type="url" id="evt-video-url" value="${escapeHtml(e.video_url || '')}" placeholder="https://youtube.com/watch?v=...">
-              </div>
-              <div class="admin-field">
-                <label>Slide Deck URL (Google Slides/PDF)</label>
-                <input type="url" id="evt-pres-url" value="${escapeHtml(e.presentation_url || '')}" placeholder="https://docs.google.com/presentation/...">
-              </div>
-              <div class="admin-field full-width">
-                <label>External Article / Press Coverage URL</label>
-                <input type="url" id="evt-article-url" value="${escapeHtml(e.external_article_url || '')}" placeholder="https://...">
-              </div>
-              <div class="admin-field">
-                <label>Key Achievement</label>
-                <input type="text" id="evt-achievement" value="${escapeHtml(e.achievement || '')}" placeholder="e.g., 1st Prize, National Hackathon">
-              </div>
-              <div class="admin-field">
-                <label>Outcome</label>
-                <input type="text" id="evt-outcome" value="${escapeHtml(e.outcome || '')}" placeholder="e.g., 4 Research Prototypes Deployed">
-              </div>
-              <div class="admin-field full-width">
-                <label>Impact Statement</label>
-                <input type="text" id="evt-impact" value="${escapeHtml(e.impact || '')}" placeholder="e.g., Trained 120+ undergraduates in Spatial Computing">
-              </div>
-              <div class="admin-field full-width">
-                <label>Key Takeaways (one per line)</label>
-                <textarea id="evt-key-takeaways" placeholder="Spatial audio integration enhances VR immersion&#10;Unity WebGL export allows zero-install browser deployment">${(e.key_takeaways || []).join('\n')}</textarea>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div class="admin-form-actions">
           <button type="submit" class="admin-btn admin-btn-primary" style="width:auto" id="event-submit-btn">
             ${editingEventId ? 'UPDATE EVENT' : 'CREATE EVENT'}
@@ -834,15 +780,6 @@
         </div>
       </form>
     `;
-
-    // Toggle milestone fields
-    const milestoneCheck = $('#evt-milestone');
-    if (milestoneCheck) {
-      milestoneCheck.addEventListener('change', () => {
-        const fields = $('#milestone-fields');
-        if (fields) fields.style.display = milestoneCheck.checked ? '' : 'none';
-      });
-    }
 
     // Form submit
     $('#event-form').addEventListener('submit', async (ev) => {
@@ -874,18 +811,6 @@
       featured_image: $('#evt-image').value.trim(),
       highlights: $('#evt-highlights').value.split('\n').map(h => h.trim()).filter(Boolean),
       tags: $('#evt-tags').value.split(',').map(t => t.trim()).filter(Boolean),
-      milestone_enabled: $('#evt-milestone').checked,
-      milestone_title: $('#evt-milestone-title')?.value.trim() || '',
-      milestone_description: $('#evt-milestone-desc')?.value.trim() || '',
-      event_report_url: $('#evt-report-url')?.value.trim() || '',
-      video_url: $('#evt-video-url')?.value.trim() || '',
-      presentation_url: $('#evt-pres-url')?.value.trim() || '',
-      external_article_url: $('#evt-article-url')?.value.trim() || '',
-      achievement: $('#evt-achievement')?.value.trim() || '',
-      outcome: $('#evt-outcome')?.value.trim() || '',
-      impact: $('#evt-impact')?.value.trim() || '',
-      participant_count: $('#evt-participants')?.value ? parseInt($('#evt-participants').value, 10) : null,
-      key_takeaways: $('#evt-key-takeaways')?.value.split('\n').map(t => t.trim()).filter(Boolean) || [],
     };
 
     if (!eventData.title) {
@@ -998,26 +923,86 @@
         alert('Error: ' + err.message);
       }
     },
-    publishAsMilestone: async (id) => {
+    createMilestoneFromEvent: (id) => {
       const evt = allEvents.find(e => e.id === id);
       if (!evt) return;
-      const reportUrl = prompt('Publish this completed event as an Explore Milestone?\n\nEnter Event Report URL (Google Drive or external HTTPS link) or leave as is:', evt.event_report_url || '');
-      if (reportUrl === null) return; // User cancelled
+      switchSection('create-milestone');
+      loadCreateMilestone({
+        title: evt.title,
+        milestone_type: 'completed_event',
+        category: evt.category || 'Completed Event',
+        research_division: evt.research_division || '',
+        completed_date: evt.end_datetime ? evt.end_datetime.slice(0, 10) : (evt.start_datetime ? evt.start_datetime.slice(0, 10) : new Date().toISOString().slice(0, 10)),
+        location: evt.location || '',
+        venue: evt.venue || '',
+        organizer: evt.organizer || '',
+        short_description: evt.short_description || '',
+        description: evt.description || '',
+        tags: evt.tags || [],
+      });
+    },
+    editMilestone: async (id) => {
       try {
-        await apiCall(`admin-events?id=${id}`, {
-          method: 'PUT',
-          body: JSON.stringify({
-            ...evt,
-            milestone_enabled: true,
-            event_report_url: reportUrl.trim() || evt.event_report_url || '',
-            milestone_title: evt.milestone_title || evt.title,
-            milestone_description: evt.milestone_description || evt.short_description || evt.description,
-          }),
-        });
-        alert('Published as Milestone successfully!');
-        loadEvents('milestone');
+        const data = await apiCall(`admin-milestones?id=${id}`);
+        switchSection('create-milestone');
+        loadCreateMilestone(data.milestone);
       } catch (err) {
-        alert('Error publishing milestone: ' + err.message);
+        alert('Unable to load milestone: ' + err.message);
+      }
+    },
+    previewMilestone: async (id) => {
+      const m = allMilestones.find(item => item.id === id);
+      if (!m) return;
+      const main = $('#admin-main');
+      main.innerHTML = `
+        <div class="admin-main-header">
+          <div>
+            <h1 class="admin-main-title">Milestone Preview</h1>
+            <p class="admin-main-subtitle">HOW THIS COMPLETED EVENT APPEARS ON EXPLORE &gt; MILESTONES</p>
+          </div>
+          <button class="admin-btn admin-btn-secondary admin-btn-small" onclick="window.adminApp.switchSection('milestones')">
+            ← BACK TO MILESTONES
+          </button>
+        </div>
+        <div class="admin-preview-card" style="background:var(--cin-card-bg);border:1px solid var(--cin-border);border-radius:12px;padding:32px;max-width:800px">
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--cin-accent-bright);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">
+            ★ ${escapeHtml(m.category || m.milestone_type || 'COMPLETED EVENT')}
+          </div>
+          <h2 style="font-family:var(--font-display);font-size:24px;margin-bottom:12px;color:var(--cin-text)">${escapeHtml(m.title)}</h2>
+          <div class="admin-preview-meta" style="display:flex;gap:16px;color:var(--cin-text-dim);font-size:12px;margin-bottom:20px;flex-wrap:wrap">
+            <span>📅 ${formatDate(m.completed_date)}</span>
+            ${m.location ? `<span>📍 ${escapeHtml(m.location)}</span>` : ''}
+            ${m.participant_count ? `<span>👥 ${m.participant_count} Attendees</span>` : ''}
+          </div>
+          <p style="color:var(--cin-text-secondary);line-height:1.7;margin-bottom:20px">${escapeHtml(m.short_description || m.description || '')}</p>
+          ${m.achievement ? `<div style="background:rgba(252,211,77,0.08);border:1px solid rgba(252,211,77,0.25);border-radius:6px;padding:12px 16px;margin-bottom:16px;font-size:13px"><strong style="color:#FCD34D">Key Achievement:</strong> ${escapeHtml(m.achievement)}</div>` : ''}
+          ${m.outcome ? `<div style="margin-bottom:12px;font-size:13px;color:var(--cin-text-secondary)"><strong style="color:var(--cin-text)">Tangible Outcome:</strong> ${escapeHtml(m.outcome)}</div>` : ''}
+          ${m.impact ? `<div style="margin-bottom:16px;font-size:13px;color:var(--cin-text-secondary)"><strong style="color:var(--cin-text)">Institutional Impact:</strong> ${escapeHtml(m.impact)}</div>` : ''}
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;padding-top:16px;border-top:1px solid var(--cin-border)">
+            ${m.event_report_url ? `<a href="${escapeHtml(m.event_report_url)}" target="_blank" class="admin-btn admin-btn-primary admin-btn-small">📄 Open Event Report</a>` : ''}
+            ${m.video_url ? `<a href="${escapeHtml(m.video_url)}" target="_blank" class="admin-btn admin-btn-secondary admin-btn-small">🎬 Watch Video</a>` : ''}
+            ${m.presentation_url ? `<a href="${escapeHtml(m.presentation_url)}" target="_blank" class="admin-btn admin-btn-secondary admin-btn-small">📊 View Deck</a>` : ''}
+            ${m.external_article_url ? `<a href="${escapeHtml(m.external_article_url)}" target="_blank" class="admin-btn admin-btn-secondary admin-btn-small">🔗 Read Article</a>` : ''}
+          </div>
+        </div>
+      `;
+    },
+    toggleMilestonePublish: async (id, publish) => {
+      try {
+        await apiCall('admin-milestones', 'POST', { _action: 'toggle_publish', id, published: publish });
+        loadMilestones();
+      } catch (err) {
+        alert('Error updating milestone: ' + err.message);
+      }
+    },
+    deleteMilestone: async (id, title) => {
+      if (!confirm(`Delete milestone "${title}"? This action cannot be undone.`)) return;
+      if (!confirm('Are you absolutely sure you want to delete this completed event record?')) return;
+      try {
+        await apiCall(`admin-milestones?id=${id}`, { method: 'DELETE' });
+        loadMilestones();
+      } catch (err) {
+        alert('Error: ' + err.message);
       }
     },
     deleteEvent: async (id, title) => {
@@ -1031,6 +1016,409 @@
       }
     },
   };
+
+  // =========================================================================
+  // 6B. MILESTONES & COMPLETED EVENTS (DEDICATED SECTION)
+  // =========================================================================
+  async function loadMilestones(filter) {
+    const main = $('#admin-main');
+    main.innerHTML = `
+      <div class="admin-main-header">
+        <div>
+          <h1 class="admin-main-title">Milestones &amp; Completed Events</h1>
+          <p class="admin-main-subtitle">OFFICIAL LAB RECORD OF COMPLETED EVENTS, ACADEMIC IMPACT &amp; AWARDS</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="admin-btn admin-btn-secondary admin-btn-small" onclick="window.adminApp.switchSection('events')">
+            Browse Events
+          </button>
+          <button class="admin-btn admin-btn-primary admin-btn-small" onclick="window.adminApp.switchSection('create-milestone')">
+            + ADD COMPLETED EVENT / MILESTONE
+          </button>
+        </div>
+      </div>
+      <div class="admin-tabs" id="milestone-tabs">
+        <button class="admin-tab active" data-filter="">ALL MILESTONES</button>
+        <button class="admin-tab" data-filter="completed_event">COMPLETED EVENTS</button>
+        <button class="admin-tab" data-filter="award">AWARDS &amp; HACKATHONS</button>
+        <button class="admin-tab" data-filter="publication">SYMPOSIA &amp; PAPERS</button>
+        <button class="admin-tab" data-filter="lab_milestone">LAB MILESTONES</button>
+        <button class="admin-tab" data-filter="draft">DRAFTS</button>
+      </div>
+      <div class="admin-events-list" id="milestones-list">
+        <div style="text-align:center;padding:40px"><div class="admin-spinner" style="margin:0 auto"></div></div>
+      </div>
+    `;
+
+    // Tab clicks
+    $$('#milestone-tabs .admin-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        $$('#milestone-tabs .admin-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        renderMilestonesList(tab.dataset.filter);
+      });
+    });
+
+    try {
+      const data = await apiCall('admin-milestones');
+      allMilestones = data.milestones || [];
+      renderMilestonesList(filter || '');
+    } catch (err) {
+      $('#milestones-list').innerHTML = `<div class="admin-message error">${escapeHtml(err.message)}</div>`;
+    }
+  }
+
+  function renderMilestonesList(filter) {
+    const el = $('#milestones-list');
+    if (!el) return;
+    let list = allMilestones;
+    if (filter === 'draft') {
+      list = list.filter(m => !m.published);
+    } else if (filter) {
+      list = list.filter(m => m.milestone_type === filter);
+    }
+
+    if (!list.length) {
+      el.innerHTML = `
+        <div class="admin-empty-state">
+          <h3>No milestones found</h3>
+          <p>Record a completed event, student hackathon victory, or academic symposium to highlight lab achievements.</p>
+          <button class="admin-btn admin-btn-primary admin-btn-small" style="margin-top:14px" onclick="window.adminApp.switchSection('create-milestone')">
+            + Add Completed Event Details
+          </button>
+        </div>`;
+      return;
+    }
+
+    el.innerHTML = list.map(m => renderMilestoneRow(m)).join('');
+  }
+
+  function renderMilestoneRow(m) {
+    const typeBadges = {
+      completed_event: { label: 'COMPLETED EVENT', color: '#60A5FA', bg: 'rgba(96,165,250,0.12)' },
+      award: { label: '★ AWARD / HACKATHON', color: '#FCD34D', bg: 'rgba(252,211,77,0.12)' },
+      publication: { label: 'SYMPOSIUM / PAPER', color: '#A78BFA', bg: 'rgba(167,139,250,0.12)' },
+      project_milestone: { label: 'PROJECT MILESTONE', color: '#34D399', bg: 'rgba(52,211,153,0.12)' },
+      lab_milestone: { label: 'LAB MILESTONE', color: '#EC4899', bg: 'rgba(236,72,153,0.12)' },
+    };
+    const badge = typeBadges[m.milestone_type] || { label: m.milestone_type || 'MILESTONE', color: 'var(--cin-accent-bright)', bg: 'rgba(59,130,246,0.12)' };
+
+    return `
+      <div class="admin-event-row" data-id="${m.id}">
+        <div class="admin-event-info">
+          <div class="admin-event-title" style="display:flex;align-items:center;flex-wrap:wrap;gap:8px">
+            <span style="font-weight:600;font-size:15px">${escapeHtml(m.title)}</span>
+            <span style="font-size:10px;font-family:var(--font-mono);font-weight:600;color:${badge.color};background:${badge.bg};border:1px solid ${badge.color}40;padding:2px 7px;border-radius:4px;letter-spacing:0.06em">
+              ${badge.label}
+            </span>
+            ${m.research_division ? `<span style="font-size:10px;color:#9CA3AF;background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:3px">${escapeHtml(m.research_division)}</span>` : ''}
+          </div>
+          <div class="admin-event-meta" style="margin-top:6px;gap:12px">
+            <span>📅 ${formatDate(m.completed_date)}</span>
+            ${m.location ? `<span>📍 ${escapeHtml(m.location)}</span>` : ''}
+            ${m.participant_count ? `<span style="color:#60A5FA">👥 ${m.participant_count} Attendees</span>` : ''}
+            ${m.event_report_url ? `<span style="color:var(--cin-accent-bright)">📄 Report Linked</span>` : ''}
+            ${m.video_url ? `<span style="color:#F87171">🎬 Video</span>` : ''}
+            ${m.presentation_url ? `<span style="color:#A78BFA">📊 Slides</span>` : ''}
+          </div>
+          ${m.achievement ? `<div style="font-size:12px;color:var(--cin-text-secondary);margin-top:4px"><strong style="color:var(--cin-text)">Achievement:</strong> ${escapeHtml(m.achievement)}</div>` : ''}
+        </div>
+        <span class="admin-status-badge ${m.published ? 'upcoming' : 'draft'}">
+          ${m.published ? 'Published' : 'Draft'}
+        </span>
+        <div class="admin-event-actions">
+          <button class="admin-btn admin-btn-icon" onclick="window.adminApp.editMilestone('${m.id}')" title="Edit Milestone">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="admin-btn admin-btn-icon" onclick="window.adminApp.previewMilestone('${m.id}')" title="Preview Public Card">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button class="admin-btn admin-btn-icon" onclick="window.adminApp.toggleMilestonePublish('${m.id}', ${!m.published})" title="${m.published ? 'Unpublish' : 'Publish'}" style="color:${m.published ? '#F87171' : '#34D399'}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+          </button>
+          <button class="admin-btn admin-btn-icon" onclick="window.adminApp.deleteMilestone('${m.id}', '${escapeHtml(m.title).replace(/'/g, "\\'")}')" title="Delete" style="color:#f87171">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  // =========================================================================
+  // 6C. CREATE / EDIT MILESTONE (ADD COMPLETED EVENT FORM)
+  // =========================================================================
+  function loadCreateMilestone(prefillData) {
+    editingMilestoneId = prefillData && prefillData.id ? prefillData.id : null;
+    const m = prefillData || {};
+    const isEdit = !!editingMilestoneId;
+    const defaultDate = m.completed_date 
+      ? (typeof m.completed_date === 'string' ? m.completed_date.slice(0, 10) : new Date(m.completed_date).toISOString().slice(0, 10))
+      : new Date().toISOString().slice(0, 10);
+
+    const main = $('#admin-main');
+    main.innerHTML = `
+      <div class="admin-main-header">
+        <div>
+          <h1 class="admin-main-title">${isEdit ? 'Edit Completed Event / Milestone' : 'Add Completed Event Details &amp; Milestone'}</h1>
+          <p class="admin-main-subtitle">RECORD VERIFIED COMPLETION OUTCOMES, ACADEMIC REPORTS, AND LAB ACHIEVEMENTS</p>
+        </div>
+        <button class="admin-btn admin-btn-ghost admin-btn-small" onclick="window.adminApp.switchSection('milestones')">
+          ← Back to Milestones
+        </button>
+      </div>
+
+      <form id="milestone-form" autocomplete="off" class="admin-form">
+        <div id="milestone-form-error" class="admin-message" style="display:none"></div>
+        <div id="milestone-form-success" class="admin-message" style="display:none"></div>
+
+        <!-- Section 1: Basic Information -->
+        <div class="admin-form-section">
+          <h3 class="admin-form-section-title">Milestone &amp; Event Identification</h3>
+          <p class="admin-form-section-desc">ESSENTIAL CLASSIFICATION &amp; COMPLETION TIMELINE</p>
+          <div class="admin-form-grid">
+            <div class="admin-field full-width">
+              <label>Milestone / Completed Event Title *</label>
+              <input type="text" id="ms-title" value="${escapeHtml(m.title || '')}" required maxlength="200" placeholder="e.g., National Spatial Computing Hackathon — Gold Victory">
+            </div>
+
+            <div class="admin-field">
+              <label>Milestone Type *</label>
+              <select id="ms-type" required>
+                <option value="completed_event" ${(m.milestone_type === 'completed_event' || !m.milestone_type) ? 'selected' : ''}>Completed Event</option>
+                <option value="award" ${m.milestone_type === 'award' ? 'selected' : ''}>Award / Hackathon Victory</option>
+                <option value="publication" ${m.milestone_type === 'publication' ? 'selected' : ''}>Research Symposium / Paper</option>
+                <option value="project_milestone" ${m.milestone_type === 'project_milestone' ? 'selected' : ''}>Project Milestone / Release</option>
+                <option value="lab_milestone" ${m.milestone_type === 'lab_milestone' ? 'selected' : ''}>Lab Milestone / Facility Growth</option>
+              </select>
+            </div>
+
+            <div class="admin-field">
+              <label>Research Division</label>
+              <select id="ms-division">
+                <option value="">— Select Research Division —</option>
+                <option value="Engineering" ${m.research_division === 'Engineering' ? 'selected' : ''}>Engineering Simulations</option>
+                <option value="Healthcare" ${m.research_division === 'Healthcare' ? 'selected' : ''}>Healthcare &amp; Surgical VR</option>
+                <option value="Tourism & Culture" ${m.research_division === 'Tourism & Culture' ? 'selected' : ''}>Tourism &amp; Cultural Heritage</option>
+                <option value="Entertainment" ${m.research_division === 'Entertainment' ? 'selected' : ''}>Interactive Entertainment</option>
+                <option value="Building & Infrastructure" ${m.research_division === 'Building & Infrastructure' ? 'selected' : ''}>Building &amp; Smart Infrastructure</option>
+                <option value="Placements" ${m.research_division === 'Placements' ? 'selected' : ''}>Spatial Careers &amp; Placements</option>
+                <option value="General" ${m.research_division === 'General' ? 'selected' : ''}>General Lab Milestone</option>
+              </select>
+            </div>
+
+            <div class="admin-field">
+              <label>Category Tag</label>
+              <input type="text" id="ms-category" value="${escapeHtml(m.category || 'Completed Event')}" maxlength="100" placeholder="Completed Event, Hackathon, Symposium, Workshop">
+            </div>
+
+            <div class="admin-field">
+              <label>Completion Date *</label>
+              <input type="date" id="ms-date" value="${defaultDate}" required>
+            </div>
+
+            <div class="admin-field">
+              <label>Location (City / State / Campus)</label>
+              <input type="text" id="ms-location" value="${escapeHtml(m.location || '')}" maxlength="300" placeholder="e.g., Bengaluru, India or GCET Campus">
+            </div>
+
+            <div class="admin-field">
+              <label>Venue (Hall / Building / Auditorium)</label>
+              <input type="text" id="ms-venue" value="${escapeHtml(m.venue || '')}" maxlength="300" placeholder="e.g., Main Auditorium Hall A">
+            </div>
+
+            <div class="admin-field full-width">
+              <label>Organizer / Host Entity</label>
+              <input type="text" id="ms-organizer" value="${escapeHtml(m.organizer || '')}" maxlength="200" placeholder="e.g., GCET AR/VR Research Lab &amp; IEEE Student Chapter">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Narrative & Description -->
+        <div class="admin-form-section">
+          <h3 class="admin-form-section-title">Descriptions &amp; Executive Summary</h3>
+          <p class="admin-form-section-desc">CONCISE CARD SUMMARY AND COMPREHENSIVE NARRATIVE</p>
+          <div class="admin-form-grid">
+            <div class="admin-field full-width">
+              <label>Short Summary (displayed on public timeline cards)</label>
+              <input type="text" id="ms-short-desc" value="${escapeHtml(m.short_description || '')}" maxlength="500" placeholder="Brief 1-2 sentence overview of the completed event and its primary breakthrough">
+            </div>
+
+            <div class="admin-field full-width">
+              <label>Detailed Description &amp; Outcome Narrative</label>
+              <textarea id="ms-desc" maxlength="20000" style="min-height:140px" placeholder="Comprehensive post-event report, methodology, and session breakdown...">${escapeHtml(m.description || '')}</textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Verification & External Artifacts -->
+        <div class="admin-form-section">
+          <h3 class="admin-form-section-title">Academic Reports &amp; Verification Links</h3>
+          <p class="admin-form-section-desc">EXTERNAL HTTPS URLS ONLY (GOOGLE DRIVE / YOUTUBE / GITHUB / INSTITUTIONAL PDFS)</p>
+          <div class="admin-form-grid">
+            <div class="admin-field full-width">
+              <label>Official Event Report URL (Google Drive / PDF / Academic Repo) 📄</label>
+              <input type="url" id="ms-report-url" value="${escapeHtml(m.event_report_url || '')}" placeholder="https://drive.google.com/file/d/.../view">
+            </div>
+
+            <div class="admin-field">
+              <label>Video Recording / Showcase URL (YouTube / Vimeo) 🎬</label>
+              <input type="url" id="ms-video-url" value="${escapeHtml(m.video_url || '')}" placeholder="https://www.youtube.com/watch?v=...">
+            </div>
+
+            <div class="admin-field">
+              <label>Presentation Deck URL (Google Slides / PDF) 📊</label>
+              <input type="url" id="ms-presentation-url" value="${escapeHtml(m.presentation_url || '')}" placeholder="https://docs.google.com/presentation/d/...">
+            </div>
+
+            <div class="admin-field">
+              <label>External Press / News Article URL 🔗</label>
+              <input type="url" id="ms-article-url" value="${escapeHtml(m.external_article_url || '')}" placeholder="https://newspaper.com/article/...">
+            </div>
+
+            <div class="admin-field">
+              <label>Cover / Featured Photo URL (External HTTPS)</label>
+              <input type="url" id="ms-image-url" value="${escapeHtml(m.featured_image || '')}" placeholder="https://images.unsplash.com/... or Google Drive direct image">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Quantitative & Qualitative Impact -->
+        <div class="admin-form-section">
+          <h3 class="admin-form-section-title">Quantitative &amp; Qualitative Impact</h3>
+          <p class="admin-form-section-desc">RECORD MEASURABLE SUCCESS METRICS AND SCHOLARLY FINDINGS</p>
+          <div class="admin-form-grid">
+            <div class="admin-field">
+              <label>Total Attendees / Participants 👥</label>
+              <input type="number" id="ms-participants" min="0" value="${m.participant_count || ''}" placeholder="e.g., 140">
+            </div>
+
+            <div class="admin-field">
+              <label>Key Achievement / Award Won 🏆</label>
+              <input type="text" id="ms-achievement" value="${escapeHtml(m.achievement || '')}" placeholder="e.g., 1st Prize Gold Trophy &amp; Best Technical Architecture">
+            </div>
+
+            <div class="admin-field full-width">
+              <label>Tangible Outcome</label>
+              <input type="text" id="ms-outcome" value="${escapeHtml(m.outcome || '')}" placeholder="e.g., 4 prototypes deployed to Meta Quest 3, adopted by regional hospital">
+            </div>
+
+            <div class="admin-field full-width">
+              <label>Broader Institutional Impact Statement</label>
+              <input type="text" id="ms-impact" value="${escapeHtml(m.impact || '')}" placeholder="e.g., Validated collegiate research capabilities and trained 45 undergraduate engineers in WebRTC">
+            </div>
+
+            <div class="admin-field full-width">
+              <label>Key Takeaways &amp; Research Findings (one per line)</label>
+              <textarea id="ms-takeaways" style="min-height:90px" placeholder="Sub-millimeter haptic feedback is essential for tissue incision&#10;Binaural audio reduced vocal collisions in collaborative VR&#10;Niagara particle budget maintained 72 FPS on mobile chipsets">${(m.key_takeaways || []).join('\n')}</textarea>
+            </div>
+
+            <div class="admin-field full-width">
+              <label>Tags (comma-separated)</label>
+              <input type="text" id="ms-tags" value="${(m.tags || []).join(', ')}" placeholder="Hackathon, Victory, Healthcare, Medical XR, Unreal Engine 5">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 5: Publishing & Visibility -->
+        <div class="admin-form-section">
+          <h3 class="admin-form-section-title">Publishing &amp; Site Visibility</h3>
+          <div class="admin-form-grid">
+            <div class="admin-field">
+              <label>Publish Status</label>
+              <select id="ms-published">
+                <option value="true" ${m.published !== false ? 'selected' : ''}>Published — Visible on Explore Milestones</option>
+                <option value="false" ${m.published === false ? 'selected' : ''}>Draft — Hidden from Public</option>
+              </select>
+            </div>
+
+            <div class="admin-field">
+              <label>Featured Milestone</label>
+              <select id="ms-featured">
+                <option value="false" ${!m.featured ? 'selected' : ''}>Standard Milestone</option>
+                <option value="true" ${m.featured ? 'selected' : ''}>Featured — Pin at Top</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-form-actions">
+          <button type="submit" class="admin-btn admin-btn-primary" id="milestone-submit-btn">
+            ${isEdit ? 'UPDATE MILESTONE' : 'SAVE COMPLETED EVENT MILESTONE'}
+          </button>
+          <button type="button" class="admin-btn admin-btn-secondary" onclick="window.adminApp.switchSection('milestones')">
+            CANCEL
+          </button>
+        </div>
+      </form>
+    `;
+
+    $('#milestone-form').addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      await saveMilestone();
+    });
+  }
+
+  async function saveMilestone() {
+    const errorEl = $('#milestone-form-error');
+    const successEl = $('#milestone-form-success');
+    errorEl.style.display = 'none';
+    successEl.style.display = 'none';
+
+    const title = $('#ms-title').value.trim();
+    if (!title) {
+      errorEl.textContent = 'Milestone title is required';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    const payload = {
+      title,
+      milestone_type: $('#ms-type').value,
+      research_division: $('#ms-division').value,
+      category: $('#ms-category').value.trim() || 'Completed Event',
+      completed_date: $('#ms-date').value || new Date().toISOString().slice(0, 10),
+      location: $('#ms-location').value.trim(),
+      venue: $('#ms-venue').value.trim(),
+      organizer: $('#ms-organizer').value.trim(),
+      short_description: $('#ms-short-desc').value.trim(),
+      description: $('#ms-desc').value.trim(),
+      event_report_url: $('#ms-report-url').value.trim(),
+      video_url: $('#ms-video-url').value.trim(),
+      presentation_url: $('#ms-presentation-url').value.trim(),
+      external_article_url: $('#ms-article-url').value.trim(),
+      featured_image: $('#ms-image-url').value.trim(),
+      participant_count: $('#ms-participants').value ? parseInt($('#ms-participants').value, 10) : null,
+      achievement: $('#ms-achievement').value.trim(),
+      outcome: $('#ms-outcome').value.trim(),
+      impact: $('#ms-impact').value.trim(),
+      key_takeaways: $('#ms-takeaways').value.split('\n').map(t => t.trim()).filter(Boolean),
+      tags: $('#ms-tags').value.split(',').map(t => t.trim()).filter(Boolean),
+      published: $('#ms-published').value === 'true',
+      featured: $('#ms-featured').value === 'true',
+    };
+
+    try {
+      $('#milestone-submit-btn').disabled = true;
+      $('#milestone-submit-btn').textContent = 'SAVING...';
+
+      if (editingMilestoneId) {
+        await apiCall(`admin-milestones?id=${editingMilestoneId}`, 'PUT', payload);
+        successEl.textContent = 'Completed event milestone updated successfully!';
+      } else {
+        await apiCall('admin-milestones', 'POST', payload);
+        successEl.textContent = 'Completed event milestone recorded successfully!';
+      }
+
+      successEl.style.display = 'block';
+      setTimeout(() => switchSection('milestones'), 1400);
+    } catch (err) {
+      errorEl.textContent = err.message || 'Failed to save milestone';
+      errorEl.style.display = 'block';
+    } finally {
+      $('#milestone-submit-btn').disabled = false;
+      $('#milestone-submit-btn').textContent = editingMilestoneId ? 'UPDATE MILESTONE' : 'SAVE COMPLETED EVENT MILESTONE';
+    }
+  }
 
   // =========================================================================
   // 7. SECURITY DASHBOARD

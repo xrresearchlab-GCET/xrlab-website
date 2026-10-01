@@ -148,7 +148,64 @@ CREATE INDEX IF NOT EXISTS idx_events_start_datetime ON events(start_datetime);
 CREATE INDEX IF NOT EXISTS idx_events_milestone_enabled ON events(milestone_enabled) WHERE milestone_enabled = TRUE;
 
 -- =============================================================================
--- 4. AUTH CHALLENGES TABLE (OTP AUTHENTICATION)
+-- 4. MILESTONES TABLE (COMPLETED EVENTS & RESEARCH ACHIEVEMENTS)
+-- Dedicated section for completed events and academic outcomes
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS milestones (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  short_description TEXT,
+  description TEXT,
+  
+  -- Milestone Classification
+  milestone_type TEXT NOT NULL DEFAULT 'completed_event'
+    CHECK (milestone_type IN ('completed_event', 'project_milestone', 'award', 'publication', 'lab_milestone')),
+  category TEXT DEFAULT 'Completed Event',
+  research_division TEXT,
+  organizer TEXT,
+  
+  -- Completion & Timeline
+  completed_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  location TEXT,
+  venue TEXT,
+  
+  -- Academic & Verification Artifacts (External URLs ONLY: Google Drive, YouTube, external HTTPS)
+  event_report_url TEXT,
+  video_url TEXT,
+  presentation_url TEXT,
+  external_article_url TEXT,
+  featured_image TEXT,
+  
+  -- Quantitative & Qualitative Impact
+  participant_count INTEGER,
+  achievement TEXT,
+  outcome TEXT,
+  impact TEXT,
+  key_takeaways JSONB DEFAULT '[]'::jsonb,
+  tags JSONB DEFAULT '[]'::jsonb,
+  
+  -- Associated Event (optional foreign key if linked to a previous event record)
+  event_id UUID REFERENCES events(id) ON DELETE SET NULL,
+  
+  -- Publishing & Lifecycle
+  published BOOLEAN DEFAULT TRUE,
+  featured BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  created_by TEXT DEFAULT 'admin'
+);
+
+-- Milestones Indexes
+CREATE INDEX IF NOT EXISTS idx_milestones_slug ON milestones(slug);
+CREATE INDEX IF NOT EXISTS idx_milestones_type ON milestones(milestone_type);
+CREATE INDEX IF NOT EXISTS idx_milestones_division ON milestones(research_division);
+CREATE INDEX IF NOT EXISTS idx_milestones_completed_date ON milestones(completed_date DESC);
+CREATE INDEX IF NOT EXISTS idx_milestones_published ON milestones(published) WHERE published = TRUE;
+CREATE INDEX IF NOT EXISTS idx_milestones_featured ON milestones(featured) WHERE featured = TRUE;
+
+-- =============================================================================
+-- 5. AUTH CHALLENGES TABLE (OTP AUTHENTICATION)
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS auth_challenges (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -166,7 +223,7 @@ CREATE INDEX IF NOT EXISTS idx_auth_challenges_email ON auth_challenges(email_ha
 CREATE INDEX IF NOT EXISTS idx_auth_challenges_expires ON auth_challenges(expires_at);
 
 -- =============================================================================
--- 5. ADMIN SESSIONS TABLE
+-- 6. ADMIN SESSIONS TABLE
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS admin_sessions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -182,13 +239,14 @@ CREATE INDEX IF NOT EXISTS idx_sessions_token ON admin_sessions(session_token_ha
 CREATE INDEX IF NOT EXISTS idx_sessions_expires ON admin_sessions(expires_at);
 
 -- =============================================================================
--- 6. AUDIT LOG TABLE
+-- 7. AUDIT LOG TABLE
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS audit_log (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   action TEXT NOT NULL,
   event_id UUID REFERENCES events(id) ON DELETE SET NULL,
   project_id UUID REFERENCES projects(id) ON DELETE SET NULL,
+  milestone_id UUID REFERENCES milestones(id) ON DELETE SET NULL,
   success BOOLEAN DEFAULT TRUE,
   ip_address TEXT,
   user_agent TEXT,
@@ -196,8 +254,9 @@ CREATE TABLE IF NOT EXISTS audit_log (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Ensure project_id column exists if audit_log table was created earlier
+-- Ensure project_id and milestone_id columns exist if audit_log table was created earlier
 ALTER TABLE audit_log ADD COLUMN IF NOT EXISTS project_id UUID REFERENCES projects(id) ON DELETE SET NULL;
+ALTER TABLE audit_log ADD COLUMN IF NOT EXISTS milestone_id UUID REFERENCES milestones(id) ON DELETE SET NULL;
 
 CREATE INDEX IF NOT EXISTS idx_audit_action ON audit_log(action);
 CREATE INDEX IF NOT EXISTS idx_audit_created ON audit_log(created_at DESC);
@@ -222,6 +281,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_rate_limits_key_action ON rate_limits(key,
 -- =============================================================================
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE milestones ENABLE ROW LEVEL SECURITY;
 ALTER TABLE auth_challenges ENABLE ROW LEVEL SECURITY;
 ALTER TABLE admin_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
@@ -249,6 +309,19 @@ CREATE POLICY "Public can read published events" ON events
 -- Events: Service role full access
 DROP POLICY IF EXISTS "Service role full access events" ON events;
 CREATE POLICY "Service role full access events" ON events
+  FOR ALL
+  USING (true)
+  WITH CHECK (true);
+
+-- Milestones: Public read published only
+DROP POLICY IF EXISTS "Public can read published milestones" ON milestones;
+CREATE POLICY "Public can read published milestones" ON milestones
+  FOR SELECT
+  USING (published = TRUE);
+
+-- Milestones: Service role full access
+DROP POLICY IF EXISTS "Service role full access milestones" ON milestones;
+CREATE POLICY "Service role full access milestones" ON milestones
   FOR ALL
   USING (true)
   WITH CHECK (true);
@@ -282,6 +355,12 @@ CREATE TRIGGER trigger_projects_updated_at
 DROP TRIGGER IF EXISTS trigger_events_updated_at ON events;
 CREATE TRIGGER trigger_events_updated_at
   BEFORE UPDATE ON events
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at();
+
+DROP TRIGGER IF EXISTS trigger_milestones_updated_at ON milestones;
+CREATE TRIGGER trigger_milestones_updated_at
+  BEFORE UPDATE ON milestones
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at();
 
@@ -549,3 +628,109 @@ INSERT INTO projects (
   NOW()
 )
 ON CONFLICT (slug) DO NOTHING;
+
+-- =============================================================================
+-- 13. SEED COMPLETED EVENTS & RESEARCH MILESTONES
+-- =============================================================================
+INSERT INTO milestones (
+  title,
+  slug,
+  milestone_type,
+  category,
+  research_division,
+  completed_date,
+  location,
+  venue,
+  organizer,
+  short_description,
+  description,
+  event_report_url,
+  video_url,
+  presentation_url,
+  external_article_url,
+  participant_count,
+  achievement,
+  outcome,
+  impact,
+  key_takeaways,
+  tags,
+  featured,
+  published
+) VALUES
+(
+  'National Spatial Computing Hackathon — 1st Place Victory',
+  'national-spatial-computing-hackathon-1st-place-victory',
+  'completed_event',
+  'Completed Event',
+  'Building & Infrastructure',
+  '2025-11-18',
+  'Bengaluru, India',
+  'National Tech Convention Center',
+  'National Spatial Computing Federation & XR Lab GCET',
+  'GCET XR Research Lab team clinched 1st place among 140+ nationwide university engineering teams with their VR Disaster Triage simulator.',
+  'A rigorous 48-hour continuous hackathon culminating in the presentation of our Chaos Physics and Niagara Fluid evacuation simulator. The system was praised by judges for low-latency simulation fidelity on standalone headsets.',
+  'https://drive.google.com/file/d/demo-hackathon-gold-report/view',
+  'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+  'https://docs.google.com/presentation/d/demo-hackathon-slides/edit',
+  'https://techtimes.example.com/gcet-xr-lab-wins-national-hackathon',
+  140,
+  'Gold Trophy & Best Technical Architecture Award',
+  'Full prototype deployed to Meta Quest 3 and adopted by regional civil defense trainers for trial evaluations.',
+  'Validated student readiness in high-pressure competition and established XR Lab as a leading national collegiate research unit.',
+  '["Real-time Niagara fluid particle reduction on mobile chipset", "User stress metrics tracking via heart rate telemetry", "Synchronized multi-user VR triage coordination"]'::jsonb,
+  '["Hackathon", "Victory", "Disaster Management", "Unreal Engine 5"]'::jsonb,
+  TRUE,
+  TRUE
+),
+(
+  'XR Medical Surgery & Anatomy Symposium 2025',
+  'xr-medical-surgery-and-anatomy-symposium-2025',
+  'completed_event',
+  'Completed Event',
+  'Healthcare',
+  '2025-09-12',
+  'GCET Auditorium',
+  'Main Academic Campus, Hall A',
+  'Department of Medical Sciences & GCET XR Research Lab',
+  'A milestone academic symposium gathering 280+ clinicians, biomedical students, and spatial computing researchers discussing haptic surgical training.',
+  'Three keynote lectures delivered by leading laparoscopic surgeons followed by hands-on haptic demonstration stations created by XR Lab interns. Comprehensive post-event academic report published to our institutional repository.',
+  'https://drive.google.com/file/d/demo-medical-symposium-report/view',
+  'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+  'https://docs.google.com/presentation/d/demo-symposium-slides/edit',
+  'https://medicaltech.example.com/symposium-2025-gcet',
+  280,
+  'Official Memorandum of Understanding signed with Regional Teaching Hospital',
+  'Formalized clinical validation trials for XR Lab Laparoscopic Haptic Simulator.',
+  'Bridged the gap between clinical requirements and immersive software engineering.',
+  '["Sub-millimeter haptic feedback is necessary for tissue incision training", "Stereoscopic visualization reduced cognitive fatigue by 34% among resident trainees", "Cloud-backed telemetry records surgeon precision metrics accurately"]'::jsonb,
+  '["Symposium", "Medical XR", "Healthcare", "Surgery", "Haptics"]'::jsonb,
+  TRUE,
+  TRUE
+),
+(
+  'Multi-User Spatial Audio & Photon Hands-On Workshop',
+  'multi-user-spatial-audio-and-photon-hands-on-workshop',
+  'completed_event',
+  'Completed Event',
+  'General',
+  '2025-08-04',
+  'XR Research Lab Studio',
+  'Lab Room 302, GCET Campus',
+  'XR Lab Core Engineering Cohort',
+  'Intensive full-day workshop training 45 undergraduate researchers in WebRTC, spatial audio HRTF filtering, and multi-user networked VR synchronization.',
+  'All 45 participants successfully built and deployed a 4-player shared VR room with positional voice chat on local Quest headsets by the end of the session.',
+  'https://drive.google.com/file/d/demo-spatial-audio-workshop-report/view',
+  NULL,
+  'https://docs.google.com/presentation/d/demo-workshop-slides/edit',
+  NULL,
+  45,
+  '100% project completion rate across all 12 student teams',
+  '45 trained undergraduate developers onboarded into active lab research tracks.',
+  'Expanded active student developer pool capable of contributing to production spatial environments.',
+  '["Photon Fusion provides predictable clock sync across asymmetric networks", "Binaural spatial audio reduces speech collisions in multi-user discussion", "Asset optimization strategies for standalone VR performance"]'::jsonb,
+  '["Workshop", "Spatial Audio", "Multiplayer", "Networking"]'::jsonb,
+  FALSE,
+  TRUE
+)
+ON CONFLICT (slug) DO NOTHING;
+
