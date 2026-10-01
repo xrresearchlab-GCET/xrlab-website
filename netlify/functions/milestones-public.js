@@ -3,7 +3,7 @@
  * Public read-only endpoint for published academic milestones & completed events
  */
 
-const { getSupabase } = require('./utils/supabase');
+const { getSupabase } = require('./utils/shared');
 
 exports.handler = async (event) => {
   const headers = {

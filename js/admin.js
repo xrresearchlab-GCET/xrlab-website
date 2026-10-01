@@ -30,6 +30,16 @@
   function $(sel) { return document.querySelector(sel); }
   function $$(sel) { return document.querySelectorAll(sel); }
 
+  function getCSRFToken() {
+    if (csrfToken) return csrfToken;
+    const match = document.cookie.match(/(?:^|;\s*)xr_csrf=([^;]+)/);
+    if (match && match[1]) {
+      csrfToken = decodeURIComponent(match[1]);
+      return csrfToken;
+    }
+    return '';
+  }
+
   async function apiCall(path, options = {}, maybeBody = null) {
     if (window.location.protocol === 'file:') {
       throw new Error('Running on file:// protocol. Netlify backend functions require a live web server or Netlify deployment.');
@@ -43,8 +53,24 @@
       options.body = JSON.stringify(options.body);
     }
     const headers = { 'Content-Type': 'application/json', ...options.headers };
-    if (csrfToken && options.method && options.method !== 'GET') {
-      headers['X-CSRF-Token'] = csrfToken;
+    if (options.method && options.method !== 'GET') {
+      let token = getCSRFToken();
+      if (!token) {
+        // Attempt quick sync recovery of csrfToken from session before proceeding
+        try {
+          const sRes = await fetch(`${API}/auth-session`, { credentials: 'include' });
+          if (sRes.ok) {
+            const sData = await sRes.json();
+            if (sData && sData.csrfToken) {
+              csrfToken = sData.csrfToken;
+              token = csrfToken;
+            }
+          }
+        } catch (_) {}
+      }
+      if (token) {
+        headers['X-CSRF-Token'] = token;
+      }
     }
     let res;
     try {
@@ -106,6 +132,11 @@
     try {
       const data = await apiCall('auth-session');
       if (data.authenticated) {
+        if (data.csrfToken) {
+          csrfToken = data.csrfToken;
+        } else {
+          getCSRFToken();
+        }
         showDashboard();
         return true;
       }

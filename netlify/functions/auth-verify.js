@@ -136,7 +136,9 @@ exports.handler = async (event) => {
       headers: {
         'Content-Type': 'application/json',
         'Cache-Control': 'no-store',
-        'Set-Cookie': `${sessionCookie}, ${csrfCookie}`,
+      },
+      multiValueHeaders: {
+        'Set-Cookie': [sessionCookie, csrfCookie],
       },
       body: JSON.stringify({
         success: true,

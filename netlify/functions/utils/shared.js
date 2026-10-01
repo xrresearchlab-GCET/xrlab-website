@@ -65,11 +65,15 @@ function hashToken(token) {
   return crypto.createHash('sha256').update(token).digest('hex');
 }
 
+function isSecureCookie() {
+  return process.env.NODE_ENV === 'production' || !!(process.env.URL && process.env.URL.startsWith('https'));
+}
+
 function createSessionCookie(token) {
   return cookie.serialize('xr_admin_session', token, {
     httpOnly: true,
-    secure: true,
-    sameSite: 'Strict',
+    secure: isSecureCookie(),
+    sameSite: 'Lax',
     path: '/',
     maxAge: SESSION_DURATION / 1000,
   });
@@ -78,15 +82,26 @@ function createSessionCookie(token) {
 function clearSessionCookie() {
   return cookie.serialize('xr_admin_session', '', {
     httpOnly: true,
-    secure: true,
-    sameSite: 'Strict',
+    secure: isSecureCookie(),
+    sameSite: 'Lax',
+    path: '/',
+    maxAge: 0,
+  });
+}
+
+function clearCSRFCookie() {
+  return cookie.serialize('xr_csrf', '', {
+    httpOnly: false,
+    secure: isSecureCookie(),
+    sameSite: 'Lax',
     path: '/',
     maxAge: 0,
   });
 }
 
 function getSessionToken(event) {
-  const cookies = cookie.parse(event.headers.cookie || '');
+  const cookieHeader = event.headers.cookie || event.headers.Cookie || '';
+  const cookies = cookie.parse(cookieHeader);
   return cookies.xr_admin_session || null;
 }
 
@@ -133,23 +148,36 @@ function generateCSRFToken() {
 function createCSRFCookie(token) {
   return cookie.serialize('xr_csrf', token, {
     httpOnly: false, // Must be readable by JS to send in header
-    secure: true,
-    sameSite: 'Strict',
+    secure: isSecureCookie(),
+    sameSite: 'Lax',
     path: '/',
     maxAge: SESSION_DURATION / 1000,
   });
 }
 
 function validateCSRF(event) {
-  const cookies = cookie.parse(event.headers.cookie || '');
+  const cookieHeader = event.headers.cookie || event.headers.Cookie || '';
+  const cookies = cookie.parse(cookieHeader);
   const cookieToken = cookies.xr_csrf;
-  const headerToken = event.headers['x-csrf-token'];
+
+  const headers = event.headers || {};
+  let headerToken = headers['x-csrf-token'] || headers['X-CSRF-Token'] || headers['X-Csrf-Token'];
+  if (!headerToken) {
+    const key = Object.keys(headers).find(k => k.toLowerCase() === 'x-csrf-token');
+    if (key) headerToken = headers[key];
+  }
 
   if (!cookieToken || !headerToken) return false;
-  return crypto.timingSafeEqual(
-    Buffer.from(cookieToken),
-    Buffer.from(headerToken)
-  );
+  if (typeof cookieToken !== 'string' || typeof headerToken !== 'string') return false;
+
+  const bufCookie = Buffer.from(cookieToken);
+  const bufHeader = Buffer.from(headerToken);
+
+  if (bufCookie.length === 0 || bufCookie.length !== bufHeader.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(bufCookie, bufHeader);
 }
 
 // ============================================
@@ -322,6 +350,7 @@ module.exports = {
   // CSRF
   generateCSRFToken,
   createCSRFCookie,
+  clearCSRFCookie,
   validateCSRF,
   // Rate limiting
   checkRateLimit,

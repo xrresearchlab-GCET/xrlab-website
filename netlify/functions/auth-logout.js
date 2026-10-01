@@ -6,7 +6,7 @@
 const {
   respondError, handleOptions, getSupabase,
   getSessionToken, hashToken, clearSessionCookie,
-  auditLog, getClientIP,
+  clearCSRFCookie, auditLog, getClientIP,
 } = require('./utils/shared');
 
 exports.handler = async (event) => {
@@ -31,7 +31,9 @@ exports.handler = async (event) => {
       headers: {
         'Content-Type': 'application/json',
         'Cache-Control': 'no-store',
-        'Set-Cookie': clearSessionCookie(),
+      },
+      multiValueHeaders: {
+        'Set-Cookie': [clearSessionCookie(), clearCSRFCookie()],
       },
       body: JSON.stringify({ success: true }),
     };
