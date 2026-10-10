@@ -2628,18 +2628,18 @@
     main.innerHTML = `
       <div class="admin-main-header">
         <div>
-          <h1 class="admin-main-title">Learn Platform &amp; Curricula</h1>
-          <p class="admin-main-subtitle">MANAGE SPATIAL COMPUTING COURSES &amp; LESSONS</p>
+          <h1 class="admin-main-title">Tutorials &amp; Learning Hub</h1>
+          <p class="admin-main-subtitle">DEV COMMUNITY TUTORIALS, GUIDES, KNOWLEDGE BASE &amp; SNIPPETS</p>
         </div>
         <button class="admin-btn admin-btn-primary admin-btn-small" onclick="window.adminApp.loadCourseForm()">
-          + ADD COURSE
+          + ADD TUTORIAL
         </button>
       </div>
 
       <div class="admin-tabs" id="course-tabs">
-        <button class="admin-tab ${categoryFilter === 'all' ? 'active' : ''}" data-cat="all">ALL COURSES</button>
-        <button class="admin-tab ${categoryFilter === 'Augmented Reality' ? 'active' : ''}" data-cat="Augmented Reality">AR</button>
-        <button class="admin-tab ${categoryFilter === 'Virtual Reality' ? 'active' : ''}" data-cat="Virtual Reality">VR</button>
+        <button class="admin-tab ${categoryFilter === 'all' ? 'active' : ''}" data-cat="all">ALL TUTORIALS</button>
+        <button class="admin-tab ${categoryFilter === 'Unreal Engine 5' ? 'active' : ''}" data-cat="Unreal Engine 5">UNREAL ENGINE</button>
+        <button class="admin-tab ${categoryFilter === 'Unity 3D' ? 'active' : ''}" data-cat="Unity 3D">UNITY</button>
         <button class="admin-tab ${categoryFilter === 'WebXR' ? 'active' : ''}" data-cat="WebXR">WEBXR</button>
         <button class="admin-tab ${categoryFilter === 'draft' ? 'active' : ''}" data-cat="draft">DRAFTS</button>
       </div>
@@ -2674,14 +2674,14 @@
     if (filter === 'draft') {
       filtered = allCourses.filter(c => c.status === 'draft');
     } else if (filter !== 'all') {
-      filtered = allCourses.filter(c => c.category === filter);
+      filtered = allCourses.filter(c => (c.category || '').toLowerCase().includes(filter.toLowerCase()));
     }
 
     if (!filtered.length) {
       listEl.innerHTML = `
         <div class="admin-empty-state">
-          <h3>No courses found</h3>
-          <p>Click "+ ADD COURSE" to create a new curriculum track.</p>
+          <h3>No tutorials found</h3>
+          <p>Click "+ ADD TUTORIAL" to publish an Unreal Engine, Unity, or Spatial AI guide.</p>
         </div>
       `;
       return;
@@ -2690,27 +2690,29 @@
     listEl.innerHTML = filtered.map(c => `
       <div class="admin-event-row" style="display:flex;justify-content:space-between;align-items:center;padding:16px;margin-bottom:12px;background:rgba(255,255,255,0.02);border:1px solid var(--cin-border);border-radius:10px">
         <div style="display:flex;align-items:center;gap:16px">
-          <div style="width:64px;height:48px;border-radius:8px;background:rgba(0,0,0,0.4);border:1px solid var(--cin-border);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-            ${c.thumbnail_url ? `<img src="${escapeHtml(c.thumbnail_url)}" alt="${escapeHtml(c.title)}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='<span style=\\'font-size:11px;color:var(--cin-text-dim)\\'>TRACK</span>'"/>` : `<span style="font-family:var(--font-mono);font-size:11px;color:var(--cin-accent-bright)">TRACK</span>`}
+          <div style="width:72px;height:48px;border-radius:8px;background:rgba(0,0,0,0.4);border:1px solid var(--cin-border);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            ${c.thumbnail_url ? `<img src="${escapeHtml(c.thumbnail_url)}" alt="${escapeHtml(c.title)}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='<span style=\\'font-size:10px;color:var(--cin-text-dim)\\'>TUTORIAL</span>'"/>` : `<span style="font-family:var(--font-mono);font-size:10px;color:var(--cin-accent-bright)">TUTORIAL</span>`}
           </div>
           <div>
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
               <strong style="font-size:15px;color:var(--cin-text)">${escapeHtml(c.title)}</strong>
-              <span class="admin-status-badge ${c.status === 'published' ? 'admin-badge-present' : 'admin-badge-past'}">${c.status.toUpperCase()}</span>
-              <span class="admin-status-badge admin-badge-model">${escapeHtml(c.difficulty)}</span>
-              ${c.featured ? `<span style="font-size:10px;color:#FCD34D;font-family:var(--font-mono)">★ FEATURED</span>` : ''}
+              <span class="admin-status-badge ${c.status === 'published' ? 'admin-badge-present' : 'admin-badge-past'}">${(c.status || 'published').toUpperCase()}</span>
+              <span class="admin-status-badge admin-badge-model">${escapeHtml(c.content_type || 'Tutorial')}</span>
+              <span style="font-family:var(--font-mono);font-size:11px;color:var(--cin-accent-bright);padding:2px 6px;background:rgba(56,189,248,0.1);border-radius:4px">${escapeHtml(c.difficulty || 'Beginner')}</span>
+              ${c.featured ? `<span style="font-size:10px;color:#FCD34D;font-family:var(--font-mono)">★ TRENDING</span>` : ''}
             </div>
             <div style="font-size:13px;color:var(--cin-text-secondary);margin-top:2px">
-              ${escapeHtml(c.category)} · ${c.estimated_duration ? `${escapeHtml(c.estimated_duration)} · ` : ''}${c.lesson_count || 0} Lessons
+              ${escapeHtml(c.category || 'Unreal Engine 5')} · ${escapeHtml(c.author_type || 'Lab Core')} · ${escapeHtml(c.estimated_duration || '15 min')}
             </div>
             <div style="font-size:11px;color:var(--cin-text-dim);margin-top:4px">
-              Instructor: ${escapeHtml(c.instructor_name || 'Lab Staff')} · Slug: <code>${escapeHtml(c.slug)}</code>
+              By: ${escapeHtml(c.author_name || c.instructor_name || 'XR Research Lab')} · Slug: <code>${escapeHtml(c.slug)}</code>
+              ${c.video_url ? ` · <span style="color:#38bdf8">🎥 Video</span>` : ''}
+              ${c.external_url ? ` · <span style="color:#34d399">🔗 Resource Link</span>` : ''}
             </div>
           </div>
         </div>
 
         <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
-          <button class="admin-btn admin-btn-secondary admin-btn-tiny" onclick="window.adminApp.manageLessons('${c.id}')">Manage Lessons (${c.lesson_count || 0})</button>
           <button class="admin-btn admin-btn-ghost admin-btn-tiny" onclick="window.adminApp.editCourse('${c.id}')">Edit</button>
           <button class="admin-btn admin-btn-ghost admin-btn-tiny" onclick="window.adminApp.toggleCoursePublish('${c.id}', ${c.status !== 'published'})">
             ${c.status === 'published' ? 'Unpublish' : 'Publish'}
@@ -2730,42 +2732,54 @@
     main.innerHTML = `
       <div class="admin-main-header">
         <div>
-          <h1 class="admin-main-title">${isEdit ? 'Edit Course' : 'Create Course'}</h1>
-          <p class="admin-main-subtitle">SPATIAL CURRICULUM, SYLLABUS &amp; METADATA</p>
+          <h1 class="admin-main-title">${isEdit ? 'Edit Tutorial' : 'Add Tutorial'}</h1>
+          <p class="admin-main-subtitle">DEV COMMUNITY ATTRIBUTES, MEDIA &amp; STEP-BY-STEP INSTRUCTIONS</p>
         </div>
         <button class="admin-btn admin-btn-secondary admin-btn-small" onclick="window.adminApp.switchSection('learn')">
-          ← BACK TO COURSES
+          ← BACK TO TUTORIALS
         </button>
       </div>
 
       <div id="course-form-msg" class="admin-message" style="display:none"></div>
 
       <form id="course-form" class="admin-form">
-        <!-- Overview -->
+        <!-- Section 1: Overview & Type -->
         <div class="admin-form-section">
-          <h3 class="admin-form-section-title">Course Information</h3>
+          <h3 class="admin-form-section-title">Tutorial Overview</h3>
           <div class="admin-form-grid">
             <div class="admin-field full-width">
-              <label for="course-title">Course Title *</label>
-              <input type="text" id="course-title" value="${escapeHtml(c.title || '')}" placeholder="e.g. Unreal Engine 5 &amp; Virtual Production" required>
+              <label for="course-title">Tutorial Title *</label>
+              <input type="text" id="course-title" value="${escapeHtml(c.title || '')}" placeholder="e.g. How to Use Iris' Filtering System in UE5" required>
             </div>
 
             <div class="admin-field">
-              <label for="course-category">Category *</label>
-              <select id="course-category">
-                <option value="Augmented Reality" ${c.category === 'Augmented Reality' ? 'selected' : ''}>Augmented Reality</option>
-                <option value="Virtual Reality" ${c.category === 'Virtual Reality' ? 'selected' : ''}>Virtual Reality</option>
-                <option value="Mixed Reality" ${c.category === 'Mixed Reality' ? 'selected' : ''}>Mixed Reality</option>
-                <option value="WebXR" ${c.category === 'WebXR' ? 'selected' : ''}>WebXR</option>
-                <option value="3D Modeling" ${c.category === '3D Modeling' ? 'selected' : ''}>3D Modeling &amp; Shaders</option>
-                <option value="Spatial Computing" ${c.category === 'Spatial Computing' ? 'selected' : ''}>Spatial Computing</option>
+              <label for="course-content-type">Content Type *</label>
+              <select id="course-content-type">
+                <option value="Tutorial" ${(c.content_type || 'Tutorial') === 'Tutorial' ? 'selected' : ''}>Tutorial (Step-by-Step Guide)</option>
+                <option value="Community Tutorial" ${c.content_type === 'Community Tutorial' ? 'selected' : ''}>Community Tutorial</option>
+                <option value="Knowledge Base" ${c.content_type === 'Knowledge Base' ? 'selected' : ''}>Knowledge Base / Concept Paper</option>
+                <option value="Snippet" ${c.content_type === 'Snippet' ? 'selected' : ''}>Snippet / Quick Blueprint Tip</option>
+                <option value="Livestream" ${c.content_type === 'Livestream' ? 'selected' : ''}>Livestream / Recorded Workshop</option>
+                <option value="Talks & Demos" ${c.content_type === 'Talks & Demos' ? 'selected' : ''}>Talks &amp; Technical Demos</option>
               </select>
             </div>
 
             <div class="admin-field">
-              <label for="course-difficulty">Difficulty *</label>
+              <label for="course-category">Engine &amp; Platform *</label>
+              <select id="course-category">
+                <option value="Unreal Engine 5" ${(c.category || 'Unreal Engine 5') === 'Unreal Engine 5' ? 'selected' : ''}>Unreal Engine 5</option>
+                <option value="Unity 3D" ${c.category === 'Unity 3D' ? 'selected' : ''}>Unity 3D &amp; XRIT</option>
+                <option value="WebXR" ${c.category === 'WebXR' ? 'selected' : ''}>WebXR &amp; Three.js</option>
+                <option value="3D Modeling" ${c.category === '3D Modeling' ? 'selected' : ''}>Blender &amp; 3D Shaders</option>
+                <option value="Spatial AI" ${c.category === 'Spatial AI' ? 'selected' : ''}>Spatial AI &amp; Vision</option>
+                <option value="OpenXR" ${c.category === 'OpenXR' ? 'selected' : ''}>OpenXR &amp; VisionOS</option>
+              </select>
+            </div>
+
+            <div class="admin-field">
+              <label for="course-difficulty">Skill Level *</label>
               <select id="course-difficulty">
-                <option value="Beginner" ${c.difficulty === 'Beginner' ? 'selected' : ''}>Beginner</option>
+                <option value="Beginner" ${(c.difficulty || 'Beginner') === 'Beginner' ? 'selected' : ''}>Beginner</option>
                 <option value="Intermediate" ${c.difficulty === 'Intermediate' ? 'selected' : ''}>Intermediate</option>
                 <option value="Advanced" ${c.difficulty === 'Advanced' ? 'selected' : ''}>Advanced</option>
                 <option value="Expert" ${c.difficulty === 'Expert' ? 'selected' : ''}>Expert</option>
@@ -2773,78 +2787,98 @@
             </div>
 
             <div class="admin-field">
-              <label for="course-slug">URL Slug (leave blank to auto-generate)</label>
-              <input type="text" id="course-slug" value="${escapeHtml(c.slug || '')}" placeholder="e.g. unreal-engine-5-virtual-production">
-            </div>
-
-            <div class="admin-field">
               <label for="course-duration">Estimated Duration</label>
-              <input type="text" id="course-duration" value="${escapeHtml(c.estimated_duration || '')}" placeholder="e.g. 6 Weeks · 24 Hours">
-            </div>
-
-            <div class="admin-field">
-              <label for="course-instructor">Instructor Name</label>
-              <input type="text" id="course-instructor" value="${escapeHtml(c.instructor_name || '')}" placeholder="e.g. MD Akif">
-            </div>
-
-            <div class="admin-field">
-              <label for="course-instructor-role">Instructor Role</label>
-              <input type="text" id="course-instructor-role" value="${escapeHtml(c.instructor_role || '')}" placeholder="e.g. Head of Lab / Lead Researcher">
+              <input type="text" id="course-duration" value="${escapeHtml(c.estimated_duration || '15 min read')}" placeholder="e.g. 15 min read, 25 min video">
             </div>
 
             <div class="admin-field full-width">
-              <label for="course-short-desc">Short Description (Cards &amp; Meta)</label>
-              <input type="text" id="course-short-desc" value="${escapeHtml(c.short_description || '')}" placeholder="Brief 1-2 sentence overview">
-            </div>
-
-            <div class="admin-field full-width">
-              <label for="course-desc">Full Syllabus Description</label>
-              <textarea id="course-desc" rows="5" placeholder="Comprehensive course syllabus, methodology, and learning expectations...">${escapeHtml(c.description || '')}</textarea>
+              <label for="course-slug">URL Slug (leave blank to auto-generate)</label>
+              <input type="text" id="course-slug" value="${escapeHtml(c.slug || '')}" placeholder="e.g. how-to-use-iris-filtering">
             </div>
           </div>
         </div>
 
-        <!-- Media Assets -->
+        <!-- Section 2: Creator & Authorship -->
         <div class="admin-form-section">
-          <h3 class="admin-form-section-title">Media &amp; Video Embeds</h3>
+          <h3 class="admin-form-section-title">Author &amp; Attribution</h3>
           <div class="admin-form-grid">
             <div class="admin-field">
-              <label for="course-thumbnail">Thumbnail Image URL (or Google Drive)</label>
-              <input type="url" id="course-thumbnail" value="${escapeHtml(c.thumbnail_url || '')}" placeholder="https://drive.google.com/file/d/.../view or image URL">
+              <label for="course-author-name">Author / Creator Name *</label>
+              <input type="text" id="course-author-name" value="${escapeHtml(c.author_name || c.instructor_name || 'XR Research Lab')}" placeholder="e.g. XR Research Lab, Ashif Ali, Fate-2-Go" required>
+            </div>
+
+            <div class="admin-field">
+              <label for="course-author-type">Author Category *</label>
+              <select id="course-author-type">
+                <option value="Lab Core" ${(c.author_type || 'Lab Core') === 'Lab Core' ? 'selected' : ''}>Lab Core (Official / Mentors)</option>
+                <option value="Community" ${c.author_type === 'Community' ? 'selected' : ''}>Community &amp; Students</option>
+              </select>
+            </div>
+
+            <div class="admin-field">
+              <label for="course-author-role">Author Role / Division</label>
+              <input type="text" id="course-author-role" value="${escapeHtml(c.author_role || c.instructor_role || 'Lab Lead / XR Engineer')}" placeholder="e.g. Graphics Researcher, Student Contributor">
+            </div>
+
+            <div class="admin-field">
+              <label for="course-author-avatar">Author Avatar URL (optional)</label>
+              <input type="url" id="course-author-avatar" value="${escapeHtml(c.author_avatar_url || '')}" placeholder="https://... avatar image">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Media & Video Assets -->
+        <div class="admin-form-section">
+          <h3 class="admin-form-section-title">Media &amp; External Links</h3>
+          <div class="admin-form-grid">
+            <div class="admin-field">
+              <label for="course-thumbnail">Thumbnail Image URL (16:9 ratio)</label>
+              <input type="url" id="course-thumbnail" value="${escapeHtml(c.thumbnail_url || '')}" placeholder="https://drive.google.com/... or image URL">
               <div id="course-thumb-preview" class="admin-media-preview-box"></div>
             </div>
 
             <div class="admin-field">
-              <label for="course-video">Introduction Video URL (YouTube or Google Drive)</label>
-              <input type="url" id="course-video" value="${escapeHtml(c.intro_video_url || c.video_url || '')}" placeholder="https://youtube.com/watch?v=... or Google Drive video">
+              <label for="course-video">Video Tutorial URL (YouTube, Vimeo, Google Drive)</label>
+              <input type="url" id="course-video" value="${escapeHtml(c.video_url || c.intro_video_url || '')}" placeholder="https://youtube.com/watch?v=... or Drive video">
               <div id="course-vid-preview" class="admin-media-preview-box"></div>
             </div>
 
             <div class="admin-field full-width">
-              <label for="course-objectives">Learning Objectives (one per line)</label>
-              <textarea id="course-objectives" rows="3" placeholder="Master Nanite and Lumen dynamic lighting&#10;Implement Blueprint spatial interaction systems&#10;Optimize real-time framerate for VR">${(c.learning_objectives || []).join('\n')}</textarea>
+              <label for="course-external-url">External Resource / Repository Link (GitHub, Epic Dev Community, Docs)</label>
+              <input type="url" id="course-external-url" value="${escapeHtml(c.external_url || '')}" placeholder="https://github.com/... or Epic Dev Community tutorial link">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Content & Guide -->
+        <div class="admin-form-section">
+          <h3 class="admin-form-section-title">Tutorial Instructions &amp; Documentation</h3>
+          <div class="admin-form-grid">
+            <div class="admin-field full-width">
+              <label for="course-short-desc">Short Summary (Cards &amp; Previews)</label>
+              <input type="text" id="course-short-desc" value="${escapeHtml(c.short_description || '')}" placeholder="Brief 1-2 sentence preview">
             </div>
 
             <div class="admin-field full-width">
-              <label for="course-prereqs">Prerequisites (one per line)</label>
-              <textarea id="course-prereqs" rows="2" placeholder="Basic C++ or C# syntax understanding&#10;Foundational 3D coordinate mathematics">${(c.prerequisites || []).join('\n')}</textarea>
+              <label for="course-desc">Full Step-by-Step Tutorial Guide</label>
+              <textarea id="course-desc" rows="8" placeholder="Detailed step-by-step instructions, code snippets, blueprint setup notes, and tips...">${escapeHtml(c.tutorial_body || c.description || '')}</textarea>
             </div>
 
             <div class="admin-field">
               <label for="course-tech">Technologies (comma-separated)</label>
-              <input type="text" id="course-tech" value="${(c.technologies || []).join(', ')}" placeholder="Unreal Engine 5, C++, OpenXR, Lumen">
+              <input type="text" id="course-tech" value="${(c.technologies || []).join(', ')}" placeholder="Unreal Engine 5, Iris, C++, Nanite">
             </div>
 
             <div class="admin-field">
               <label for="course-tags">Tags (comma-separated)</label>
-              <input type="text" id="course-tags" value="${(c.tags || []).join(', ')}" placeholder="VR, Virtual Production, Blueprint">
+              <input type="text" id="course-tags" value="${(c.tags || []).join(', ')}" placeholder="Multiplayer, Networking, Level Design">
             </div>
 
             <div class="admin-field">
               <label for="course-status">Publication Status</label>
               <select id="course-status">
-                <option value="published" ${c.status !== 'draft' && c.status !== 'archived' ? 'selected' : ''}>Published — Active on Learn Page</option>
-                <option value="draft" ${c.status === 'draft' ? 'selected' : ''}>Draft — Hidden from Public</option>
+                <option value="published" ${c.status !== 'draft' && c.status !== 'archived' ? 'selected' : ''}>Published — Visible on Learn Page</option>
+                <option value="draft" ${c.status === 'draft' ? 'selected' : ''}>Draft — Internal / Hidden</option>
                 <option value="archived" ${c.status === 'archived' ? 'selected' : ''}>Archived</option>
               </select>
             </div>
@@ -2857,14 +2891,7 @@
             <div class="admin-field" style="display:flex;align-items:center;padding-top:24px">
               <label class="admin-toggle">
                 <input type="checkbox" id="course-featured" ${c.featured ? 'checked' : ''}>
-                <span>Feature on Homepage &amp; Learn Header</span>
-              </label>
-            </div>
-
-            <div class="admin-field" style="display:flex;align-items:center;padding-top:24px">
-              <label class="admin-toggle">
-                <input type="checkbox" id="course-cert" ${c.certificate_available ? 'checked' : ''}>
-                <span>Lab Completion Certificate Available</span>
+                <span>Pin as Trending / Featured Tutorial</span>
               </label>
             </div>
           </div>
@@ -2872,7 +2899,7 @@
 
         <div class="admin-form-actions">
           <button type="submit" class="admin-btn admin-btn-primary" id="course-submit-btn">
-            ${isEdit ? 'UPDATE COURSE' : 'SAVE COURSE'}
+            ${isEdit ? 'UPDATE TUTORIAL' : 'SAVE TUTORIAL'}
           </button>
           <button type="button" class="admin-btn admin-btn-secondary" onclick="window.adminApp.switchSection('learn')">
             CANCEL
@@ -2913,7 +2940,7 @@
     const title = $('#course-title').value.trim();
     if (!title) {
       msg.className = 'admin-message error';
-      msg.textContent = 'Course title is required';
+      msg.textContent = 'Tutorial title is required';
       msg.style.display = 'block';
       return;
     }
@@ -2921,24 +2948,25 @@
     const payload = {
       title,
       slug: $('#course-slug').value.trim() || undefined,
+      content_type: $('#course-content-type').value,
       category: $('#course-category').value,
       difficulty: $('#course-difficulty').value,
-      estimated_duration: $('#course-duration').value.trim() || null,
-      instructor_name: $('#course-instructor').value.trim() || null,
-      instructor_role: $('#course-instructor-role').value.trim() || null,
+      estimated_duration: $('#course-duration').value.trim() || '15 min read',
+      author_name: $('#course-author-name').value.trim() || 'XR Research Lab',
+      author_type: $('#course-author-type').value,
+      author_role: $('#course-author-role').value.trim() || 'Lab Core',
+      author_avatar_url: $('#course-author-avatar').value.trim() || null,
+      thumbnail_url: $('#course-thumbnail').value.trim() || null,
+      video_url: $('#course-video').value.trim() || null,
+      external_url: $('#course-external-url').value.trim() || null,
       short_description: $('#course-short-desc').value.trim() || null,
       description: $('#course-desc').value.trim() || null,
-      thumbnail_url: $('#course-thumbnail').value.trim() || null,
-      intro_video_url: $('#course-video').value.trim() || null,
-      video_url: $('#course-video').value.trim() || null,
-      learning_objectives: $('#course-objectives').value.split('\n').map(s => s.trim()).filter(Boolean),
-      prerequisites: $('#course-prereqs').value.split('\n').map(s => s.trim()).filter(Boolean),
+      tutorial_body: $('#course-desc').value.trim() || null,
       technologies: $('#course-tech').value.split(',').map(s => s.trim()).filter(Boolean),
       tags: $('#course-tags').value.split(',').map(s => s.trim()).filter(Boolean),
       status: $('#course-status').value,
       display_order: parseInt($('#course-order').value, 10) || 0,
       featured: $('#course-featured').checked,
-      certificate_available: $('#course-cert').checked,
     };
 
     const submitBtn = $('#course-submit-btn');
@@ -2953,17 +2981,17 @@
       }
 
       msg.className = 'admin-message success';
-      msg.textContent = editingCourse ? 'Course updated!' : 'Course created!';
+      msg.textContent = editingCourse ? 'Tutorial updated!' : 'Tutorial created!';
       msg.style.display = 'block';
 
       setTimeout(() => loadCourses(), 1200);
     } catch (err) {
       msg.className = 'admin-message error';
-      msg.textContent = err.message || 'Failed to save course';
+      msg.textContent = err.message || 'Failed to save tutorial';
       msg.style.display = 'block';
     } finally {
       submitBtn.disabled = false;
-      submitBtn.textContent = editingCourse ? 'UPDATE COURSE' : 'SAVE COURSE';
+      submitBtn.textContent = editingCourse ? 'UPDATE TUTORIAL' : 'SAVE TUTORIAL';
     }
   }
 

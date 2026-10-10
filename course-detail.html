@@ -361,12 +361,12 @@
 
         const metaEl = document.getElementById('c-meta');
         metaEl.innerHTML = `
-          <div class="course-meta-item"><strong>Category:</strong> ${course.category}</div>
-          <div class="course-meta-item"><strong>Difficulty:</strong> ${course.difficulty}</div>
+          <div class="course-meta-item"><strong>Engine:</strong> ${course.category || 'Unreal Engine 5'}</div>
+          <div class="course-meta-item"><strong>Type:</strong> ${course.content_type || 'Tutorial'}</div>
+          <div class="course-meta-item"><strong>Skill Level:</strong> ${course.difficulty || 'Beginner'}</div>
           ${course.estimated_duration ? `<div class="course-meta-item"><strong>Duration:</strong> ${course.estimated_duration}</div>` : ''}
-          ${course.instructor_name ? `<div class="course-meta-item"><strong>Instructor:</strong> ${course.instructor_name} (${course.instructor_role || 'Faculty'})</div>` : ''}
-          <div class="course-meta-item"><strong>Lessons:</strong> ${lessons.length} Units</div>
-          ${course.certificate_available ? `<div class="course-meta-item" style="color:#34D399">✓ Certificate Eligible</div>` : ''}
+          ${(course.author_name || course.instructor_name) ? `<div class="course-meta-item"><strong>Author:</strong> ${course.author_name || course.instructor_name} (${course.author_role || course.instructor_role || 'Lab Core'})</div>` : ''}
+          ${course.external_url ? `<div class="course-meta-item"><a href="${course.external_url}" target="_blank" rel="noopener" style="color:var(--cin-accent-bright);text-decoration:none">🔗 External Resource / Repo &rarr;</a></div>` : ''}
         `;
 
         // Video Player

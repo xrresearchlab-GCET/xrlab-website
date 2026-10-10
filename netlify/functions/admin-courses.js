@@ -232,21 +232,33 @@ exports.handler = async (event) => {
       slug = `${slug}-${Date.now().toString(36)}`;
     }
 
+    const authorName = sanitizeText(body.author_name || body.instructor_name || 'XR Research Lab');
+    const authorRole = sanitizeText(body.author_role || body.instructor_role || 'Lab Core');
+    const authorType = sanitizeText(body.author_type || 'Lab Core');
+    const contentType = sanitizeText(body.content_type || 'Tutorial');
+
     const courseData = {
       title,
       slug,
       short_description: sanitizeText(body.short_description || ''),
-      description: sanitizeText(body.description || ''),
-      category: sanitizeText(body.category || 'Augmented Reality'),
+      description: sanitizeText(body.description || body.tutorial_body || ''),
+      category: sanitizeText(body.category || 'Unreal Engine 5'),
       difficulty: ['Beginner', 'Intermediate', 'Advanced', 'Expert'].includes(body.difficulty)
         ? body.difficulty
         : 'Beginner',
       thumbnail_url: body.thumbnail_url ? validateUrl(body.thumbnail_url) : null,
       video_url: body.video_url ? validateUrl(body.video_url) : null,
       intro_video_url: body.intro_video_url ? validateUrl(body.intro_video_url) : null,
-      instructor_name: sanitizeText(body.instructor_name || ''),
-      instructor_role: sanitizeText(body.instructor_role || ''),
-      estimated_duration: sanitizeText(body.estimated_duration || ''),
+      instructor_name: authorName,
+      instructor_role: authorRole,
+      author_name: authorName,
+      author_role: authorRole,
+      author_type: authorType,
+      author_avatar_url: body.author_avatar_url ? validateUrl(body.author_avatar_url) : null,
+      content_type: contentType,
+      external_url: body.external_url ? validateUrl(body.external_url) : null,
+      tutorial_body: sanitizeText(body.tutorial_body || body.description || ''),
+      estimated_duration: sanitizeText(body.estimated_duration || '15 min read'),
       lesson_count: 0,
       learning_objectives: Array.isArray(body.learning_objectives) ? body.learning_objectives.map(sanitizeText).filter(Boolean) : [],
       prerequisites: Array.isArray(body.prerequisites) ? body.prerequisites.map(sanitizeText).filter(Boolean) : [],
@@ -256,28 +268,51 @@ exports.handler = async (event) => {
       certificate_available: !!body.certificate_available,
       featured: !!body.featured,
       display_order: parseInt(body.display_order, 10) || 0,
-      status: ['draft', 'published', 'archived'].includes(body.status) ? body.status : 'draft',
-      published_at: body.status === 'published' ? new Date().toISOString() : null,
+      status: ['draft', 'published', 'archived'].includes(body.status) ? body.status : 'published',
+      published_at: body.status !== 'draft' ? new Date().toISOString() : null,
       created_by: 'admin',
     };
 
-    const { data: course, error } = await supabase
+    let course;
+    // Attempt insert with all extended attributes
+    let { data: insData, error } = await supabase
       .from('courses')
       .insert(courseData)
       .select('*')
       .single();
 
+    if (error && error.message && error.message.includes('column')) {
+      // Fallback if newly added columns do not exist yet in Supabase
+      console.warn('Retrying insert without extended columns:', error.message);
+      delete courseData.content_type;
+      delete courseData.author_name;
+      delete courseData.author_role;
+      delete courseData.author_type;
+      delete courseData.author_avatar_url;
+      delete courseData.external_url;
+      delete courseData.tutorial_body;
+
+      const fallbackRes = await supabase
+        .from('courses')
+        .insert(courseData)
+        .select('*')
+        .single();
+      insData = fallbackRes.data;
+      error = fallbackRes.error;
+    }
+
     if (error) {
       console.error('Course insert error:', error.message);
-      return respondError(500, 'Failed to create course: ' + error.message);
+      return respondError(500, 'Failed to create tutorial: ' + error.message);
     }
+    course = insData;
 
     await auditLog('COURSE_CREATE', {
       success: true, ip, userAgent: ua, courseId: course.id,
       details: { title: course.title, slug: course.slug },
     });
 
-    return respond(201, { course });
+    return respond(201, { course, tutorial: course });
   }
 
   // ── PUT ──
@@ -297,6 +332,8 @@ exports.handler = async (event) => {
     if (body.slug !== undefined && body.slug) updates.slug = generateSlug(body.slug);
     if (body.short_description !== undefined) updates.short_description = sanitizeText(body.short_description);
     if (body.description !== undefined) updates.description = sanitizeText(body.description);
+    if (body.tutorial_body !== undefined) updates.tutorial_body = sanitizeText(body.tutorial_body);
+    if (body.content_type !== undefined) updates.content_type = sanitizeText(body.content_type);
     if (body.category !== undefined) updates.category = sanitizeText(body.category);
     if (body.difficulty !== undefined && ['Beginner', 'Intermediate', 'Advanced', 'Expert'].includes(body.difficulty)) {
       updates.difficulty = body.difficulty;
@@ -304,8 +341,20 @@ exports.handler = async (event) => {
     if (body.thumbnail_url !== undefined) updates.thumbnail_url = body.thumbnail_url ? validateUrl(body.thumbnail_url) : null;
     if (body.video_url !== undefined) updates.video_url = body.video_url ? validateUrl(body.video_url) : null;
     if (body.intro_video_url !== undefined) updates.intro_video_url = body.intro_video_url ? validateUrl(body.intro_video_url) : null;
-    if (body.instructor_name !== undefined) updates.instructor_name = sanitizeText(body.instructor_name);
-    if (body.instructor_role !== undefined) updates.instructor_role = sanitizeText(body.instructor_role);
+    if (body.external_url !== undefined) updates.external_url = body.external_url ? validateUrl(body.external_url) : null;
+
+    if (body.author_name !== undefined || body.instructor_name !== undefined) {
+      const name = sanitizeText(body.author_name || body.instructor_name || '');
+      updates.author_name = name;
+      updates.instructor_name = name;
+    }
+    if (body.author_role !== undefined || body.instructor_role !== undefined) {
+      const role = sanitizeText(body.author_role || body.instructor_role || '');
+      updates.author_role = role;
+      updates.instructor_role = role;
+    }
+    if (body.author_type !== undefined) updates.author_type = sanitizeText(body.author_type);
+    if (body.author_avatar_url !== undefined) updates.author_avatar_url = body.author_avatar_url ? validateUrl(body.author_avatar_url) : null;
     if (body.estimated_duration !== undefined) updates.estimated_duration = sanitizeText(body.estimated_duration);
     if (body.learning_objectives !== undefined) {
       updates.learning_objectives = Array.isArray(body.learning_objectives) ? body.learning_objectives.map(sanitizeText).filter(Boolean) : [];
@@ -330,16 +379,35 @@ exports.handler = async (event) => {
       }
     }
 
-    const { data: course, error } = await supabase
+    let { data: course, error } = await supabase
       .from('courses')
       .update(updates)
       .eq('id', id)
       .select('*')
       .single();
 
+    if (error && error.message && error.message.includes('column')) {
+      delete updates.content_type;
+      delete updates.author_name;
+      delete updates.author_role;
+      delete updates.author_type;
+      delete updates.author_avatar_url;
+      delete updates.external_url;
+      delete updates.tutorial_body;
+
+      const fallbackRes = await supabase
+        .from('courses')
+        .update(updates)
+        .eq('id', id)
+        .select('*')
+        .single();
+      course = fallbackRes.data;
+      error = fallbackRes.error;
+    }
+
     if (error) {
       console.error('Course update error:', error.message);
-      return respondError(500, 'Failed to update course');
+      return respondError(500, 'Failed to update tutorial: ' + error.message);
     }
 
     await auditLog('COURSE_UPDATE', {

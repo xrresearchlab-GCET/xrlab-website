@@ -1048,6 +1048,16 @@ SELECT
   0
 WHERE NOT EXISTS (
   SELECT 1 FROM members WHERE is_lead = TRUE
-);
+);-- Unreal Engine Style Learning & Tutorials Schema Extension
+ALTER TABLE IF EXISTS courses ADD COLUMN IF NOT EXISTS content_type TEXT DEFAULT 'Tutorial';
+ALTER TABLE IF EXISTS courses ADD COLUMN IF NOT EXISTS author_name TEXT;
+ALTER TABLE IF EXISTS courses ADD COLUMN IF NOT EXISTS author_role TEXT;
+ALTER TABLE IF EXISTS courses ADD COLUMN IF NOT EXISTS author_type TEXT DEFAULT 'Lab Core';
+ALTER TABLE IF EXISTS courses ADD COLUMN IF NOT EXISTS author_avatar_url TEXT;
+ALTER TABLE IF EXISTS courses ADD COLUMN IF NOT EXISTS external_url TEXT;
+ALTER TABLE IF EXISTS courses ADD COLUMN IF NOT EXISTS tutorial_body TEXT;
+ALTER TABLE IF EXISTS courses ADD COLUMN IF NOT EXISTS views_count INTEGER DEFAULT 0;
+ALTER TABLE IF EXISTS courses ADD COLUMN IF NOT EXISTS likes_count INTEGER DEFAULT 0;
 
-
+CREATE INDEX IF NOT EXISTS idx_courses_content_type ON courses(content_type);
+CREATE INDEX IF NOT EXISTS idx_courses_author_type ON courses(author_type);
