@@ -1,4 +1,4 @@
-/**
+/** to sc
  * XR Research Lab — About Page Dynamic Members Integration
  * Loads and renders live lab members from /api/members-public (connected to Admin Panel)
  * Supports 3D Model Viewers, Avatar Portraits, Role/Year Meta Badges, and Active/Alumni filtering.
@@ -118,7 +118,7 @@
           metaBadgesHtml = parts.map(p => `<span class="meta-badge">${escapeHtml(p)}</span>`).join('');
         }
       }
-      const statusBadge = m.status === 'PAST' 
+      const statusBadge = m.status === 'PAST'
         ? `<span class="meta-badge status-alumni">Alumni</span>`
         : `<span class="meta-badge status-active">Active</span>`;
       metaBadgesHtml += statusBadge;

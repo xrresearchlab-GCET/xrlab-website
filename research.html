@@ -133,18 +133,15 @@
       </p>
     </div>
 
-    <!-- Research Filter & Search Bar -->
+    <!-- Research Search Bar -->
     <div style="max-width:1200px;margin:0 auto 36px;padding:0 24px">
       <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between;align-items:center;background:rgba(14,18,28,0.5);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px 20px;backdrop-filter:blur(10px)">
-        <div style="display:flex;gap:8px;flex-wrap:wrap" id="res-stage-tabs">
-          <button class="team-filter-btn active" data-stage="all">All Stages</button>
-          <button class="team-filter-btn" data-stage="ONGOING">Ongoing</button>
-          <button class="team-filter-btn" data-stage="EXPERIMENTAL">Experimental</button>
-          <button class="team-filter-btn" data-stage="VALIDATION">Validation</button>
-          <button class="team-filter-btn" data-stage="COMPLETED">Completed</button>
+        <div style="display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:12px;color:var(--cin-text-secondary)">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#38bdf8;box-shadow:0 0 8px #38bdf8"></span>
+          <span>CURRENT LAB RESEARCH INITIATIVES (ALL ONGOING)</span>
         </div>
 
-        <div style="position:relative;min-width:240px">
+        <div style="position:relative;width:100%;max-width:320px">
           <input type="text" id="res-search" placeholder="Search papers, disciplines..." style="width:100%;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:8px 16px;color:var(--cin-text);font-size:13px;outline:none">
         </div>
       </div>
@@ -162,7 +159,7 @@
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
             <span class="card-track-badge">HEALTHCARE &amp; SURGICAL XR</span>
             <span style="font-family:var(--font-mono);font-size:10px;color:var(--cin-accent-bright);padding:2px 8px;background:rgba(56,189,248,0.1);border-radius:4px">
-              VALIDATION
+              ONGOING
             </span>
           </div>
           <h2 class="card-heading" style="font-size:18px">Sub-Millimeter Optical Tracking Accuracy in Holographic Headsets</h2>
@@ -188,7 +185,7 @@
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
             <span class="card-track-badge">INDUSTRIAL DIGITAL TWINS</span>
             <span style="font-family:var(--font-mono);font-size:10px;color:var(--cin-accent-bright);padding:2px 8px;background:rgba(56,189,248,0.1);border-radius:4px">
-              EXPERIMENTAL
+              ONGOING
             </span>
           </div>
           <h2 class="card-heading" style="font-size:18px">BIM Telemetry Synchronization via WebSockets in Browser WebXR</h2>
@@ -237,7 +234,6 @@
   <script src="js/homepage.js"></script>
   <script>
     (function () {
-      let currentStage = 'all';
       let searchQuery = '';
       let allFetchedResearch = null;
       let initialFallbackHtml = '';
@@ -250,24 +246,22 @@
 
         try {
           let url = '/api/research-public';
-          const params = [];
-          if (currentStage !== 'all') params.push(`stage=${encodeURIComponent(currentStage)}`);
-          if (searchQuery) params.push(`search=${encodeURIComponent(searchQuery)}`);
-          if (params.length) url += '?' + params.join('&');
+          if (searchQuery) url += '?search=' + encodeURIComponent(searchQuery);
 
           let res = await fetch(url);
           if (!res.ok) {
-            res = await fetch('/.netlify/functions/research-public' + (params.length ? '?' + params.join('&') : ''));
+            res = await fetch('/.netlify/functions/research-public' + (searchQuery ? '?search=' + encodeURIComponent(searchQuery) : ''));
           }
           if (!res.ok) throw new Error('API unreachable');
 
           const data = await res.json();
           if (data && Array.isArray(data.research)) {
-            if (currentStage === 'all' && !searchQuery) {
-              if (data.research.length > 0) {
-                allFetchedResearch = data.research;
-                renderResearch(data.research);
-              }
+            if (data.research.length > 0) {
+              allFetchedResearch = data.research;
+              renderResearch(data.research);
+            } else if (!searchQuery && initialFallbackHtml && grid) {
+              // If no custom research added in DB yet, preserve initial sample cards so page isn't empty!
+              grid.innerHTML = initialFallbackHtml;
             } else {
               renderResearch(data.research);
             }
@@ -281,9 +275,6 @@
       function filterFallbackResearch() {
         if (allFetchedResearch && allFetchedResearch.length > 0) {
           let filtered = allFetchedResearch;
-          if (currentStage !== 'all') {
-            filtered = filtered.filter(r => (r.research_stage || '').toUpperCase() === currentStage.toUpperCase());
-          }
           if (searchQuery) {
             const q = searchQuery.toLowerCase();
             filtered = filtered.filter(r =>
@@ -301,22 +292,11 @@
         const grid = document.getElementById('research-cards-grid');
         if (!grid) return;
         const cards = grid.querySelectorAll('.subpage-card');
-        let visibleCount = 0;
 
         cards.forEach(card => {
           const cardText = card.textContent.toLowerCase();
-          const stageEl = card.querySelector('[style*="var(--cin-accent-bright)"]');
-          const stageText = stageEl ? stageEl.textContent.trim().toUpperCase() : '';
-
-          const matchesStage = currentStage === 'all' || stageText === currentStage.toUpperCase();
           const matchesSearch = !searchQuery || cardText.includes(searchQuery.toLowerCase());
-
-          if (matchesStage && matchesSearch) {
-            card.style.display = 'flex';
-            visibleCount++;
-          } else {
-            card.style.display = 'none';
-          }
+          card.style.display = matchesSearch ? 'flex' : 'none';
         });
       }
 
@@ -327,7 +307,7 @@
         if (!items || !items.length) {
           grid.innerHTML = `
             <div style="grid-column:1/-1;text-align:center;padding:48px 24px;background:rgba(14,18,28,0.4);border:1px solid rgba(255,255,255,0.08);border-radius:14px;color:var(--cin-text-secondary)">
-              <p style="font-size:15px;margin:0 0 6px">No research publications found matching your selection.</p>
+              <p style="font-size:15px;margin:0 0 6px">No research publications found matching your search.</p>
               <p style="font-size:12px;margin:0;color:var(--cin-text-dim)">Research items can be created, edited, and published in the Admin Panel.</p>
             </div>
           `;
@@ -351,7 +331,7 @@
           }
 
           const trackBadge = (r.research_division || 'HCI & SIMULATION').toUpperCase();
-          const stageBadge = (r.research_stage || 'ONGOING').toUpperCase();
+          const stageBadge = 'ONGOING';
 
           return `
             <div class="subpage-card" style="display:flex;flex-direction:column;cursor:pointer;transition:transform 0.25s ease,border-color 0.25s ease" onclick="window.location.href='research-detail.html?slug=${encodeURIComponent(r.slug)}'">
@@ -389,16 +369,6 @@
         return d.innerHTML;
       }
 
-      // Filter tabs
-      document.querySelectorAll('#res-stage-tabs button').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('#res-stage-tabs button').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          currentStage = btn.dataset.stage;
-          fetchResearch();
-        });
-      });
-
       // Search debounce
       let searchTimeout;
       const searchInput = document.getElementById('res-search');
@@ -408,7 +378,7 @@
           searchTimeout = setTimeout(() => {
             searchQuery = e.target.value.trim();
             fetchResearch();
-          }, 350);
+          }, 300);
         });
       }
 

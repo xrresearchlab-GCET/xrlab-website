@@ -85,6 +85,11 @@ exports.handler = async (event) => {
       }
     }
 
+    // If setting as lead, unset is_lead on other members
+    if (memberData.is_lead) {
+      await supabase.from('members').update({ is_lead: false }).neq('id', '00000000-0000-0000-0000-000000000000');
+    }
+
     const { data, error } = await supabase
       .from('members')
       .insert(memberData)
@@ -111,6 +116,11 @@ exports.handler = async (event) => {
       if (memberData[urlField] && !validateUrl(memberData[urlField])) {
         return respondError(400, `Invalid URL for ${urlField}`);
       }
+    }
+
+    // If setting as lead, unset is_lead on other members
+    if (memberData.is_lead) {
+      await supabase.from('members').update({ is_lead: false }).neq('id', id);
     }
 
     const { data, error } = await supabase
@@ -143,10 +153,12 @@ function sanitizeMemberData(body) {
   return {
     full_name: sanitizeText(body.full_name, 200),
     email: sanitizeText(body.email, 200),
+    phone: sanitizeText(body.phone, 50),
     role: sanitizeText(body.role, 200),
     tagline: sanitizeText(body.tagline, 500),
     about: sanitizeText(body.about, 5000),
     status: ['PRESENT', 'PAST'].includes(body.status) ? body.status : 'PRESENT',
+    is_lead: body.is_lead === true,
     model_url: sanitizeText(body.model_url, 1000),
     model_format: sanitizeText(body.model_format, 20) || 'glb',
     fallback_image_url: sanitizeText(body.fallback_image_url, 1000),

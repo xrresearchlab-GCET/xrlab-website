@@ -857,57 +857,44 @@
       {
         id: 'canvas-engineering',
         type: 'engineering',
-        modelPath: '3d objects/non-military_consumer_uav_drone.glb',
         primaryColor: 0xc5b3d3,
         accentColor: 0xa855f7,
         initialRotX: 0.25,
-        targetScaleMultiplier: 3.4
       },
       {
         id: 'canvas-placements',
         type: 'placements',
-        modelPath: '3d objects/graduate cap.glb',
         primaryColor: 0xf5cbcb,
         accentColor: 0xec4899,
         initialRotX: 0.35,
-        targetScaleMultiplier: 3.4
       },
       {
         id: 'canvas-healthcare',
         type: 'healthcare',
-        modelPath: '3d objects/syringe_background_env.glb',
         primaryColor: 0x64ffda,
         accentColor: 0x10b981,
         initialRotX: 0.1,
-        modelOrientation: { x: Math.PI / 2, y: 0, z: 0 },
-        targetScaleMultiplier: 3.5
       },
       {
         id: 'canvas-tourism',
         type: 'tourism',
-        modelPath: '3d objects/eiffel_tower.glb',
         primaryColor: 0xa855f7,
         accentColor: 0x38bdf8,
         initialRotX: 0.1,
-        targetScaleMultiplier: 3.6
       },
       {
         id: 'canvas-entertainment',
         type: 'entertainment',
-        modelPath: '3d objects/wheel_of_brisbane_ferris_wheel_low-poly_free.glb',
         primaryColor: 0xec4899,
         accentColor: 0xf59e0b,
         initialRotX: 0.05,
-        targetScaleMultiplier: 3.5
       },
       {
         id: 'canvas-building',
         type: 'building',
-        modelPath: '3d objects/building_no_19_form_tokyo_otemachi_building_pack.glb',
         primaryColor: 0x38bdf8,
         accentColor: 0x6366f1,
         initialRotX: 0.2,
-        targetScaleMultiplier: 3.5
       }
     ];
 
@@ -926,7 +913,7 @@
       if (THREE.sRGBEncoding) renderer.outputEncoding = THREE.sRGBEncoding;
       container.appendChild(renderer.domElement);
 
-      // Studio Lighting setup for realistic GLTF/PBR Rendering
+      // Studio Lighting setup
       const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
       scene.add(ambientLight);
 
@@ -945,65 +932,15 @@
       const masterGroup = new THREE.Group();
       scene.add(masterGroup);
 
-      // Load 3D GLB Model
-      if (typeof THREE.GLTFLoader !== 'undefined') {
-        const loader = new THREE.GLTFLoader();
-        loader.load(
-          encodeURI(d.modelPath),
-          (gltf) => {
-            const model = gltf.scene;
-
-            // Apply custom model orientation (e.g. standing up the syringe vertically)
-            if (d.modelOrientation) {
-              if (d.modelOrientation.x) model.rotation.x = d.modelOrientation.x;
-              if (d.modelOrientation.y) model.rotation.y = d.modelOrientation.y;
-              if (d.modelOrientation.z) model.rotation.z = d.modelOrientation.z;
-              model.updateMatrixWorld(true);
-            }
-
-            // Compute Bounding Box after applying orientation to auto-center and scale
-            const box = new THREE.Box3().setFromObject(model);
-            const center = box.getCenter(new THREE.Vector3());
-            const size = box.getSize(new THREE.Vector3());
-
-            // Center the model's pivot
-            model.position.x -= center.x;
-            model.position.y -= center.y;
-            model.position.z -= center.z;
-
-            // Normalize scale so model fits nicely inside viewport
-            const maxDim = Math.max(size.x, size.y, size.z);
-            if (maxDim > 0) {
-              const targetScale = (d.targetScaleMultiplier || 2.3) / maxDim;
-              masterGroup.scale.set(targetScale, targetScale, targetScale);
-            }
-
-            masterGroup.add(model);
-          },
-          undefined,
-          (err) => {
-            console.warn(`Could not load GLB for ${d.id}, falling back:`, err);
-            // Fallback wireframe geometric placeholder
-            const geo = new THREE.IcosahedronGeometry(1.0, 1);
-            const mat = new THREE.MeshStandardMaterial({
-              color: d.primaryColor,
-              roughness: 0.2,
-              metalness: 0.8,
-              wireframe: true
-            });
-            masterGroup.add(new THREE.Mesh(geo, mat));
-          }
-        );
-      } else {
-        const geo = new THREE.IcosahedronGeometry(1.0, 1);
-        const mat = new THREE.MeshStandardMaterial({
-          color: d.primaryColor,
-          roughness: 0.2,
-          metalness: 0.8,
-          wireframe: true
-        });
-        masterGroup.add(new THREE.Mesh(geo, mat));
-      }
+      // Procedural geometric mesh
+      const geo = new THREE.IcosahedronGeometry(1.1, 1);
+      const mat = new THREE.MeshStandardMaterial({
+        color: d.primaryColor,
+        roughness: 0.2,
+        metalness: 0.8,
+        wireframe: true
+      });
+      masterGroup.add(new THREE.Mesh(geo, mat));
 
       // Interactive High-Sensitivity Mouse & Touch Controller
       const card = container.closest('.domain-card');

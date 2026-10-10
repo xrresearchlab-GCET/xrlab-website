@@ -17,7 +17,7 @@ exports.handler = async (event) => {
 
   let query = supabase
     .from('members')
-    .select('id, full_name, role, tagline, about, status, model_url, model_format, fallback_image_url, public_profile_url, show_email_publicly, email, display_order, joined_at')
+    .select('id, full_name, role, tagline, about, status, model_url, model_format, fallback_image_url, public_profile_url, show_email_publicly, email, phone, is_lead, display_order, joined_at')
     .order('display_order', { ascending: true })
     .order('created_at', { ascending: false });
 

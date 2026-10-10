@@ -2179,6 +2179,8 @@
   // =========================================================================
   // 10. MEMBERS MANAGEMENT
   // =========================================================================
+  // 10. MEMBERS MANAGEMENT
+  // =========================================================================
   async function loadMembers(tabFilter = 'PRESENT') {
     membersTab = tabFilter;
     const main = $('#admin-main');
@@ -2186,12 +2188,20 @@
       <div class="admin-main-header">
         <div>
           <h1 class="admin-main-title">Lab Members &amp; 3D Team</h1>
-          <p class="admin-main-subtitle">MANAGE ACTIVE RESEARCHERS &amp; LAB ALUMNI</p>
+          <p class="admin-main-subtitle">MANAGE ACTIVE RESEARCHERS, LAB LEADERSHIP &amp; ALUMNI</p>
         </div>
-        <button class="admin-btn admin-btn-primary admin-btn-small" onclick="window.adminApp.loadMemberForm()">
-          + ADD MEMBER
-        </button>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <button class="admin-btn admin-btn-secondary admin-btn-small" onclick="window.adminApp.editLeadMember()" style="border-color:rgba(59,130,246,0.5);color:var(--cin-accent-bright)">
+            ★ EDIT LEAD DEVELOPER / HEAD
+          </button>
+          <button class="admin-btn admin-btn-primary admin-btn-small" onclick="window.adminApp.loadMemberForm()">
+            + ADD MEMBER
+          </button>
+        </div>
       </div>
+
+      <!-- Lab Leadership & Lead Developer Highlight Card -->
+      <div id="lead-member-banner" style="margin-bottom:24px"></div>
 
       <div class="admin-tabs" id="member-tabs">
         <button class="admin-tab ${membersTab === 'PRESENT' ? 'active' : ''}" data-tab="PRESENT">ACTIVE MEMBERS</button>
@@ -2213,13 +2223,79 @@
       });
     });
 
+    if (allMembers && allMembers.length) {
+      renderLeadBanner();
+    }
+
     try {
       const res = await apiCall('admin-members');
       allMembers = res.members || [];
+      renderLeadBanner();
       renderMembersList();
     } catch (err) {
       $('#members-list').innerHTML = `<div class="admin-message error">${escapeHtml(err.message)}</div>`;
     }
+  }
+
+  function renderLeadBanner() {
+    const bannerEl = $('#lead-member-banner');
+    if (!bannerEl) return;
+
+    const lead = allMembers.find(m => m.is_lead) || 
+                 allMembers.find(m => (m.role || '').toLowerCase().includes('lead') || (m.full_name || '').toLowerCase().includes('akif')) || 
+                 {
+                   id: null,
+                   full_name: 'MD Akif',
+                   role: 'AR/VR Research Lab Lead Researcher & Head',
+                   tagline: 'Head of Lab • Immersive Tech & HCI Research',
+                   about: 'Oversees overall lab direction, strategic research initiatives, interdisciplinary project teams, and global academic collaborations.',
+                   email: 'xrresearchlab@gcet.edu.in',
+                   phone: '+91 8763688312',
+                   is_lead: true,
+                   status: 'PRESENT'
+                 };
+
+    bannerEl.innerHTML = `
+      <div style="background:linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(13,17,23,0.7) 100%);border:1px solid rgba(59,130,246,0.3);border-radius:12px;padding:20px 24px;position:relative;overflow:hidden">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap">
+          <div style="flex:1;min-width:280px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+              <span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:1px;color:#60a5fa;text-transform:uppercase;background:rgba(59,130,246,0.15);padding:3px 8px;border-radius:4px;border:1px solid rgba(59,130,246,0.3)">
+                ★ LAB LEADERSHIP &amp; LEAD DEVELOPER
+              </span>
+              <span style="font-size:11px;color:var(--cin-text-dim)">Pinned to "Lab Leadership &amp; Mentorship" on About page</span>
+            </div>
+            <h2 style="font-family:var(--font-display);font-size:20px;font-weight:600;color:var(--cin-text);margin:0 0 4px">
+              ${escapeHtml(lead.full_name || 'MD Akif')}
+            </h2>
+            <div style="font-size:13px;color:var(--cin-accent-bright);margin-bottom:8px;font-weight:500">
+              ${escapeHtml(lead.role || 'AR/VR Research Lab Lead Researcher & Head')}
+            </div>
+            ${lead.tagline ? `
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+                ${lead.tagline.split(/[•,|]/).map(s => s.trim()).filter(Boolean).map(t => `
+                  <span style="font-family:var(--font-mono);font-size:10px;color:var(--cin-text-dim);background:rgba(255,255,255,0.04);padding:2px 8px;border-radius:4px;border:1px solid var(--cin-border)">${escapeHtml(t)}</span>
+                `).join('')}
+              </div>
+            ` : ''}
+            <p style="font-size:13px;line-height:1.5;color:var(--cin-text-secondary);margin:0 0 12px;max-width:760px">
+              ${escapeHtml(lead.about || 'Oversees overall lab direction, strategic research initiatives, interdisciplinary project teams, and global academic collaborations.')}
+            </p>
+            <div style="display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:var(--cin-text-dim);font-family:var(--font-mono)">
+              ${lead.email ? `<div><span style="color:var(--cin-text-secondary)">EMAIL:</span> <span style="color:var(--cin-text)">${escapeHtml(lead.email)}</span></div>` : ''}
+              ${lead.phone ? `<div><span style="color:var(--cin-text-secondary)">PHONE:</span> <span style="color:var(--cin-text)">${escapeHtml(lead.phone)}</span></div>` : ''}
+              ${lead.model_url ? `<div style="color:#38bdf8">3D MODEL CONFIGURED</div>` : ''}
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;flex-shrink:0">
+            <button class="admin-btn admin-btn-primary admin-btn-small" onclick="window.adminApp.editLeadMember('${lead.id || ''}')" style="box-shadow:0 0 12px rgba(59,130,246,0.3)">
+              ✏ EDIT LEAD DEVELOPER / HEAD
+            </button>
+            <span style="font-size:11px;color:var(--cin-text-dim)">Changes sync live to About page</span>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   function renderMembersList() {
@@ -2249,6 +2325,7 @@
           <div>
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
               <strong style="font-size:15px;color:var(--cin-text)">${escapeHtml(m.full_name)}</strong>
+              ${m.is_lead ? `<span class="admin-status-badge" style="background:rgba(59,130,246,0.2);color:#60a5fa;border:1px solid rgba(59,130,246,0.4)">★ LEAD</span>` : ''}
               <span class="admin-status-badge ${m.status === 'PRESENT' ? 'admin-badge-present' : 'admin-badge-past'}">${m.status === 'PRESENT' ? 'Active' : 'Alumni'}</span>
               ${m.model_url ? `<span class="admin-status-badge admin-badge-model">3D Model</span>` : ''}
               ${m.show_email_publicly ? `<span style="font-size:10px;color:var(--cin-accent-bright);font-family:var(--font-mono)">Public Email</span>` : ''}
@@ -2257,7 +2334,7 @@
               ${escapeHtml(m.role || 'Member')} ${m.tagline ? `— <span style="color:var(--cin-text-dim)">${escapeHtml(m.tagline)}</span>` : ''}
             </div>
             <div style="font-size:11px;color:var(--cin-text-dim);margin-top:4px">
-              Order: ${m.display_order ?? 0} · Joined: ${formatDate(m.joined_at)} ${m.email ? `· ${escapeHtml(m.email)}` : ''}
+              Order: ${m.display_order ?? 0} · Joined: ${formatDate(m.joined_at)} ${m.email ? `· ${escapeHtml(m.email)}` : ''} ${m.phone ? `· Tel: ${escapeHtml(m.phone)}` : ''}
             </div>
           </div>
         </div>
@@ -2279,13 +2356,14 @@
     editingMember = member;
     const isEdit = !!member;
     const m = member || {};
+    const isLead = m.is_lead === true || (m.role || '').toLowerCase().includes('lead') || (m.full_name || '').toLowerCase().includes('akif');
 
     const main = $('#admin-main');
     main.innerHTML = `
       <div class="admin-main-header">
         <div>
-          <h1 class="admin-main-title">${isEdit ? 'Edit Member' : 'Add Team Member'}</h1>
-          <p class="admin-main-subtitle">RESEARCHER PROFILE, 3D AVATAR &amp; BIO</p>
+          <h1 class="admin-main-title">${isEdit ? (isLead ? 'Edit Lab Leadership &amp; Lead Developer' : 'Edit Member') : 'Add Team Member'}</h1>
+          <p class="admin-main-subtitle">RESEARCHER PROFILE, CONTACT INFO, 3D AVATAR &amp; BIO</p>
         </div>
         <button class="admin-btn admin-btn-secondary admin-btn-small" onclick="window.adminApp.switchSection('members')">
           ← BACK TO MEMBERS
@@ -2310,8 +2388,13 @@
             </div>
 
             <div class="admin-field">
+              <label for="mem-phone">Contact Phone Number</label>
+              <input type="tel" id="mem-phone" value="${escapeHtml(m.phone || '')}" placeholder="+91 8763688312">
+            </div>
+
+            <div class="admin-field">
               <label for="mem-role">Lab Role *</label>
-              <input type="text" id="mem-role" value="${escapeHtml(m.role || 'Member')}" placeholder="e.g. Lead Researcher, XR Developer, 3D Artist" required>
+              <input type="text" id="mem-role" value="${escapeHtml(m.role || (isLead ? 'AR/VR Research Lab Lead Researcher & Head' : 'Member'))}" placeholder="e.g. AR/VR Research Lab Lead Researcher &amp; Head" required>
             </div>
 
             <div class="admin-field">
@@ -2322,14 +2405,28 @@
               </select>
             </div>
 
+            <div class="admin-field full-width" style="padding:14px 16px;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.25);border-radius:8px">
+              <label class="admin-toggle" style="display:flex;align-items:center;gap:12px;cursor:pointer">
+                <input type="checkbox" id="mem-is-lead" ${isLead ? 'checked' : ''}>
+                <div>
+                  <strong style="color:var(--cin-text);font-size:13px;display:flex;align-items:center;gap:6px">
+                    <span style="color:#60a5fa">★</span> Set as Lead Developer / Lab Head (Pins to "Lab Leadership &amp; Mentorship" on About Page)
+                  </strong>
+                  <div style="font-size:11px;color:var(--cin-text-secondary);margin-top:2px">
+                    When enabled, this member is featured prominently in the top Leadership Card on the About page with email &amp; phone contacts.
+                  </div>
+                </div>
+              </label>
+            </div>
+
             <div class="admin-field full-width">
-              <label for="mem-tagline">Tagline / Specialization</label>
-              <input type="text" id="mem-tagline" value="${escapeHtml(m.tagline || '')}" placeholder="e.g. Immersive Tech &amp; HCI Research, Unreal Engine Lead">
+              <label for="mem-tagline">Tagline / Specialization (Tags separated by • or commas)</label>
+              <input type="text" id="mem-tagline" value="${escapeHtml(m.tagline || (isLead ? 'Head of Lab • Immersive Tech & HCI Research' : ''))}" placeholder="e.g. Head of Lab • Immersive Tech &amp; HCI Research">
             </div>
 
             <div class="admin-field full-width">
               <label for="mem-about">About / Biography</label>
-              <textarea id="mem-about" rows="4" placeholder="Brief research background, achievements, and contributions...">${escapeHtml(m.about || '')}</textarea>
+              <textarea id="mem-about" rows="4" placeholder="Brief research background, achievements, and contributions...">${escapeHtml(m.about || (isLead ? 'Oversees overall lab direction, strategic research initiatives, interdisciplinary project teams, and global academic collaborations.' : ''))}</textarea>
             </div>
           </div>
         </div>
@@ -2428,10 +2525,12 @@
     const payload = {
       full_name,
       email: $('#mem-email').value.trim() || null,
+      phone: $('#mem-phone').value.trim() || null,
       role: $('#mem-role').value.trim() || 'Member',
       tagline: $('#mem-tagline').value.trim() || null,
       about: $('#mem-about').value.trim() || null,
       status: $('#mem-status').value,
+      is_lead: $('#mem-is-lead').checked,
       model_url: $('#mem-model-url').value.trim() || null,
       fallback_image_url: $('#mem-fallback-img').value.trim() || null,
       public_profile_url: $('#mem-profile-url').value.trim() || null,
@@ -2445,14 +2544,14 @@
     submitBtn.textContent = 'SAVING...';
 
     try {
-      if (editingMember) {
+      if (editingMember && editingMember.id) {
         await apiCall(`admin-members?id=${editingMember.id}`, 'PUT', payload);
       } else {
         await apiCall('admin-members', 'POST', payload);
       }
 
       msg.className = 'admin-message success';
-      msg.textContent = editingMember ? 'Member profile updated!' : 'Member added successfully!';
+      msg.textContent = (editingMember && editingMember.id) ? 'Member profile updated!' : 'Member added successfully!';
       msg.style.display = 'block';
 
       setTimeout(() => loadMembers(payload.status), 1200);
@@ -2462,8 +2561,44 @@
       msg.style.display = 'block';
     } finally {
       submitBtn.disabled = false;
-      submitBtn.textContent = editingMember ? 'UPDATE MEMBER' : 'SAVE MEMBER';
+      submitBtn.textContent = (editingMember && editingMember.id) ? 'UPDATE MEMBER' : 'SAVE MEMBER';
     }
+  }
+
+  async function editLeadMember(id) {
+    if (id) {
+      try {
+        const res = await apiCall(`admin-members?id=${id}`);
+        if (res.member) {
+          loadMemberForm(res.member);
+          return;
+        }
+      } catch (err) {
+        console.warn('Could not fetch lead member by id, falling back to local list', err);
+      }
+    }
+
+    // Check if any existing member in allMembers is already lead or named Akif
+    const existing = allMembers.find(m => m.is_lead) || 
+                     allMembers.find(m => (m.role || '').toLowerCase().includes('lead') || (m.full_name || '').toLowerCase().includes('akif'));
+    if (existing) {
+      loadMemberForm(existing);
+      return;
+    }
+
+    // Default template for MD Akif as Lead Developer / Lab Head
+    loadMemberForm({
+      full_name: 'MD Akif',
+      email: 'xrresearchlab@gcet.edu.in',
+      phone: '+91 8763688312',
+      role: 'AR/VR Research Lab Lead Researcher & Head',
+      tagline: 'Head of Lab • Immersive Tech & HCI Research',
+      about: 'Oversees overall lab direction, strategic research initiatives, interdisciplinary project teams, and global academic collaborations.',
+      status: 'PRESENT',
+      is_lead: true,
+      show_email_publicly: true,
+      display_order: 0
+    });
   }
 
   async function moveMemberStatus(id, action) {
@@ -3037,11 +3172,7 @@
       </div>
 
       <div class="admin-tabs" id="research-tabs">
-        <button class="admin-tab ${stageFilter === 'ALL' ? 'active' : ''}" data-stage="ALL">ALL RESEARCH</button>
-        <button class="admin-tab ${stageFilter === 'ONGOING' ? 'active' : ''}" data-stage="ONGOING">ONGOING</button>
-        <button class="admin-tab ${stageFilter === 'EXPERIMENTAL' ? 'active' : ''}" data-stage="EXPERIMENTAL">EXPERIMENTAL</button>
-        <button class="admin-tab ${stageFilter === 'VALIDATION' ? 'active' : ''}" data-stage="VALIDATION">VALIDATION</button>
-        <button class="admin-tab ${stageFilter === 'COMPLETED' ? 'active' : ''}" data-stage="COMPLETED">COMPLETED</button>
+        <button class="admin-tab ${stageFilter === 'ALL' ? 'active' : ''}" data-stage="ALL">ALL RESEARCH (ONGOING)</button>
         <button class="admin-tab ${stageFilter === 'draft' ? 'active' : ''}" data-stage="draft">DRAFTS</button>
       </div>
 
@@ -3074,8 +3205,6 @@
     let filtered = allResearch;
     if (filter === 'draft') {
       filtered = allResearch.filter(r => r.publication_status === 'draft');
-    } else if (filter !== 'ALL') {
-      filtered = allResearch.filter(r => r.research_stage === filter);
     }
 
     if (!filtered.length) {
@@ -3428,6 +3557,7 @@
   // Export methods to window.adminApp
   window.adminApp = window.adminApp || {};
   window.adminApp.loadMemberForm = loadMemberForm;
+  window.adminApp.editLeadMember = editLeadMember;
   window.adminApp.editMember = async (id) => {
     try {
       const res = await apiCall(`admin-members?id=${id}`);
