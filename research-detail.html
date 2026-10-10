@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Research Dossier &amp; Paper — XR Research Lab</title>
+  <meta name="description" content="Peer-reviewed research paper, experimental methodology, and technical disclosure at the XR Research Lab.">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="images/collegelogo.png">
+  <link rel="apple-touch-icon" href="images/collegelogo.png">
+
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/homepage.css">
+  <link rel="stylesheet" href="css/subpages.css">
+
+  <style>
+    .research-dossier-wrapper {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 40px 24px 100px;
+    }
+
+    .research-stage-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 20px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #38bdf8;
+      margin-bottom: 20px;
+    }
+
+    .research-title-text {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 700;
+      color: var(--cin-text);
+      line-height: 1.25;
+      margin-bottom: 16px;
+    }
+
+    .research-meta-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 16px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 32px;
+      font-size: 13px;
+      color: var(--cin-text-secondary);
+    }
+
+    .research-grid-layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 36px;
+    }
+
+    @media (max-width: 860px) {
+      .research-grid-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .research-block {
+      background: rgba(14, 18, 28, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      padding: 28px;
+      margin-bottom: 24px;
+      backdrop-filter: blur(12px);
+    }
+
+    .research-block-title {
+      font-family: var(--font-display);
+      font-size: 17px;
+      color: var(--cin-text);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .deliverable-link-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      color: var(--cin-text);
+      text-decoration: none;
+      font-size: 13px;
+      margin-bottom: 10px;
+      transition: all 0.2s ease;
+    }
+
+    .deliverable-link-btn:hover {
+      background: rgba(56, 189, 248, 0.1);
+      border-color: rgba(56, 189, 248, 0.4);
+      color: #38bdf8;
+    }
+
+    .tag-bubble {
+      display: inline-block;
+      padding: 4px 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--cin-text-secondary);
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Cinematic Transparent Navigation -->
+  <header class="cin-header" id="cin-header">
+    <nav class="cin-nav">
+      <a href="index.html" class="cin-brand" aria-label="XR Research Lab Home">
+        <span class="brand-xr">XR</span>
+        <span class="brand-sep"></span>
+        <span class="brand-text">RESEARCH LAB</span>
+      </a>
+
+      <div class="cin-nav-links" id="cin-nav-links">
+        <a href="index.html" class="cin-nav-link">Home</a>
+        <a href="about.html" class="cin-nav-link">About Us</a>
+        <a href="project-space.html" class="cin-nav-link">Project Space</a>
+
+        <div class="cin-nav-dropdown" id="cin-explore">
+          <button class="cin-nav-link cin-dropdown-trigger" aria-expanded="false" aria-haspopup="true" id="explore-trigger">
+            Explore
+            <svg class="dropdown-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="cin-dropdown" id="cin-explore-dropdown" role="menu">
+            <a href="learn.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Learn
+            </a>
+            <a href="milestones.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Milestones
+            </a>
+            <a href="team.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Team &amp; 3D Roster
+            </a>
+          </div>
+        </div>
+
+        <div class="cin-nav-dropdown cin-nav-connect" id="cin-connect">
+          <button class="cin-nav-link cin-dropdown-trigger cin-connect-trigger active" aria-expanded="false" aria-haspopup="true" id="connect-trigger">
+            Connect
+            <svg class="dropdown-chevron connect-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="cin-dropdown" id="cin-dropdown" role="menu">
+            <a href="projects.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Ongoing Projects
+            </a>
+            <a href="events.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Upcoming Events
+            </a>
+            <a href="research.html" class="cin-dropdown-item active" role="menuitem">
+              <span class="dropdown-indicator"></span> Research
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <button class="cin-hamburger" id="cin-hamburger" aria-label="Toggle Navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Mobile Navigation Overlay -->
+  <div class="cin-mobile-overlay" id="cin-mobile-overlay" aria-hidden="true">
+    <div class="cin-mobile-menu">
+      <a href="index.html" class="cin-mobile-link">Home</a>
+      <a href="about.html" class="cin-mobile-link">About Us</a>
+      <a href="project-space.html" class="cin-mobile-link">Project Space</a>
+      <a href="learn.html" class="cin-mobile-link">Learn</a>
+      <a href="milestones.html" class="cin-mobile-link">Milestones</a>
+      <a href="team.html" class="cin-mobile-link">Team &amp; 3D Roster</a>
+      <a href="projects.html" class="cin-mobile-link">Ongoing Projects</a>
+      <a href="events.html" class="cin-mobile-link">Upcoming Events</a>
+      <a href="research.html" class="cin-mobile-link active">Research</a>
+    </div>
+  </div>
+
+  <div class="research-dossier-wrapper">
+    <div style="margin-bottom:24px">
+      <a href="research.html" style="font-family:var(--font-mono);font-size:12px;color:var(--cin-text-secondary);text-decoration:none">
+        ← BACK TO RESEARCH ARCHIVE
+      </a>
+    </div>
+
+    <div id="res-loader" style="text-align:center;padding:80px">
+      <div class="admin-spinner" style="margin:0 auto;width:32px;height:32px"></div>
+      <p style="margin-top:16px;color:var(--cin-text-dim);font-size:13px;font-family:var(--font-mono)">INDEXING RESEARCH DOSSIER...</p>
+    </div>
+
+    <div id="res-content" style="display:none">
+      <div class="research-stage-pill" id="r-stage"></div>
+      <h1 class="research-title-text" id="r-title"></h1>
+      <p style="color:var(--cin-text-secondary);font-size:16px;line-height:1.7;margin-bottom:24px" id="r-summary"></p>
+
+      <div class="research-meta-bar" id="r-meta"></div>
+
+      <!-- Demo Video or Concept Image Box -->
+      <div id="r-media-box" style="margin-bottom:36px"></div>
+
+      <div class="research-grid-layout">
+        <!-- Main Content -->
+        <div>
+          <div class="research-block" id="r-problem-block" style="display:none">
+            <h2 class="research-block-title">Problem Statement</h2>
+            <div style="font-size:14px;color:var(--cin-text-secondary);line-height:1.8" id="r-problem"></div>
+          </div>
+
+          <div class="research-block" id="r-methodology-block" style="display:none">
+            <h2 class="research-block-title">Methodology &amp; Experimental Architecture</h2>
+            <div style="font-size:14px;color:var(--cin-text-secondary);line-height:1.8" id="r-methodology"></div>
+          </div>
+
+          <div class="research-block" id="r-findings-block" style="display:none">
+            <h2 class="research-block-title">Validated Findings &amp; Outcomes</h2>
+            <div style="font-size:14px;color:var(--cin-text-secondary);line-height:1.8" id="r-findings"></div>
+          </div>
+
+          <div class="research-block" id="r-desc-block">
+            <h2 class="research-block-title">Extended Technical Dossier</h2>
+            <div style="font-size:14px;color:var(--cin-text-secondary);line-height:1.8" id="r-desc"></div>
+          </div>
+        </div>
+
+        <!-- Sidebar: Deliverables & Team -->
+        <div>
+          <div class="research-block">
+            <h3 class="research-block-title" style="font-size:15px">Academic Deliverables</h3>
+            <div id="r-deliverables-list"></div>
+          </div>
+
+          <div class="research-block" id="r-team-block">
+            <h3 class="research-block-title" style="font-size:15px">Research Personnel</h3>
+            <div style="font-size:13px;color:var(--cin-text-secondary);line-height:1.8">
+              <div id="r-mentor-line"></div>
+              <div id="r-team-line" style="margin-top:8px"></div>
+            </div>
+          </div>
+
+          <div class="research-block" id="r-tech-block" style="display:none">
+            <h3 class="research-block-title" style="font-size:15px">Technologies &amp; Toolchains</h3>
+            <div id="r-tech-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="cin-footer">
+    <div class="cin-footer-inner">
+      <div class="cin-footer-brand">
+        <span class="footer-xr">XR</span> RESEARCH LAB
+      </div>
+      <div class="cin-footer-info">
+        © 2026 AR/VR RESEARCH LAB — GEETHANJALI COLLEGE OF ENGINEERING &amp; TECHNOLOGY
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/homepage.js"></script>
+  <script src="js/media-utils.js"></script>
+  <script>
+    (function () {
+      function getSlug() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('slug')) return urlParams.get('slug');
+
+        const parts = window.location.pathname.split('/').filter(Boolean);
+        if (parts.length >= 2 && parts[0] === 'research') return parts[1];
+        return '';
+      }
+
+      async function loadResearch() {
+        const slug = getSlug();
+        const loader = document.getElementById('res-loader');
+        const content = document.getElementById('res-content');
+
+        if (!slug) {
+          loader.innerHTML = `
+            <div style="color:var(--cin-error)">No research paper specified. <a href="research.html" style="color:#fff">Return to Research</a></div>
+          `;
+          return;
+        }
+
+        try {
+          const res = await fetch(`/api/research-public?slug=${encodeURIComponent(slug)}`);
+          if (!res.ok) throw new Error('Research paper not found');
+          const data = await res.json();
+          renderResearch(data.research);
+          loader.style.display = 'none';
+          content.style.display = 'block';
+        } catch (err) {
+          loader.innerHTML = `
+            <div style="padding:40px;color:var(--cin-text-secondary)">
+              <h3>Research Record Not Found</h3>
+              <p style="margin-top:8px">${err.message}</p>
+              <div style="margin-top:20px"><a href="research.html" class="admin-btn admin-btn-primary admin-btn-small" style="text-decoration:none">View Research Archive</a></div>
+            </div>
+          `;
+        }
+      }
+
+      function renderResearch(r) {
+        document.title = `${r.title} — XR Research Lab`;
+        document.getElementById('r-stage').textContent = `STAGE: ${r.research_stage} · ${r.research_division || 'HCI & Simulation'}`;
+        document.getElementById('r-title').textContent = r.title;
+        document.getElementById('r-summary').textContent = r.short_summary || '';
+
+        const metaEl = document.getElementById('r-meta');
+        metaEl.innerHTML = `
+          <div><strong>Division:</strong> ${r.research_division || 'HCI'}</div>
+          ${r.research_area ? `<div><strong>Area:</strong> ${r.research_area}</div>` : ''}
+          ${r.mentor ? `<div><strong>Faculty Mentor:</strong> ${r.mentor}</div>` : ''}
+          ${r.start_date ? `<div><strong>Initiated:</strong> ${r.start_date.slice(0, 10)}</div>` : ''}
+          ${r.completion_date ? `<div><strong>Completed:</strong> ${r.completion_date.slice(0, 10)}</div>` : ''}
+        `;
+
+        // Media box
+        const mediaBox = document.getElementById('r-media-box');
+        if (r.demo_video_url && window.XRMedia) {
+          window.XRMedia.renderLivePreview(mediaBox, r.demo_video_url, 'video');
+        } else if (r.concept_image_url && window.XRMedia) {
+          window.XRMedia.renderLivePreview(mediaBox, r.concept_image_url, 'image');
+        }
+
+        // Problem
+        if (r.problem_statement) {
+          document.getElementById('r-problem').textContent = r.problem_statement;
+          document.getElementById('r-problem-block').style.display = 'block';
+        }
+
+        // Methodology
+        if (r.methodology) {
+          document.getElementById('r-methodology').textContent = r.methodology;
+          document.getElementById('r-methodology-block').style.display = 'block';
+        }
+
+        // Findings
+        if (r.findings) {
+          document.getElementById('r-findings').textContent = r.findings;
+          document.getElementById('r-findings-block').style.display = 'block';
+        }
+
+        document.getElementById('r-desc').textContent = r.description || r.short_summary || 'Full disclosure notes documented in the lab repository.';
+
+        // Deliverables
+        const delivList = document.getElementById('r-deliverables-list');
+        const links = [];
+        if (r.publication_url) links.push({ title: 'Peer-Reviewed Paper (DOI / Publisher)', url: r.publication_url });
+        if (r.report_url) links.push({ title: 'Research Report (PDF / Whitepaper)', url: r.report_url });
+        if (r.github_url) links.push({ title: 'Source Code Repository (GitHub)', url: r.github_url });
+        if (r.dataset_url) links.push({ title: 'Benchmark Dataset Archive', url: r.dataset_url });
+        if (r.related_project_url) links.push({ title: 'Interactive WebGL / Project Space', url: r.related_project_url });
+
+        if (!links.length) {
+          delivList.innerHTML = `<p style="font-size:12px;color:var(--cin-text-dim)">Publications and repository artifacts are currently under peer review.</p>`;
+        } else {
+          delivList.innerHTML = links.map(l => `
+            <a href="${l.url}" target="_blank" rel="noopener" class="deliverable-link-btn">
+              <span>${l.title}</span>
+              <span>&rarr;</span>
+            </a>
+          `).join('');
+        }
+
+        // Personnel
+        if (r.mentor) {
+          document.getElementById('r-mentor-line').innerHTML = `<strong>Mentor:</strong> ${r.mentor}`;
+        }
+        if (r.team_members && r.team_members.length) {
+          document.getElementById('r-team-line').innerHTML = `<strong>Researchers:</strong> ${r.team_members.join(', ')}`;
+        }
+
+        // Tech
+        if (r.technologies && r.technologies.length) {
+          const tList = document.getElementById('r-tech-list');
+          tList.innerHTML = r.technologies.map(t => `<span class="tag-bubble">${t}</span>`).join('');
+          document.getElementById('r-tech-block').style.display = 'block';
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', loadResearch);
+    })();
+  </script>
+</body>
+</html>

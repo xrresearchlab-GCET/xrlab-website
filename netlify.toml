@@ -51,8 +51,27 @@
   to = "/project-detail.html"
   status = 200
 
+# SPA-style redirect for team page
+[[redirects]]
+  from = "/team"
+  to = "/team.html"
+  status = 200
+
+# SPA-style redirect for course detail pages
+[[redirects]]
+  from = "/learn/*"
+  to = "/course-detail.html"
+  status = 200
+
+# SPA-style redirect for research detail pages
+[[redirects]]
+  from = "/research/*"
+  to = "/research-detail.html"
+  status = 200
+
 # Redirect /api/* to Netlify functions
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
+

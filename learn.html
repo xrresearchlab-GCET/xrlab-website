@@ -53,6 +53,10 @@
               <span class="dropdown-indicator"></span>
               Milestones
             </a>
+            <a href="team.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span>
+              Team &amp; 3D Roster
+            </a>
           </div>
         </div>
 
@@ -105,6 +109,7 @@
         <div class="cin-mobile-dropdown" id="cin-mobile-explore-dropdown">
           <a href="learn.html" class="cin-mobile-sub active">Learn</a>
           <a href="milestones.html" class="cin-mobile-sub">Milestones</a>
+          <a href="team.html" class="cin-mobile-sub">Team &amp; 3D Roster</a>
         </div>
       </div>
 
@@ -137,6 +142,24 @@
       </p>
     </div>
 
+    <!-- Filter and Search Bar -->
+    <div style="max-width:1200px;margin:0 auto 36px;padding:0 24px">
+      <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between;align-items:center;background:rgba(14,18,28,0.5);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px 20px;backdrop-filter:blur(10px)">
+        <div style="display:flex;gap:8px;flex-wrap:wrap" id="learn-category-tabs">
+          <button class="team-filter-btn active" data-cat="all">All Tracks</button>
+          <button class="team-filter-btn" data-cat="Augmented Reality">AR</button>
+          <button class="team-filter-btn" data-cat="Virtual Reality">VR</button>
+          <button class="team-filter-btn" data-cat="Mixed Reality">MR</button>
+          <button class="team-filter-btn" data-cat="WebXR">WebXR</button>
+          <button class="team-filter-btn" data-cat="3D Modeling">3D &amp; Shaders</button>
+        </div>
+
+        <div style="position:relative;min-width:240px">
+          <input type="text" id="learn-search" placeholder="Search curricula &amp; topics..." style="width:100%;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:8px 16px;color:var(--cin-text);font-size:13px;outline:none">
+        </div>
+      </div>
+    </div>
+
     <!-- Learning Pathways Grid -->
     <section class="subpage-section">
       <div class="section-label-bar">
@@ -144,7 +167,7 @@
         <span class="section-label-title">CORE CURRICULA &amp; TRACKS</span>
       </div>
 
-      <div class="subpage-cards-grid">
+      <div class="subpage-cards-grid" id="courses-catalog-grid">
         <div class="subpage-card">
           <div class="card-track-badge">TRACK 01</div>
           <h2 class="card-heading">Unreal Engine 5 &amp; Virtual Production</h2>
@@ -269,5 +292,93 @@
   </footer>
 
   <script src="js/homepage.js"></script>
-</body>
+  <script>
+    (function () {
+      let currentCategory = 'all';
+      let searchQuery = '';
+
+      async function fetchCourses() {
+        const grid = document.getElementById('courses-catalog-grid');
+        try {
+          let url = '/api/courses-public';
+          const params = [];
+          if (currentCategory !== 'all') params.push(`category=${encodeURIComponent(currentCategory)}`);
+          if (searchQuery) params.push(`search=${encodeURIComponent(searchQuery)}`);
+          if (params.length) url += '?' + params.join('&');
+
+          const res = await fetch(url);
+          if (!res.ok) return; // Keep static fallback
+          const data = await res.json();
+          if (data.courses && data.courses.length > 0) {
+            renderCourses(data.courses);
+          }
+        } catch (_) {
+          // Graceful fallback to static tracks
+        }
+      }
+
+      function renderCourses(courses) {
+        const grid = document.getElementById('courses-catalog-grid');
+        grid.innerHTML = courses.map((c, i) => `
+          <div class="subpage-card" style="display:flex;flex-direction:column">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+              <span class="card-track-badge">${c.category.toUpperCase()}</span>
+              <span style="font-family:var(--font-mono);font-size:10px;color:var(--cin-accent-bright);padding:2px 8px;background:rgba(56,189,248,0.1);border-radius:4px">
+                ${c.difficulty.toUpperCase()}
+              </span>
+            </div>
+            <h2 class="card-heading" style="font-size:18px">${escapeHtml(c.title)}</h2>
+            <p class="card-body-text" style="flex-grow:1">
+              ${escapeHtml(c.short_description || 'Structured spatial computing curriculum module.')}
+            </p>
+            <div style="font-size:12px;color:var(--cin-text-dim);margin-bottom:12px">
+              ${c.estimated_duration ? `⏱ ${escapeHtml(c.estimated_duration)} · ` : ''}📚 ${c.lesson_count || 0} Lessons
+            </div>
+            ${c.technologies && c.technologies.length ? `
+              <div class="card-tags" style="margin-bottom:16px">
+                ${c.technologies.slice(0, 4).map(t => `<span class="card-tag">${escapeHtml(t)}</span>`).join('')}
+              </div>
+            ` : ''}
+            <div style="margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)">
+              <a href="course-detail.html?slug=${c.slug}" style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:0.05em;color:#fff;text-decoration:none;background:var(--cin-accent);padding:8px 16px;border-radius:6px;transition:opacity 0.2s ease">
+                VIEW SYLLABUS &rarr;
+              </a>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        const d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+      }
+
+      // Filter tabs
+      document.querySelectorAll('#learn-category-tabs button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#learn-category-tabs button').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentCategory = btn.dataset.cat;
+          fetchCourses();
+        });
+      });
+
+      // Search debounce
+      let searchTimeout;
+      const searchInput = document.getElementById('learn-search');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            searchQuery = e.target.value.trim();
+            fetchCourses();
+          }, 350);
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', fetchCourses);
+    })();
+  </script>
 </html>

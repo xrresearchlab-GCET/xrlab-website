@@ -50,6 +50,9 @@
             <a href="milestones.html" class="cin-dropdown-item" role="menuitem">
               <span class="dropdown-indicator"></span> Milestones
             </a>
+            <a href="team.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Team &amp; 3D Roster
+            </a>
           </div>
         </div>
 
@@ -97,6 +100,7 @@
         <div class="cin-mobile-dropdown" id="cin-mobile-explore-dropdown">
           <a href="learn.html" class="cin-mobile-sub">Learn</a>
           <a href="milestones.html" class="cin-mobile-sub">Milestones</a>
+          <a href="team.html" class="cin-mobile-sub">Team &amp; 3D Roster</a>
         </div>
       </div>
 
@@ -129,20 +133,81 @@
       </p>
     </div>
 
+    <!-- Research Filter & Search Bar -->
+    <div style="max-width:1200px;margin:0 auto 36px;padding:0 24px">
+      <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between;align-items:center;background:rgba(14,18,28,0.5);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px 20px;backdrop-filter:blur(10px)">
+        <div style="display:flex;gap:8px;flex-wrap:wrap" id="res-stage-tabs">
+          <button class="team-filter-btn active" data-stage="all">All Stages</button>
+          <button class="team-filter-btn" data-stage="ONGOING">Ongoing</button>
+          <button class="team-filter-btn" data-stage="EXPERIMENTAL">Experimental</button>
+          <button class="team-filter-btn" data-stage="VALIDATION">Validation</button>
+          <button class="team-filter-btn" data-stage="COMPLETED">Completed</button>
+        </div>
+
+        <div style="position:relative;min-width:240px">
+          <input type="text" id="res-search" placeholder="Search papers, disciplines..." style="width:100%;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:8px 16px;color:var(--cin-text);font-size:13px;outline:none">
+        </div>
+      </div>
+    </div>
+
     <section class="subpage-section">
       <div class="section-label-bar">
         <span class="section-label-num">◆</span>
-        <span class="section-label-title">ARCHIVE IN PROGRESS</span>
+        <span class="section-label-title">ACTIVE RESEARCH PAPERS &amp; DISCLOSURES</span>
       </div>
 
-      <div style="background:rgba(14,18,28,0.55);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:48px 24px;text-align:center;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">
-        <h3 style="font-family:var(--font-display);font-size:20px;color:var(--cin-text);margin-bottom:12px">Publications & Papers Under Archival</h3>
-        <p style="color:var(--cin-text-secondary);font-size:14px;max-width:540px;margin:0 auto 28px;line-height:1.7">
-          Our upcoming peer-reviewed papers on spatial computing interfaces, surgical VR accuracy, and BIM digital twins are currently being indexed into the laboratory's public research repository.
-        </p>
-        <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
-          <a href="project-space.html" style="font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#fff;background:var(--cin-accent);padding:10px 22px;border-radius:6px;text-decoration:none">EXPLORE PROJECT SPACE</a>
-          <a href="index.html" style="font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--cin-text-secondary);background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:10px 22px;border-radius:6px;text-decoration:none">BACK TO HOME</a>
+      <div class="subpage-cards-grid" id="research-cards-grid">
+        <!-- Default sample paper fallback -->
+        <div class="subpage-card" style="display:flex;flex-direction:column">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <span class="card-track-badge">HEALTHCARE &amp; SURGICAL XR</span>
+            <span style="font-family:var(--font-mono);font-size:10px;color:var(--cin-accent-bright);padding:2px 8px;background:rgba(56,189,248,0.1);border-radius:4px">
+              VALIDATION
+            </span>
+          </div>
+          <h2 class="card-heading" style="font-size:18px">Sub-Millimeter Optical Tracking Accuracy in Holographic Headsets</h2>
+          <p class="card-body-text" style="flex-grow:1">
+            Empirical benchmark assessing stereoscopic drift and depth disparity tolerances under micro-surgical operating room illumination.
+          </p>
+          <div style="font-size:12px;color:var(--cin-text-dim);margin-bottom:12px">
+            Mentor: MD Akif · HCI Division
+          </div>
+          <div class="card-tags" style="margin-bottom:16px">
+            <span class="card-tag">Computer Vision</span>
+            <span class="card-tag">OpenXR</span>
+            <span class="card-tag">Surgical VR</span>
+          </div>
+          <div style="margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)">
+            <a href="research-detail.html?slug=sub-millimeter-tracking" style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:0.05em;color:#fff;text-decoration:none;background:var(--cin-accent);padding:8px 16px;border-radius:6px">
+              VIEW RESEARCH DOSSIER &rarr;
+            </a>
+          </div>
+        </div>
+
+        <div class="subpage-card" style="display:flex;flex-direction:column">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <span class="card-track-badge">INDUSTRIAL DIGITAL TWINS</span>
+            <span style="font-family:var(--font-mono);font-size:10px;color:var(--cin-accent-bright);padding:2px 8px;background:rgba(56,189,248,0.1);border-radius:4px">
+              EXPERIMENTAL
+            </span>
+          </div>
+          <h2 class="card-heading" style="font-size:18px">BIM Telemetry Synchronization via WebSockets in Browser WebXR</h2>
+          <p class="card-body-text" style="flex-grow:1">
+            Real-time IoT sensor telemetry streaming overlaid onto 3D CAD architectural models in browser runtimes.
+          </p>
+          <div style="font-size:12px;color:var(--cin-text-dim);margin-bottom:12px">
+            Faculty Advisor: XR Research Lab · Robotics Division
+          </div>
+          <div class="card-tags" style="margin-bottom:16px">
+            <span class="card-tag">WebXR</span>
+            <span class="card-tag">Three.js</span>
+            <span class="card-tag">Digital Twins</span>
+          </div>
+          <div style="margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)">
+            <a href="project-space.html" style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:0.05em;color:#fff;text-decoration:none;background:var(--cin-accent);padding:8px 16px;border-radius:6px">
+              EXPLORE IN PROJECT SPACE &rarr;
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -170,5 +235,94 @@
   </footer>
 
   <script src="js/homepage.js"></script>
+  <script>
+    (function () {
+      let currentStage = 'all';
+      let searchQuery = '';
+
+      async function fetchResearch() {
+        const grid = document.getElementById('research-cards-grid');
+        try {
+          let url = '/api/research-public';
+          const params = [];
+          if (currentStage !== 'all') params.push(`stage=${encodeURIComponent(currentStage)}`);
+          if (searchQuery) params.push(`search=${encodeURIComponent(searchQuery)}`);
+          if (params.length) url += '?' + params.join('&');
+
+          const res = await fetch(url);
+          if (!res.ok) return;
+          const data = await res.json();
+          if (data.research && data.research.length > 0) {
+            renderResearch(data.research);
+          }
+        } catch (_) {
+          // Graceful fallback
+        }
+      }
+
+      function renderResearch(items) {
+        const grid = document.getElementById('research-cards-grid');
+        grid.innerHTML = items.map(r => `
+          <div class="subpage-card" style="display:flex;flex-direction:column">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+              <span class="card-track-badge">${(r.research_division || 'HCI').toUpperCase()}</span>
+              <span style="font-family:var(--font-mono);font-size:10px;color:var(--cin-accent-bright);padding:2px 8px;background:rgba(56,189,248,0.1);border-radius:4px">
+                ${r.research_stage}
+              </span>
+            </div>
+            <h2 class="card-heading" style="font-size:18px">${escapeHtml(r.title)}</h2>
+            <p class="card-body-text" style="flex-grow:1">
+              ${escapeHtml(r.short_summary || 'Peer-reviewed research and experimental outcomes.')}
+            </p>
+            <div style="font-size:12px;color:var(--cin-text-dim);margin-bottom:12px">
+              ${r.mentor ? `Advisor: ${escapeHtml(r.mentor)} · ` : ''}${r.research_area ? escapeHtml(r.research_area) : ''}
+            </div>
+            ${r.technologies && r.technologies.length ? `
+              <div class="card-tags" style="margin-bottom:16px">
+                ${r.technologies.slice(0, 4).map(t => `<span class="card-tag">${escapeHtml(t)}</span>`).join('')}
+              </div>
+            ` : ''}
+            <div style="margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)">
+              <a href="research-detail.html?slug=${r.slug}" style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:0.05em;color:#fff;text-decoration:none;background:var(--cin-accent);padding:8px 16px;border-radius:6px;transition:opacity 0.2s ease">
+                VIEW RESEARCH DOSSIER &rarr;
+              </a>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        const d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+      }
+
+      // Filter tabs
+      document.querySelectorAll('#res-stage-tabs button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#res-stage-tabs button').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentStage = btn.dataset.stage;
+          fetchResearch();
+        });
+      });
+
+      // Search debounce
+      let searchTimeout;
+      const searchInput = document.getElementById('res-search');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            searchQuery = e.target.value.trim();
+            fetchResearch();
+          }, 350);
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', fetchResearch);
+    })();
+  </script>
 </body>
 </html>

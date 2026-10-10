@@ -187,6 +187,7 @@ const RATE_LIMITS = {
   login: { maxAttempts: 5, windowMs: 15 * 60 * 1000, blockMs: 30 * 60 * 1000 },
   otp: { maxAttempts: 5, windowMs: 15 * 60 * 1000, blockMs: 30 * 60 * 1000 },
   resend: { maxAttempts: 3, windowMs: 10 * 60 * 1000, blockMs: 30 * 60 * 1000 },
+  password_change: { maxAttempts: 3, windowMs: 30 * 60 * 1000, blockMs: 60 * 60 * 1000 },
   api: { maxAttempts: 100, windowMs: 15 * 60 * 1000, blockMs: 5 * 60 * 1000 },
 };
 
@@ -287,7 +288,73 @@ function validateUrl(url) {
   if (!url) return true;
   try {
     const parsed = new URL(url);
+    if (parsed.protocol === 'javascript:') return false;
     return ['https:', 'http:'].includes(parsed.protocol);
+  } catch {
+    return false;
+  }
+}
+
+// ============================================
+// Google Drive & Media URL Utilities
+// ============================================
+const EMBED_ALLOWLIST = ['www.youtube.com', 'youtube.com', 'www.youtube-nocookie.com', 'drive.google.com', 'docs.google.com', 'player.vimeo.com'];
+
+function classifyMediaUrl(url) {
+  if (!url) return { type: 'empty', valid: false };
+  try {
+    const parsed = new URL(url);
+    if (!['https:', 'http:'].includes(parsed.protocol)) return { type: 'unsupported', valid: false };
+
+    // Google Drive patterns
+    if (parsed.hostname === 'drive.google.com') {
+      const fileMatch = parsed.pathname.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+      if (fileMatch) {
+        return { type: 'gdrive_file', valid: true, fileId: fileMatch[1], displayUrl: `https://drive.google.com/file/d/${fileMatch[1]}/preview`, thumbnailUrl: `https://drive.google.com/thumbnail?id=${fileMatch[1]}&sz=w800` };
+      }
+      const openMatch = parsed.searchParams.get('id');
+      if (parsed.pathname.includes('/open') && openMatch) {
+        return { type: 'gdrive_file', valid: true, fileId: openMatch, displayUrl: `https://drive.google.com/file/d/${openMatch}/preview`, thumbnailUrl: `https://drive.google.com/thumbnail?id=${openMatch}&sz=w800` };
+      }
+      return { type: 'gdrive_page', valid: true, fileId: null };
+    }
+
+    // Google Docs/Slides/Sheets
+    if (parsed.hostname === 'docs.google.com') {
+      return { type: 'gdocs', valid: true };
+    }
+
+    // YouTube patterns
+    if (['www.youtube.com', 'youtube.com'].includes(parsed.hostname)) {
+      const videoId = parsed.searchParams.get('v');
+      if (videoId) return { type: 'youtube', valid: true, videoId, embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}` };
+      const embedMatch = parsed.pathname.match(/\/embed\/([a-zA-Z0-9_-]+)/);
+      if (embedMatch) return { type: 'youtube', valid: true, videoId: embedMatch[1], embedUrl: `https://www.youtube-nocookie.com/embed/${embedMatch[1]}` };
+    }
+    if (parsed.hostname === 'youtu.be') {
+      const videoId = parsed.pathname.slice(1);
+      if (videoId) return { type: 'youtube', valid: true, videoId, embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}` };
+    }
+
+    // Vimeo
+    if (parsed.hostname === 'vimeo.com' || parsed.hostname === 'www.vimeo.com') {
+      const vimeoMatch = parsed.pathname.match(/\/(\d+)/);
+      if (vimeoMatch) return { type: 'vimeo', valid: true, videoId: vimeoMatch[1], embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}` };
+    }
+
+    // Generic HTTPS image/document
+    if (parsed.protocol === 'https:') return { type: 'direct_url', valid: true };
+    return { type: 'unsupported', valid: false };
+  } catch {
+    return { type: 'invalid', valid: false };
+  }
+}
+
+function isAllowedEmbedHost(url) {
+  if (!url) return false;
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'https:' && EMBED_ALLOWLIST.includes(parsed.hostname);
   } catch {
     return false;
   }
@@ -360,6 +427,10 @@ module.exports = {
   sanitizeText,
   validateUrl,
   generateSlug,
+  // Media
+  classifyMediaUrl,
+  isAllowedEmbedHost,
+  EMBED_ALLOWLIST,
   // Audit
   auditLog,
   getClientIP,

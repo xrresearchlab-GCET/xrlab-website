@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team &amp; 3D Researcher Roster — XR Research Lab</title>
+  <meta name="description" content="Meet the multidisciplinary researchers, XR developers, and faculty mentors pioneering spatial computing at XR Research Lab. Explore interactive 3D avatars.">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="images/collegelogo.png">
+  <link rel="apple-touch-icon" href="images/collegelogo.png">
+
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- 3D Model Viewer Google Component -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/homepage.css">
+  <link rel="stylesheet" href="css/subpages.css">
+  <link rel="stylesheet" href="css/about.css">
+
+  <style>
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+      margin-top: 32px;
+    }
+
+    .team-card {
+      background: rgba(14, 18, 28, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .team-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(56, 189, 248, 0.35);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4), 0 0 20px rgba(56, 189, 248, 0.1);
+    }
+
+    .team-card-viewport {
+      height: 280px;
+      background: radial-gradient(circle at center, rgba(56, 189, 248, 0.08) 0%, rgba(10, 13, 20, 0.8) 100%);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .team-card-viewport model-viewer {
+      width: 100%;
+      height: 100%;
+      --poster-color: transparent;
+    }
+
+    .team-card-viewport img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .team-3d-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(10, 14, 24, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: #38bdf8;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: 4px 10px;
+      border-radius: 20px;
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .team-card-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .team-card-name {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--cin-text);
+      margin-bottom: 4px;
+    }
+
+    .team-card-role {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--cin-accent-bright);
+      margin-bottom: 10px;
+    }
+
+    .team-card-tagline {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--cin-text-dim);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    .team-card-about {
+      font-size: 13px;
+      color: var(--cin-text-secondary);
+      line-height: 1.6;
+      margin-bottom: 20px;
+      flex-grow: 1;
+    }
+
+    .team-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 12px;
+    }
+
+    .team-filter-bar {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .team-filter-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--cin-text-secondary);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .team-filter-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--cin-text);
+    }
+
+    .team-filter-btn.active {
+      background: var(--cin-accent);
+      border-color: var(--cin-accent-bright);
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Cinematic Transparent Navigation -->
+  <header class="cin-header" id="cin-header">
+    <nav class="cin-nav">
+      <a href="index.html" class="cin-brand" aria-label="XR Research Lab Home">
+        <span class="brand-xr">XR</span>
+        <span class="brand-sep"></span>
+        <span class="brand-text">RESEARCH LAB</span>
+      </a>
+
+      <div class="cin-nav-links" id="cin-nav-links">
+        <a href="index.html" class="cin-nav-link">Home</a>
+        <a href="about.html" class="cin-nav-link active">About Us</a>
+        <a href="project-space.html" class="cin-nav-link">Project Space</a>
+
+        <div class="cin-nav-dropdown" id="cin-explore">
+          <button class="cin-nav-link cin-dropdown-trigger" aria-expanded="false" aria-haspopup="true" id="explore-trigger">
+            Explore
+            <svg class="dropdown-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="cin-dropdown" id="cin-explore-dropdown" role="menu">
+            <a href="learn.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Learn
+            </a>
+            <a href="milestones.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Milestones
+            </a>
+            <a href="team.html" class="cin-dropdown-item" role="menuitem" style="color:var(--cin-accent-bright)">
+              <span class="dropdown-indicator"></span> Team &amp; 3D Roster
+            </a>
+          </div>
+        </div>
+
+        <div class="cin-nav-dropdown cin-nav-connect" id="cin-connect">
+          <button class="cin-nav-link cin-dropdown-trigger cin-connect-trigger" aria-expanded="false" aria-haspopup="true" id="connect-trigger">
+            Connect
+            <svg class="dropdown-chevron connect-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="cin-dropdown" id="cin-dropdown" role="menu">
+            <a href="projects.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Ongoing Projects
+            </a>
+            <a href="events.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Upcoming Events
+            </a>
+            <a href="research.html" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Research
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <button class="cin-hamburger" id="cin-hamburger" aria-label="Toggle Navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Mobile Overlay -->
+  <div class="cin-mobile-overlay" id="cin-mobile-overlay" aria-hidden="true">
+    <div class="cin-mobile-menu">
+      <a href="index.html" class="cin-mobile-link">Home</a>
+      <a href="about.html" class="cin-mobile-link active">About Us</a>
+      <a href="team.html" class="cin-mobile-link active" style="color:var(--cin-accent-bright)">Team &amp; 3D Roster</a>
+      <a href="project-space.html" class="cin-mobile-link">Project Space</a>
+      <a href="learn.html" class="cin-mobile-link">Learn</a>
+      <a href="milestones.html" class="cin-mobile-link">Milestones</a>
+      <a href="research.html" class="cin-mobile-link">Research</a>
+      <a href="events.html" class="cin-mobile-link">Events</a>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <main class="subpage-wrapper">
+    <div class="subpage-hero">
+      <div class="subpage-badge">
+        <span class="subpage-badge-dot"></span>
+        <span>RESEARCH PERSONNEL // 3D PROFILES</span>
+      </div>
+      <h1 class="subpage-title">OUR <span class="gradient-text">TEAM &amp; RESEARCHERS</span></h1>
+      <p class="subpage-lead">
+        A multidisciplinary collective of spatial computing developers, 3D technical artists, human-computer interaction researchers, and faculty mentors engineering the next generation of spatial reality.
+      </p>
+
+      <div class="team-filter-bar">
+        <button class="team-filter-btn active" data-filter="PRESENT">Active Researchers</button>
+        <button class="team-filter-btn" data-filter="PAST">Lab Alumni &amp; Fellows</button>
+        <button class="team-filter-btn" data-filter="ALL">All Members</button>
+      </div>
+    </div>
+
+    <section class="subpage-section">
+      <div id="team-loading" style="text-align:center;padding:60px">
+        <div class="admin-spinner" style="margin:0 auto;width:32px;height:32px"></div>
+        <p style="margin-top:16px;color:var(--cin-text-dim);font-size:13px;font-family:var(--font-mono)">SYNCING 3D ROSTER...</p>
+      </div>
+
+      <div class="team-grid" id="team-grid" style="display:none"></div>
+    </section>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="cin-footer">
+    <div class="cin-footer-inner">
+      <div class="cin-footer-brand">
+        <span class="footer-xr">XR</span> RESEARCH LAB
+      </div>
+      <div class="cin-footer-info">
+        © 2026 AR/VR RESEARCH LAB — GEETHANJALI COLLEGE OF ENGINEERING &amp; TECHNOLOGY
+      </div>
+      <div class="cin-footer-contact">
+        <a href="mailto:xrresearchlab@gcet.edu.in">xrresearchlab@gcet.edu.in</a>
+      </div>
+      <div class="cin-footer-social">
+        <a href="https://www.instagram.com/ar.vr.researchlab?igsh=MWM5bzhsd2VkNGFuag==" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
+        <a href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
+        <a href="https://youtube.com" target="_blank" rel="noopener" aria-label="YouTube">YouTube</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/homepage.js"></script>
+  <script src="js/media-utils.js"></script>
+  <script>
+    (function() {
+      let allMembers = [];
+      let currentFilter = 'PRESENT';
+
+      // Fallback roster if DB has no members yet
+      const fallbackRoster = [
+        {
+          full_name: 'MD Akif',
+          role: 'AR/VR Research Lab Lead Researcher & Head',
+          status: 'PRESENT',
+          tagline: 'Immersive Tech & HCI Research · Spatial Computing Lead',
+          about: 'Oversees overall lab direction, strategic research initiatives, interdisciplinary project teams, and global academic collaborations in spatial computing and immersive technologies.',
+          email: 'xrresearchlab@gcet.edu.in',
+          show_email_publicly: true,
+          public_profile_url: 'https://linkedin.com',
+          fallback_image_url: 'images/collegelogo.png'
+        },
+        {
+          full_name: 'Lead XR Developer',
+          role: 'Virtual Reality Systems Engineer',
+          status: 'PRESENT',
+          tagline: 'Unreal Engine 5 · Nanite & OpenXR Pipelines',
+          about: 'Architects real-time stereoscopic environments, interactive physics simulations, and low-latency OpenXR motion tracking pipelines.',
+          show_email_publicly: false,
+          fallback_image_url: ''
+        },
+        {
+          full_name: 'Spatial UI/UX Lead',
+          role: 'Spatial Interface Designer',
+          status: 'PRESENT',
+          tagline: 'VisionOS & Spatial Gestural Interfaces',
+          about: 'Focuses on natural 3D cognitive ergonomics, eye-tracking precision schemas, and volumetric interface typography.',
+          show_email_publicly: false,
+          fallback_image_url: ''
+        }
+      ];
+
+      async function fetchMembers() {
+        const loadingEl = document.getElementById('team-loading');
+        const gridEl = document.getElementById('team-grid');
+
+        try {
+          const res = await fetch('/api/members-public');
+          if (res.ok) {
+            const data = await res.json();
+            allMembers = data.members && data.members.length ? data.members : fallbackRoster;
+          } else {
+            allMembers = fallbackRoster;
+          }
+        } catch (_) {
+          allMembers = fallbackRoster;
+        }
+
+        loadingEl.style.display = 'none';
+        gridEl.style.display = 'grid';
+        renderMembers();
+      }
+
+      function renderMembers() {
+        const gridEl = document.getElementById('team-grid');
+        let filtered = allMembers;
+        if (currentFilter !== 'ALL') {
+          filtered = allMembers.filter(m => m.status === currentFilter);
+        }
+
+        if (!filtered.length) {
+          gridEl.innerHTML = `
+            <div style="grid-column:1/-1;text-align:center;padding:48px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:12px;color:var(--cin-text-secondary)">
+              No members currently listed in this category.
+            </div>
+          `;
+          return;
+        }
+
+        gridEl.innerHTML = filtered.map(m => {
+          let viewportContent = '';
+          const hasModel = !!m.model_url;
+
+          if (hasModel) {
+            // Check if drive link
+            let modelSrc = m.model_url;
+            const drive = window.XRMedia?.parseGoogleDriveUrl(m.model_url);
+            if (drive) {
+              modelSrc = drive.downloadUrl;
+            }
+
+            viewportContent = `
+              <span class="team-3d-badge">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+                3D ROTATE
+              </span>
+              <model-viewer
+                src="${modelSrc}"
+                auto-rotate
+                camera-controls
+                shadow-intensity="1"
+                exposure="1"
+                loading="lazy"
+                alt="${m.full_name} 3D Avatar">
+              </model-viewer>
+            `;
+          } else if (m.fallback_image_url) {
+            let imgSrc = m.fallback_image_url;
+            const drive = window.XRMedia?.parseGoogleDriveUrl(m.fallback_image_url);
+            if (drive) imgSrc = drive.imageUrl;
+
+            viewportContent = `<img src="${imgSrc}" alt="${m.full_name}" loading="lazy" onerror="this.parentElement.innerHTML='<div style=\\'font-family:var(--font-display);font-size:40px;color:var(--cin-accent-bright)\\'>${m.full_name.slice(0,2).toUpperCase()}</div>'"/>`;
+          } else {
+            viewportContent = `<div style="font-family:var(--font-display);font-size:44px;font-weight:700;color:var(--cin-accent-bright);letter-spacing:0.05em">${m.full_name.slice(0, 2).toUpperCase()}</div>`;
+          }
+
+          return `
+            <div class="team-card">
+              <div class="team-card-viewport">
+                ${viewportContent}
+              </div>
+              <div class="team-card-body">
+                <div class="team-card-name">${escapeHtml(m.full_name)}</div>
+                <div class="team-card-role">${escapeHtml(m.role || 'Researcher')}</div>
+                ${m.tagline ? `<div class="team-card-tagline">${escapeHtml(m.tagline)}</div>` : ''}
+                <div class="team-card-about">${escapeHtml(m.about || 'Pioneering immersive hardware and spatial computing solutions.')}</div>
+                <div class="team-card-footer">
+                  <div>
+                    ${m.show_email_publicly && m.email ? `<a href="mailto:${m.email}" style="color:var(--cin-accent-bright);text-decoration:none">✉ Contact</a>` : `<span style="color:var(--cin-text-dim)">XR Research Lab</span>`}
+                  </div>
+                  <div>
+                    ${m.public_profile_url ? `<a href="${m.public_profile_url}" target="_blank" rel="noopener noreferrer" style="color:var(--cin-text);text-decoration:none;font-weight:600">Profile &rarr;</a>` : ''}
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        const d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+      }
+
+      // Filter button listeners
+      document.querySelectorAll('.team-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.team-filter-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentFilter = btn.dataset.filter;
+          renderMembers();
+        });
+      });
+
+      document.addEventListener('DOMContentLoaded', fetchMembers);
+    })();
+  </script>
+</body>
+</html>
