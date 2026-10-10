@@ -168,60 +168,9 @@
       </div>
 
       <div class="subpage-cards-grid" id="courses-catalog-grid">
-        <div class="subpage-card">
-          <div class="card-track-badge">TRACK 01</div>
-          <h2 class="card-heading">Unreal Engine 5 &amp; Virtual Production</h2>
-          <p class="card-body-text">
-            Master Nanite, Lumen dynamic illumination, Niagara particle physics, Blueprint visual scripting, and C++ gameplay systems tailored for high-fidelity VR.
-          </p>
-          <div class="card-tags">
-            <span class="card-tag">UE5</span>
-            <span class="card-tag">C++</span>
-            <span class="card-tag">Lumen &amp; Nanite</span>
-            <span class="card-tag">VR OpenXR</span>
-          </div>
-        </div>
-
-        <div class="subpage-card">
-          <div class="card-track-badge">TRACK 02</div>
-          <h2 class="card-heading">Unity 3D &amp; XR Interaction Toolkit</h2>
-          <p class="card-body-text">
-            Build cross-platform AR/VR experiences targeting Meta Quest 3, Apple Vision Pro, and mobile AR with ARFoundation, spatial anchors, and hand-tracking.
-          </p>
-          <div class="card-tags">
-            <span class="card-tag">Unity</span>
-            <span class="card-tag">C#</span>
-            <span class="card-tag">XRIT</span>
-            <span class="card-tag">ARFoundation</span>
-          </div>
-        </div>
-
-        <div class="subpage-card">
-          <div class="card-track-badge">TRACK 03</div>
-          <h2 class="card-heading">WebXR, Three.js &amp; Browser 3D</h2>
-          <p class="card-body-text">
-            Create zero-install spatial experiences running directly in web browsers using WebGL, WebGPU, Three.js, GLTF pipelines, and WebXR device APIs.
-          </p>
-          <div class="card-tags">
-            <span class="card-tag">JavaScript</span>
-            <span class="card-tag">Three.js</span>
-            <span class="card-tag">WebGL</span>
-            <span class="card-tag">WebXR</span>
-          </div>
-        </div>
-
-        <div class="subpage-card">
-          <div class="card-track-badge">TRACK 04</div>
-          <h2 class="card-heading">Spatial UI/UX &amp; Cognitive Ergonomics</h2>
-          <p class="card-body-text">
-            Design intuitive 3D spatial user interfaces, natural eye-gaze targeting, gesture control schemas, and comfortable stereoscopic depth layouts.
-          </p>
-          <div class="card-tags">
-            <span class="card-tag">Spatial UX</span>
-            <span class="card-tag">Figma 3D</span>
-            <span class="card-tag">HCI</span>
-            <span class="card-tag">Depth Perception</span>
-          </div>
+        <div style="grid-column:1/-1;text-align:center;padding:48px 24px;color:var(--cin-text-secondary)">
+          <div class="cin-spinner" style="margin:0 auto 16px;width:32px;height:32px;border:2px solid rgba(56,189,248,0.2);border-top-color:var(--cin-accent-bright);border-radius:50%;animation:cin-spin 0.8s linear infinite"></div>
+          <div style="font-family:var(--font-mono);font-size:12px;letter-spacing:0.1em">LOADING CURRICULA...</div>
         </div>
       </div>
     </section>
@@ -320,17 +269,12 @@
 
           const data = await res.json();
           if (data && Array.isArray(data.courses)) {
-            if (currentCategory === 'all' && !searchQuery) {
-              if (data.courses.length > 0) {
-                allFetchedCourses = data.courses;
-                renderCourses(data.courses);
-              }
-            } else {
-              renderCourses(data.courses);
-            }
+            allFetchedCourses = data.courses;
+            renderCourses(data.courses);
+          } else {
+            renderCourses([]);
           }
         } catch (_) {
-          // Graceful fallback to client-side filtering if API fails or offline
           filterFallbackCourses();
         }
       }
@@ -350,34 +294,9 @@
             );
           }
           renderCourses(filtered);
-          return;
+        } else {
+          renderCourses([]);
         }
-
-        // Filter the static DOM cards
-        const grid = document.getElementById('courses-catalog-grid');
-        if (!grid) return;
-        const cards = grid.querySelectorAll('.subpage-card');
-
-        cards.forEach(card => {
-          const cardText = card.textContent.toLowerCase();
-          const cardCategory = (card.getAttribute('data-category') || '').toLowerCase();
-          const targetCategory = currentCategory.toLowerCase();
-
-          const matchesCat = currentCategory === 'all' || 
-                             cardCategory.includes(targetCategory) || 
-                             cardText.includes(targetCategory) ||
-                             (targetCategory === 'augmented reality' && cardText.includes('ar')) ||
-                             (targetCategory === 'virtual reality' && cardText.includes('vr')) ||
-                             (targetCategory === 'mixed reality' && cardText.includes('mr'));
-
-          const matchesSearch = !searchQuery || cardText.includes(searchQuery.toLowerCase());
-
-          if (matchesCat && matchesSearch) {
-            card.style.display = 'flex';
-          } else {
-            card.style.display = 'none';
-          }
-        });
       }
 
       function renderCourses(courses) {

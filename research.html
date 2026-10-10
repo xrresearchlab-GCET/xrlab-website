@@ -154,57 +154,9 @@
       </div>
 
       <div class="subpage-cards-grid" id="research-cards-grid">
-        <!-- Default sample paper fallback -->
-        <div class="subpage-card" style="display:flex;flex-direction:column">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-            <span class="card-track-badge">HEALTHCARE &amp; SURGICAL XR</span>
-            <span style="font-family:var(--font-mono);font-size:10px;color:var(--cin-accent-bright);padding:2px 8px;background:rgba(56,189,248,0.1);border-radius:4px">
-              ONGOING
-            </span>
-          </div>
-          <h2 class="card-heading" style="font-size:18px">Sub-Millimeter Optical Tracking Accuracy in Holographic Headsets</h2>
-          <p class="card-body-text" style="flex-grow:1">
-            Empirical benchmark assessing stereoscopic drift and depth disparity tolerances under micro-surgical operating room illumination.
-          </p>
-          <div style="font-size:12px;color:var(--cin-text-dim);margin-bottom:12px">
-            Mentor: MD Akif · HCI Division
-          </div>
-          <div class="card-tags" style="margin-bottom:16px">
-            <span class="card-tag">Computer Vision</span>
-            <span class="card-tag">OpenXR</span>
-            <span class="card-tag">Surgical VR</span>
-          </div>
-          <div style="margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)">
-            <a href="research-detail.html?slug=sub-millimeter-tracking" style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:0.05em;color:#fff;text-decoration:none;background:var(--cin-accent);padding:8px 16px;border-radius:6px">
-              VIEW RESEARCH DOSSIER &rarr;
-            </a>
-          </div>
-        </div>
-
-        <div class="subpage-card" style="display:flex;flex-direction:column">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-            <span class="card-track-badge">INDUSTRIAL DIGITAL TWINS</span>
-            <span style="font-family:var(--font-mono);font-size:10px;color:var(--cin-accent-bright);padding:2px 8px;background:rgba(56,189,248,0.1);border-radius:4px">
-              ONGOING
-            </span>
-          </div>
-          <h2 class="card-heading" style="font-size:18px">BIM Telemetry Synchronization via WebSockets in Browser WebXR</h2>
-          <p class="card-body-text" style="flex-grow:1">
-            Real-time IoT sensor telemetry streaming overlaid onto 3D CAD architectural models in browser runtimes.
-          </p>
-          <div style="font-size:12px;color:var(--cin-text-dim);margin-bottom:12px">
-            Faculty Advisor: XR Research Lab · Robotics Division
-          </div>
-          <div class="card-tags" style="margin-bottom:16px">
-            <span class="card-tag">WebXR</span>
-            <span class="card-tag">Three.js</span>
-            <span class="card-tag">Digital Twins</span>
-          </div>
-          <div style="margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)">
-            <a href="project-space.html" style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:0.05em;color:#fff;text-decoration:none;background:var(--cin-accent);padding:8px 16px;border-radius:6px">
-              EXPLORE IN PROJECT SPACE &rarr;
-            </a>
-          </div>
+        <div style="grid-column:1/-1;text-align:center;padding:48px 24px;color:var(--cin-text-secondary)">
+          <div class="cin-spinner" style="margin:0 auto 16px;width:32px;height:32px;border:2px solid rgba(56,189,248,0.2);border-top-color:var(--cin-accent-bright);border-radius:50%;animation:cin-spin 0.8s linear infinite"></div>
+          <div style="font-family:var(--font-mono);font-size:12px;letter-spacing:0.1em">LOADING RESEARCH PAPERS...</div>
         </div>
       </div>
     </section>
@@ -236,14 +188,8 @@
     (function () {
       let searchQuery = '';
       let allFetchedResearch = null;
-      let initialFallbackHtml = '';
 
       async function fetchResearch() {
-        const grid = document.getElementById('research-cards-grid');
-        if (!initialFallbackHtml && grid) {
-          initialFallbackHtml = grid.innerHTML;
-        }
-
         try {
           let url = '/api/research-public';
           if (searchQuery) url += '?search=' + encodeURIComponent(searchQuery);
@@ -256,18 +202,12 @@
 
           const data = await res.json();
           if (data && Array.isArray(data.research)) {
-            if (data.research.length > 0) {
-              allFetchedResearch = data.research;
-              renderResearch(data.research);
-            } else if (!searchQuery && initialFallbackHtml && grid) {
-              // If no custom research added in DB yet, preserve initial sample cards so page isn't empty!
-              grid.innerHTML = initialFallbackHtml;
-            } else {
-              renderResearch(data.research);
-            }
+            allFetchedResearch = data.research;
+            renderResearch(data.research);
+          } else {
+            renderResearch([]);
           }
         } catch (_) {
-          // Graceful fallback to client-side filtering if API fails or offline
           filterFallbackResearch();
         }
       }
@@ -285,19 +225,9 @@
             );
           }
           renderResearch(filtered);
-          return;
+        } else {
+          renderResearch([]);
         }
-
-        // Filter the static DOM cards
-        const grid = document.getElementById('research-cards-grid');
-        if (!grid) return;
-        const cards = grid.querySelectorAll('.subpage-card');
-
-        cards.forEach(card => {
-          const cardText = card.textContent.toLowerCase();
-          const matchesSearch = !searchQuery || cardText.includes(searchQuery.toLowerCase());
-          card.style.display = matchesSearch ? 'flex' : 'none';
-        });
       }
 
       function renderResearch(items) {

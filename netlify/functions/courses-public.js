@@ -26,17 +26,17 @@ exports.handler = async (event) => {
         published_at
       `)
       .eq('slug', params.slug)
-      .eq('status', 'published')
+      .neq('status', 'archived')
       .maybeSingle();
 
     if (cErr || !course) return respondError(404, 'Course not found');
 
-    // Fetch published lessons
+    // Fetch lessons
     const { data: lessons, error: lErr } = await supabase
       .from('course_lessons')
       .select('id, title, slug, description, video_url, resource_url, lesson_order')
       .eq('course_id', course.id)
-      .eq('status', 'published')
+      .neq('status', 'archived')
       .order('lesson_order', { ascending: true });
 
     return respond(200, {
@@ -54,7 +54,7 @@ exports.handler = async (event) => {
       estimated_duration, lesson_count, technologies, tags,
       certificate_available, featured, published_at
     `)
-    .eq('status', 'published');
+    .neq('status', 'archived');
 
   if (params.category && params.category !== 'all') {
     query = query.eq('category', params.category);

@@ -150,9 +150,81 @@
     }).join('');
   }
 
+  function renderLeadCard(leadGridEl, lead) {
+    if (!leadGridEl || !lead) return;
+
+    const hasModel = !!lead.model_url;
+    const modelSrc = hasModel ? resolveModelUrl(lead.model_url) : '';
+    const imgSrc = lead.fallback_image_url ? resolveImageUrl(lead.fallback_image_url) : '';
+
+    let visualBox = '';
+    if (hasModel) {
+      visualBox = `
+        <div class="member-3d-viewport" style="margin-bottom:16px">
+          <span class="member-3d-tag">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+            3D MODEL
+          </span>
+          <model-viewer
+            src="${escapeHtml(modelSrc)}"
+            auto-rotate
+            camera-controls
+            shadow-intensity="1"
+            exposure="1"
+            loading="lazy"
+            alt="${escapeHtml(lead.full_name)} 3D Avatar">
+          </model-viewer>
+        </div>
+      `;
+    } else if (imgSrc) {
+      visualBox = `
+        <div class="member-avatar-box member-avatar-photo" style="margin-bottom:16px">
+          <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(lead.full_name)}" loading="lazy"/>
+        </div>
+      `;
+    }
+
+    // Meta Badges from tagline
+    let metaBadgesHtml = '';
+    if (lead.tagline) {
+      const parts = lead.tagline.split(/[•,|]/).map(s => s.trim()).filter(Boolean);
+      if (parts.length) {
+        metaBadgesHtml = parts.map(p => `<span class="meta-badge">${escapeHtml(p)}</span>`).join('');
+      }
+    } else {
+      metaBadgesHtml = '<span class="meta-badge">Head of Lab</span><span class="meta-badge">Immersive Tech &amp; HCI Research</span>';
+    }
+
+    // Contact Row
+    const contactRows = [];
+    if (lead.email) {
+      contactRows.push(`<span>EMAIL: <a href="mailto:${escapeHtml(lead.email)}">${escapeHtml(lead.email)}</a></span>`);
+    }
+    if (lead.phone) {
+      const cleanPhone = lead.phone.replace(/[^0-9+]/g, '');
+      contactRows.push(`<span>PHONE: <a href="tel:${cleanPhone}">${escapeHtml(lead.phone)}</a></span>`);
+    }
+    if (lead.public_profile_url) {
+      contactRows.push(`<span>PROFILE: <a href="${escapeHtml(lead.public_profile_url)}" target="_blank" rel="noopener noreferrer">View Portfolio &rarr;</a></span>`);
+    }
+
+    leadGridEl.innerHTML = `
+      <div class="member-card head-card" data-status="${escapeHtml(lead.status || 'PRESENT')}">
+        ${visualBox}
+        <div class="member-name">${escapeHtml(lead.full_name)}</div>
+        <div class="member-role">${escapeHtml(lead.role || 'AR/VR Research Lab Lead Researcher & Head')}</div>
+        <div class="member-meta">${metaBadgesHtml}</div>
+        <p class="member-desc">
+          ${escapeHtml(lead.about || 'Oversees overall lab direction, strategic research initiatives, interdisciplinary project teams, and global academic collaborations.')}
+        </p>
+        ${contactRows.length ? `<div class="member-contact-row">${contactRows.join('')}</div>` : ''}
+      </div>
+    `;
+  }
+
   async function initAboutMembers() {
     const gridEl = document.getElementById('about-member-grid');
-    if (!gridEl) return;
+    const leadGridEl = document.getElementById('about-lead-grid');
 
     // Filter Buttons
     const filterButtons = document.querySelectorAll('.about-team-filter-btn');
@@ -161,28 +233,38 @@
         filterButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentFilter = btn.dataset.filter || 'PRESENT';
-        if (allMembers && allMembers.length > 0) {
+        if (gridEl) {
           renderMemberCards(gridEl, allMembers);
-        } else {
-          // If using static fallback, filter static cards by data-status
-          const staticCards = gridEl.querySelectorAll('.member-card');
-          staticCards.forEach(card => {
-            const status = card.dataset.status || 'PRESENT';
-            if (currentFilter === 'ALL' || status === currentFilter) {
-              card.style.display = '';
-            } else {
-              card.style.display = 'none';
-            }
-          });
         }
       });
     });
 
     // Fetch members from database
     const members = await fetchPublicMembers();
-    if (members && members.length > 0) {
-      allMembers = members;
-      renderMemberCards(gridEl, allMembers);
+    if (Array.isArray(members)) {
+      const lead = members.find(m => m.is_lead) || 
+                   members.find(m => (m.role || '').toLowerCase().includes('lead') || (m.full_name || '').toLowerCase().includes('akif'));
+
+      if (lead && leadGridEl) {
+        renderLeadCard(leadGridEl, lead);
+      }
+
+      // Filter out lead from the student researchers list if designated as lead
+      const studentMembers = lead 
+        ? members.filter(m => m.id !== lead.id && !m.is_lead)
+        : members;
+
+      allMembers = studentMembers;
+      if (gridEl) {
+        renderMemberCards(gridEl, studentMembers);
+      }
+    } else if (gridEl) {
+      gridEl.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 48px 24px; color: var(--cin-text-secondary);">
+          <p style="font-size: 14px; margin: 0 0 6px;">No members loaded.</p>
+          <p style="font-size: 12px; margin: 0; color: var(--cin-text-dim);">Members added via the Admin Panel will appear here.</p>
+        </div>
+      `;
     }
   }
 

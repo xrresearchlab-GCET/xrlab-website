@@ -2843,8 +2843,8 @@
             <div class="admin-field">
               <label for="course-status">Publication Status</label>
               <select id="course-status">
+                <option value="published" ${c.status !== 'draft' && c.status !== 'archived' ? 'selected' : ''}>Published — Active on Learn Page</option>
                 <option value="draft" ${c.status === 'draft' ? 'selected' : ''}>Draft — Hidden from Public</option>
-                <option value="published" ${c.status === 'published' ? 'selected' : ''}>Published — Active on Learn Page</option>
                 <option value="archived" ${c.status === 'archived' ? 'selected' : ''}>Archived</option>
               </select>
             </div>
@@ -3410,8 +3410,8 @@
             <div class="admin-field">
               <label for="res-status">Publication Status</label>
               <select id="res-status">
+                <option value="published" ${r.publication_status !== 'draft' && r.publication_status !== 'archived' ? 'selected' : ''}>Published — Visible on Research Page</option>
                 <option value="draft" ${r.publication_status === 'draft' ? 'selected' : ''}>Draft — Internal / Not Published</option>
-                <option value="published" ${r.publication_status === 'published' ? 'selected' : ''}>Published — Visible on Research Page</option>
                 <option value="archived" ${r.publication_status === 'archived' ? 'selected' : ''}>Archived</option>
               </select>
             </div>

@@ -28,7 +28,7 @@ exports.handler = async (event) => {
         featured, published_at
       `)
       .eq('slug', params.slug)
-      .eq('publication_status', 'published')
+      .neq('publication_status', 'archived')
       .maybeSingle();
 
     if (error || !item) return respondError(404, 'Research item not found');
@@ -44,7 +44,7 @@ exports.handler = async (event) => {
       research_stage, concept_image_url, demo_video_url, mentor, team_members,
       technologies, tags, featured, published_at
     `)
-    .eq('publication_status', 'published');
+    .neq('publication_status', 'archived');
 
   if (params.division && params.division !== 'all') {
     query = query.eq('research_division', params.division);

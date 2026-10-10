@@ -17,7 +17,7 @@ exports.handler = async (event) => {
 
   let query = supabase
     .from('members')
-    .select('id, full_name, role, tagline, about, status, model_url, model_format, fallback_image_url, public_profile_url, show_email_publicly, email, phone, is_lead, display_order, joined_at')
+    .select('*')
     .order('display_order', { ascending: true })
     .order('created_at', { ascending: false });
 
@@ -26,15 +26,19 @@ exports.handler = async (event) => {
   }
 
   const { data, error } = await query;
-  if (error) return respondError(500, 'Failed to fetch members');
+  if (error) {
+    console.error('members-public error:', error);
+    return respondError(500, error.message || 'Failed to fetch members');
+  }
 
-  // Strip private emails
+  // Strip private emails and server-internal fields
   const publicMembers = (data || []).map(m => {
     const member = { ...m };
     if (!member.show_email_publicly) {
       delete member.email;
     }
     delete member.show_email_publicly;
+    delete member.created_by;
     return member;
   });
 
