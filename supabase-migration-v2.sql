@@ -248,3 +248,97 @@ CREATE POLICY "Service role full access research" ON research_items
   FOR ALL
   USING (true)
   WITH CHECK (true);
+
+-- =============================================================================
+-- 7. INITIAL SEED DATA (CORE CURRICULA & RESEARCH PUBLICATIONS)
+-- Idempotent: uses ON CONFLICT (slug) DO NOTHING so existing data is preserved.
+-- =============================================================================
+
+-- Core Curricula (matches Learn platform tracks)
+INSERT INTO courses (
+  title, slug, short_description, description, category, difficulty,
+  technologies, lesson_count, estimated_duration, featured, display_order, status, published_at
+) VALUES 
+(
+  'Unreal Engine 5 & Virtual Production',
+  'unreal-engine-5-virtual-production',
+  'Master Nanite, Lumen dynamic illumination, Niagara particle physics, Blueprint visual scripting, and C++ gameplay systems tailored for high-fidelity VR.',
+  'Comprehensive spatial computing curriculum covering high-fidelity virtual reality development with Epic Games Unreal Engine 5. Students learn to configure OpenXR runtimes, build real-time photorealistic volumetric environments, program gameplay mechanics using C++ and Blueprints, and deploy production-ready VR applications.',
+  'Virtual Reality',
+  'Advanced',
+  '["UE5", "C++", "Lumen & Nanite", "VR OpenXR"]'::jsonb,
+  8,
+  '12 Weeks',
+  true,
+  1,
+  'published',
+  NOW()
+),
+(
+  'Unity 3D & XR Interaction Toolkit',
+  'unity-3d-xr-interaction-toolkit',
+  'Build cross-platform AR/VR experiences targeting Meta Quest 3, Apple Vision Pro, and mobile AR with ARFoundation, spatial anchors, and hand-tracking.',
+  'Hands-on laboratory track focused on rapid cross-platform spatial app engineering using Unity 6 and XR Interaction Toolkit (XRIT). Covers spatial locomotion, direct interactor physics, hand tracking gestures, plane raycasting, and passthrough mixed reality.',
+  'Mixed Reality',
+  'Intermediate',
+  '["Unity", "C#", "XRIT", "ARFoundation"]'::jsonb,
+  6,
+  '8 Weeks',
+  true,
+  2,
+  'published',
+  NOW()
+),
+(
+  'WebXR, Three.js & Browser 3D',
+  'webxr-threejs-browser-3d',
+  'Create zero-install spatial experiences running directly in web browsers using WebGL, WebGPU, Three.js, GLTF pipelines, and WebXR device APIs.',
+  'Discover the open spatial web. Learn to construct interactive 3D web environments with Three.js, configure immersive VR/AR sessions with WebXR device APIs, load and optimize GLTF models, and build accessible spatial user interfaces accessible directly from any browser without app installation.',
+  'WebXR',
+  'Beginner',
+  '["JavaScript", "Three.js", "WebGL", "WebXR"]'::jsonb,
+  5,
+  '6 Weeks',
+  true,
+  3,
+  'published',
+  NOW()
+)
+ON CONFLICT (slug) DO NOTHING;
+
+-- Initial Research Publications (matches Research archive)
+INSERT INTO research_items (
+  title, slug, short_summary, description, research_division, research_area,
+  research_stage, mentor, technologies, featured, display_order, publication_status, published_at
+) VALUES
+(
+  'Sub-Millimeter Optical Tracking Accuracy in Holographic Headsets',
+  'sub-millimeter-tracking',
+  'Empirical benchmark assessing stereoscopic drift and depth disparity tolerances under micro-surgical operating room illumination.',
+  'This research investigates optical sensor precision and positional drift in holographic head-mounted displays under dynamic clinical operating theater lighting. Through high-frequency optical motion capture benchmarking, we establish tolerance thresholds for stereoscopic spatial overlay fidelity during precision procedures.',
+  'Healthcare & Surgical XR',
+  'Computer Vision & SLAM',
+  'VALIDATION',
+  'MD Akif · HCI Division',
+  '["Computer Vision", "OpenXR", "Surgical VR"]'::jsonb,
+  true,
+  1,
+  'published',
+  NOW()
+),
+(
+  'BIM Telemetry Synchronization via WebSockets in Browser WebXR',
+  'bim-telemetry-webxr',
+  'Real-time IoT sensor telemetry streaming overlaid onto 3D CAD architectural models in browser runtimes.',
+  'An investigation into bidirectional streaming architectures for real-time digital twin monitoring. By coupling high-frequency WebSocket telemetry streams with lightweight WebGL/WebXR scene graphs, we demonstrate low-latency interactive sensor visualization mapped directly onto building information models in standard browser environments.',
+  'Industrial Digital Twins',
+  'Spatial Digital Twins',
+  'EXPERIMENTAL',
+  'Faculty Advisor: XR Research Lab · Robotics Division',
+  '["WebXR", "Three.js", "Digital Twins"]'::jsonb,
+  true,
+  2,
+  'published',
+  NOW()
+)
+ON CONFLICT (slug) DO NOTHING;

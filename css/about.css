@@ -526,11 +526,51 @@ body.about-page {
    MEMBERS & LEADERSHIP (MD AKIF & 10 STUDENTS)
    ========================================================================== */
 
+/* Status Filter Tabs (Active / Past / All) */
+.about-team-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 24px 0 28px;
+  position: relative;
+  z-index: 2;
+}
+
+.about-team-filter-btn {
+  font-family: var(--font-mono, monospace);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--cin-text-secondary, #94a3b8);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(10px);
+}
+
+.about-team-filter-btn:hover {
+  border-color: rgba(0, 240, 255, 0.4);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.about-team-filter-btn.active {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.18) 0%, rgba(112, 0, 255, 0.18) 100%);
+  border-color: #00f0ff;
+  color: #00f0ff;
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.25);
+}
+
 .member-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 22px;
-  margin-top: 24px;
+  margin-top: 16px;
 }
 
 .member-card {
@@ -544,6 +584,47 @@ body.about-page {
   overflow: hidden;
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 14px 36px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  display: flex;
+  flex-direction: column;
+}
+
+/* 3D Model Viewport inside Card */
+.member-3d-viewport {
+  width: 100%;
+  height: 180px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  margin-bottom: 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.member-3d-viewport model-viewer {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  outline: none;
+}
+
+.member-3d-tag {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(0, 240, 255, 0.15);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  color: #00f0ff;
+  font-family: var(--font-mono, monospace);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  z-index: 3;
+  backdrop-filter: blur(8px);
 }
 
 /* Full-width Lead Researcher Card */
@@ -566,14 +647,34 @@ body.about-page {
   margin-bottom: 16px;
   position: relative;
   z-index: 2;
+  overflow: hidden;
+}
+
+.member-avatar-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 11px;
 }
 
 .avatar-placeholder-icon {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
   color: var(--cin-accent-bright);
+}
+
+.meta-badge.status-active {
+  background: rgba(0, 240, 255, 0.12);
+  border-color: rgba(0, 240, 255, 0.28);
+  color: #00f0ff;
+}
+
+.meta-badge.status-alumni {
+  background: rgba(168, 85, 247, 0.12);
+  border-color: rgba(168, 85, 247, 0.28);
+  color: #c084fc;
 }
 
 .member-name {

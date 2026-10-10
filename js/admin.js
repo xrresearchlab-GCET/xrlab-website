@@ -437,7 +437,9 @@
       case 'create-milestone': loadCreateMilestone(); break;
       case 'members': loadMembers(); break;
       case 'learn': loadCourses(); break;
+      case 'create-course': loadCourseForm(); break;
       case 'research': loadResearch(); break;
+      case 'create-research': loadResearchForm(); break;
       case 'security': loadSecurity(); break;
       case 'settings': loadSettings(); break;
       default: loadDashboard();

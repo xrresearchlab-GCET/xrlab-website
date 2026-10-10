@@ -51,11 +51,16 @@
   to = "/project-detail.html"
   status = 200
 
-# SPA-style redirect for team page
+# Redirect for team to the in-page team section in about.html
 [[redirects]]
   from = "/team"
-  to = "/team.html"
-  status = 200
+  to = "/about.html#team"
+  status = 301
+
+[[redirects]]
+  from = "/team.html"
+  to = "/about.html#team"
+  status = 301
 
 # SPA-style redirect for course detail pages
 [[redirects]]

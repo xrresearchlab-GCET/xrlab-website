@@ -50,8 +50,8 @@
             <a href="milestones.html" class="cin-dropdown-item" role="menuitem">
               <span class="dropdown-indicator"></span> Milestones
             </a>
-            <a href="team.html" class="cin-dropdown-item" role="menuitem">
-              <span class="dropdown-indicator"></span> Team &amp; 3D Roster
+            <a href="about.html#team" class="cin-dropdown-item" role="menuitem">
+              <span class="dropdown-indicator"></span> Lab Members &amp; Researchers
             </a>
           </div>
         </div>
@@ -100,7 +100,7 @@
         <div class="cin-mobile-dropdown" id="cin-mobile-explore-dropdown">
           <a href="learn.html" class="cin-mobile-sub">Learn</a>
           <a href="milestones.html" class="cin-mobile-sub">Milestones</a>
-          <a href="team.html" class="cin-mobile-sub">Team &amp; 3D Roster</a>
+          <a href="about.html#team" class="cin-mobile-sub">Lab Members &amp; Researchers</a>
         </div>
       </div>
 
@@ -239,9 +239,15 @@
     (function () {
       let currentStage = 'all';
       let searchQuery = '';
+      let allFetchedResearch = null;
+      let initialFallbackHtml = '';
 
       async function fetchResearch() {
         const grid = document.getElementById('research-cards-grid');
+        if (!initialFallbackHtml && grid) {
+          initialFallbackHtml = grid.innerHTML;
+        }
+
         try {
           let url = '/api/research-public';
           const params = [];
@@ -249,46 +255,131 @@
           if (searchQuery) params.push(`search=${encodeURIComponent(searchQuery)}`);
           if (params.length) url += '?' + params.join('&');
 
-          const res = await fetch(url);
-          if (!res.ok) return;
+          let res = await fetch(url);
+          if (!res.ok) {
+            res = await fetch('/.netlify/functions/research-public' + (params.length ? '?' + params.join('&') : ''));
+          }
+          if (!res.ok) throw new Error('API unreachable');
+
           const data = await res.json();
-          if (data.research && data.research.length > 0) {
-            renderResearch(data.research);
+          if (data && Array.isArray(data.research)) {
+            if (currentStage === 'all' && !searchQuery) {
+              if (data.research.length > 0) {
+                allFetchedResearch = data.research;
+                renderResearch(data.research);
+              }
+            } else {
+              renderResearch(data.research);
+            }
           }
         } catch (_) {
-          // Graceful fallback
+          // Graceful fallback to client-side filtering if API fails or offline
+          filterFallbackResearch();
         }
+      }
+
+      function filterFallbackResearch() {
+        if (allFetchedResearch && allFetchedResearch.length > 0) {
+          let filtered = allFetchedResearch;
+          if (currentStage !== 'all') {
+            filtered = filtered.filter(r => (r.research_stage || '').toUpperCase() === currentStage.toUpperCase());
+          }
+          if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            filtered = filtered.filter(r =>
+              (r.title || '').toLowerCase().includes(q) ||
+              (r.short_summary || '').toLowerCase().includes(q) ||
+              (r.research_division || '').toLowerCase().includes(q) ||
+              (r.mentor || '').toLowerCase().includes(q)
+            );
+          }
+          renderResearch(filtered);
+          return;
+        }
+
+        // Filter the static DOM cards
+        const grid = document.getElementById('research-cards-grid');
+        if (!grid) return;
+        const cards = grid.querySelectorAll('.subpage-card');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+          const cardText = card.textContent.toLowerCase();
+          const stageEl = card.querySelector('[style*="var(--cin-accent-bright)"]');
+          const stageText = stageEl ? stageEl.textContent.trim().toUpperCase() : '';
+
+          const matchesStage = currentStage === 'all' || stageText === currentStage.toUpperCase();
+          const matchesSearch = !searchQuery || cardText.includes(searchQuery.toLowerCase());
+
+          if (matchesStage && matchesSearch) {
+            card.style.display = 'flex';
+            visibleCount++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
       }
 
       function renderResearch(items) {
         const grid = document.getElementById('research-cards-grid');
-        grid.innerHTML = items.map(r => `
-          <div class="subpage-card" style="display:flex;flex-direction:column">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-              <span class="card-track-badge">${(r.research_division || 'HCI').toUpperCase()}</span>
-              <span style="font-family:var(--font-mono);font-size:10px;color:var(--cin-accent-bright);padding:2px 8px;background:rgba(56,189,248,0.1);border-radius:4px">
-                ${r.research_stage}
-              </span>
+        if (!grid) return;
+
+        if (!items || !items.length) {
+          grid.innerHTML = `
+            <div style="grid-column:1/-1;text-align:center;padding:48px 24px;background:rgba(14,18,28,0.4);border:1px solid rgba(255,255,255,0.08);border-radius:14px;color:var(--cin-text-secondary)">
+              <p style="font-size:15px;margin:0 0 6px">No research publications found matching your selection.</p>
+              <p style="font-size:12px;margin:0;color:var(--cin-text-dim)">Research items can be created, edited, and published in the Admin Panel.</p>
             </div>
-            <h2 class="card-heading" style="font-size:18px">${escapeHtml(r.title)}</h2>
-            <p class="card-body-text" style="flex-grow:1">
-              ${escapeHtml(r.short_summary || 'Peer-reviewed research and experimental outcomes.')}
-            </p>
-            <div style="font-size:12px;color:var(--cin-text-dim);margin-bottom:12px">
-              ${r.mentor ? `Advisor: ${escapeHtml(r.mentor)} · ` : ''}${r.research_area ? escapeHtml(r.research_area) : ''}
-            </div>
-            ${r.technologies && r.technologies.length ? `
-              <div class="card-tags" style="margin-bottom:16px">
-                ${r.technologies.slice(0, 4).map(t => `<span class="card-tag">${escapeHtml(t)}</span>`).join('')}
+          `;
+          return;
+        }
+
+        grid.innerHTML = items.map(r => {
+          let attribution = '';
+          if (r.mentor) {
+            const m = r.mentor.trim();
+            if (m.startsWith('Mentor:') || m.startsWith('Faculty Advisor:') || m.startsWith('Advisor:')) {
+              attribution = escapeHtml(m);
+            } else {
+              attribution = 'Mentor: ' + escapeHtml(m);
+            }
+            if (r.research_area && !m.includes(r.research_area)) {
+              attribution += ' · ' + escapeHtml(r.research_area);
+            }
+          } else if (r.research_area) {
+            attribution = escapeHtml(r.research_area);
+          }
+
+          const trackBadge = (r.research_division || 'HCI & SIMULATION').toUpperCase();
+          const stageBadge = (r.research_stage || 'ONGOING').toUpperCase();
+
+          return `
+            <div class="subpage-card" style="display:flex;flex-direction:column;cursor:pointer;transition:transform 0.25s ease,border-color 0.25s ease" onclick="window.location.href='research-detail.html?slug=${encodeURIComponent(r.slug)}'">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                <span class="card-track-badge">${escapeHtml(trackBadge)}</span>
+                <span style="font-family:var(--font-mono);font-size:10px;color:var(--cin-accent-bright);padding:2px 8px;background:rgba(56,189,248,0.1);border-radius:4px">
+                  ${escapeHtml(stageBadge)}
+                </span>
               </div>
-            ` : ''}
-            <div style="margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)">
-              <a href="research-detail.html?slug=${r.slug}" style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:0.05em;color:#fff;text-decoration:none;background:var(--cin-accent);padding:8px 16px;border-radius:6px;transition:opacity 0.2s ease">
-                VIEW RESEARCH DOSSIER &rarr;
-              </a>
+              <h2 class="card-heading" style="font-size:18px">${escapeHtml(r.title)}</h2>
+              <p class="card-body-text" style="flex-grow:1">
+                ${escapeHtml(r.short_summary || r.description || 'Peer-reviewed research and experimental outcomes.')}
+              </p>
+              ${attribution ? `<div style="font-size:12px;color:var(--cin-text-dim);margin-bottom:12px">${attribution}</div>` : ''}
+              ${r.technologies && r.technologies.length ? `
+                <div class="card-tags" style="margin-bottom:16px">
+                  ${r.technologies.slice(0, 4).map(t => `<span class="card-tag">${escapeHtml(t)}</span>`).join('')}
+                </div>
+              ` : ''}
+              <div style="margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center">
+                <span style="font-family:var(--font-mono);font-size:11px;color:var(--cin-text-dim)">${escapeHtml(r.research_area || 'Laboratory Research')}</span>
+                <a href="research-detail.html?slug=${encodeURIComponent(r.slug)}" style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:0.05em;color:#fff;text-decoration:none;background:var(--cin-accent);padding:8px 16px;border-radius:6px;transition:opacity 0.2s ease" onclick="event.stopPropagation()">
+                  VIEW RESEARCH DOSSIER &rarr;
+                </a>
+              </div>
             </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       }
 
       function escapeHtml(str) {

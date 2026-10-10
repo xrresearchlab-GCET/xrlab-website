@@ -53,9 +53,9 @@
               <span class="dropdown-indicator"></span>
               Milestones
             </a>
-            <a href="team.html" class="cin-dropdown-item" role="menuitem">
+            <a href="about.html#team" class="cin-dropdown-item" role="menuitem">
               <span class="dropdown-indicator"></span>
-              Team &amp; 3D Roster
+              Lab Members &amp; Researchers
             </a>
           </div>
         </div>
@@ -109,7 +109,7 @@
         <div class="cin-mobile-dropdown" id="cin-mobile-explore-dropdown">
           <a href="learn.html" class="cin-mobile-sub active">Learn</a>
           <a href="milestones.html" class="cin-mobile-sub">Milestones</a>
-          <a href="team.html" class="cin-mobile-sub">Team &amp; 3D Roster</a>
+          <a href="about.html#team" class="cin-mobile-sub">Lab Members &amp; Researchers</a>
         </div>
       </div>
 
@@ -296,9 +296,15 @@
     (function () {
       let currentCategory = 'all';
       let searchQuery = '';
+      let allFetchedCourses = null;
+      let initialFallbackHtml = '';
 
       async function fetchCourses() {
         const grid = document.getElementById('courses-catalog-grid');
+        if (!initialFallbackHtml && grid) {
+          initialFallbackHtml = grid.innerHTML;
+        }
+
         try {
           let url = '/api/courses-public';
           const params = [];
@@ -306,46 +312,121 @@
           if (searchQuery) params.push(`search=${encodeURIComponent(searchQuery)}`);
           if (params.length) url += '?' + params.join('&');
 
-          const res = await fetch(url);
-          if (!res.ok) return; // Keep static fallback
+          let res = await fetch(url);
+          if (!res.ok) {
+            res = await fetch('/.netlify/functions/courses-public' + (params.length ? '?' + params.join('&') : ''));
+          }
+          if (!res.ok) throw new Error('API unreachable');
+
           const data = await res.json();
-          if (data.courses && data.courses.length > 0) {
-            renderCourses(data.courses);
+          if (data && Array.isArray(data.courses)) {
+            if (currentCategory === 'all' && !searchQuery) {
+              if (data.courses.length > 0) {
+                allFetchedCourses = data.courses;
+                renderCourses(data.courses);
+              }
+            } else {
+              renderCourses(data.courses);
+            }
           }
         } catch (_) {
-          // Graceful fallback to static tracks
+          // Graceful fallback to client-side filtering if API fails or offline
+          filterFallbackCourses();
         }
+      }
+
+      function filterFallbackCourses() {
+        if (allFetchedCourses && allFetchedCourses.length > 0) {
+          let filtered = allFetchedCourses;
+          if (currentCategory !== 'all') {
+            filtered = filtered.filter(c => (c.category || '').toLowerCase() === currentCategory.toLowerCase());
+          }
+          if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            filtered = filtered.filter(c =>
+              (c.title || '').toLowerCase().includes(q) ||
+              (c.short_description || '').toLowerCase().includes(q) ||
+              (c.category || '').toLowerCase().includes(q)
+            );
+          }
+          renderCourses(filtered);
+          return;
+        }
+
+        // Filter the static DOM cards
+        const grid = document.getElementById('courses-catalog-grid');
+        if (!grid) return;
+        const cards = grid.querySelectorAll('.subpage-card');
+
+        cards.forEach(card => {
+          const cardText = card.textContent.toLowerCase();
+          const cardCategory = (card.getAttribute('data-category') || '').toLowerCase();
+          const targetCategory = currentCategory.toLowerCase();
+
+          const matchesCat = currentCategory === 'all' || 
+                             cardCategory.includes(targetCategory) || 
+                             cardText.includes(targetCategory) ||
+                             (targetCategory === 'augmented reality' && cardText.includes('ar')) ||
+                             (targetCategory === 'virtual reality' && cardText.includes('vr')) ||
+                             (targetCategory === 'mixed reality' && cardText.includes('mr'));
+
+          const matchesSearch = !searchQuery || cardText.includes(searchQuery.toLowerCase());
+
+          if (matchesCat && matchesSearch) {
+            card.style.display = 'flex';
+          } else {
+            card.style.display = 'none';
+          }
+        });
       }
 
       function renderCourses(courses) {
         const grid = document.getElementById('courses-catalog-grid');
-        grid.innerHTML = courses.map((c, i) => `
-          <div class="subpage-card" style="display:flex;flex-direction:column">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-              <span class="card-track-badge">${c.category.toUpperCase()}</span>
-              <span style="font-family:var(--font-mono);font-size:10px;color:var(--cin-accent-bright);padding:2px 8px;background:rgba(56,189,248,0.1);border-radius:4px">
-                ${c.difficulty.toUpperCase()}
-              </span>
+        if (!grid) return;
+
+        if (!courses || !courses.length) {
+          grid.innerHTML = `
+            <div style="grid-column:1/-1;text-align:center;padding:48px 24px;background:rgba(14,18,28,0.4);border:1px solid rgba(255,255,255,0.08);border-radius:14px;color:var(--cin-text-secondary)">
+              <p style="font-size:15px;margin:0 0 6px">No curricula found matching your selection.</p>
+              <p style="font-size:12px;margin:0;color:var(--cin-text-dim)">Courses can be created and published in the Admin Panel.</p>
             </div>
-            <h2 class="card-heading" style="font-size:18px">${escapeHtml(c.title)}</h2>
-            <p class="card-body-text" style="flex-grow:1">
-              ${escapeHtml(c.short_description || 'Structured spatial computing curriculum module.')}
-            </p>
-            <div style="font-size:12px;color:var(--cin-text-dim);margin-bottom:12px">
-              ${c.estimated_duration ? `⏱ ${escapeHtml(c.estimated_duration)} · ` : ''}📚 ${c.lesson_count || 0} Lessons
-            </div>
-            ${c.technologies && c.technologies.length ? `
-              <div class="card-tags" style="margin-bottom:16px">
-                ${c.technologies.slice(0, 4).map(t => `<span class="card-tag">${escapeHtml(t)}</span>`).join('')}
+          `;
+          return;
+        }
+
+        grid.innerHTML = courses.map((c, i) => {
+          const trackNum = `TRACK ${String(i + 1).padStart(2, '0')}`;
+          const diffBadge = c.difficulty ? `<span style="font-family:var(--font-mono);font-size:10px;font-weight:600;color:var(--cin-accent-bright);padding:2px 8px;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.25);border-radius:4px">${escapeHtml(c.difficulty.toUpperCase())}</span>` : '';
+          const metaLine = [
+            c.estimated_duration ? `⏱ ${escapeHtml(c.estimated_duration)}` : '',
+            c.lesson_count ? `📚 ${c.lesson_count} Lessons` : ''
+          ].filter(Boolean).join(' · ');
+
+          return `
+            <div class="subpage-card" style="display:flex;flex-direction:column;cursor:pointer;transition:transform 0.25s ease,border-color 0.25s ease" onclick="window.location.href='course-detail.html?slug=${encodeURIComponent(c.slug)}'">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                <span class="card-track-badge">${trackNum}</span>
+                ${diffBadge}
               </div>
-            ` : ''}
-            <div style="margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)">
-              <a href="course-detail.html?slug=${c.slug}" style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:0.05em;color:#fff;text-decoration:none;background:var(--cin-accent);padding:8px 16px;border-radius:6px;transition:opacity 0.2s ease">
-                VIEW SYLLABUS &rarr;
-              </a>
+              <h2 class="card-heading" style="font-size:18px">${escapeHtml(c.title)}</h2>
+              <p class="card-body-text" style="flex-grow:1">
+                ${escapeHtml(c.short_description || c.description || 'Structured spatial computing curriculum module.')}
+              </p>
+              ${metaLine ? `<div style="font-size:12px;color:var(--cin-text-dim);margin-bottom:12px">${metaLine}</div>` : ''}
+              ${c.technologies && c.technologies.length ? `
+                <div class="card-tags" style="margin-bottom:16px">
+                  ${c.technologies.slice(0, 4).map(t => `<span class="card-tag">${escapeHtml(t)}</span>`).join('')}
+                </div>
+              ` : ''}
+              <div style="margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center">
+                <span style="font-family:var(--font-mono);font-size:11px;color:var(--cin-text-dim)">${escapeHtml(c.category || 'Spatial Computing')}</span>
+                <span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:0.05em;color:var(--cin-accent-bright)">
+                  VIEW SYLLABUS &rarr;
+                </span>
+              </div>
             </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       }
 
       function escapeHtml(str) {
