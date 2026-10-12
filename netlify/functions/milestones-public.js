@@ -10,7 +10,7 @@ exports.handler = async (event) => {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Cache-Control': 'public, max-age=60, s-maxage=300',
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
   };
 
   if (event.httpMethod === 'OPTIONS') {

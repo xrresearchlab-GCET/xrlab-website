@@ -438,9 +438,9 @@
       async function fetchTutorials() {
         const grid = document.getElementById('tutorials-catalog-grid');
         try {
-          let res = await fetch('/api/courses-public');
+          let res = await fetch('/api/courses-public?t=' + Date.now(), { cache: 'no-store' });
           if (!res.ok) {
-            res = await fetch('/.netlify/functions/courses-public');
+            res = await fetch('/.netlify/functions/courses-public?t=' + Date.now(), { cache: 'no-store' });
           }
           if (!res.ok) throw new Error('API unreachable');
 
@@ -542,9 +542,26 @@
         if (!grid) return;
 
         if (!items || !items.length) {
+          if (!allTutorials.length) {
+            grid.innerHTML = `
+              <div style="grid-column:1/-1;text-align:center;padding:64px 24px;background:rgba(14,18,28,0.5);border:1px solid rgba(255,255,255,0.08);border-radius:14px;color:var(--cin-text-secondary)">
+                <div style="font-size:36px;margin-bottom:12px">📚</div>
+                <h3 style="font-family:var(--font-display);font-size:22px;color:#fff;margin:0 0 8px;font-weight:600">No Tutorials Published Yet</h3>
+                <p style="font-size:14px;margin:0 auto 20px;max-width:500px;line-height:1.6;color:var(--cin-text-dim)">
+                  The Dev Community learning catalog is ready for guides, code snippets, and masterclasses. Instructors and researchers can add tutorials through the admin control panel.
+                </p>
+                <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+                  <a href="project-space.html" class="epic-control-btn" style="background:var(--cin-accent);color:#fff;border-color:var(--cin-accent-bright);text-decoration:none">EXPLORE PROJECT SPACE →</a>
+                  <a href="admin.html" class="epic-control-btn" style="text-decoration:none">OPEN ADMIN CONTROL PANEL</a>
+                </div>
+              </div>
+            `;
+            return;
+          }
+
           grid.innerHTML = `
             <div style="grid-column:1/-1;text-align:center;padding:56px 24px;background:rgba(14,18,28,0.4);border:1px solid rgba(255,255,255,0.08);border-radius:14px;color:var(--cin-text-secondary)">
-              <div style="font-size:32px;margin-bottom:12px">📚</div>
+              <div style="font-size:32px;margin-bottom:12px">🔍</div>
               <p style="font-size:15px;color:#fff;margin:0 0 6px;font-weight:600">No tutorials found matching your filters</p>
               <p style="font-size:13px;margin:0 0 16px;color:var(--cin-text-dim)">Adjust your search keyword or reset filters to explore all community guides.</p>
               <button onclick="document.getElementById('epic-clear-filters').click()" class="epic-control-btn" style="background:var(--cin-accent);color:#fff;border-color:var(--cin-accent-bright)">Reset All Filters</button>

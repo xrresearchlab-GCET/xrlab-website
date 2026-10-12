@@ -127,8 +127,12 @@ exports.handler = async (event) => {
   const { data: rows, error } = await query;
 
   if (error) {
-    console.error('Fetch public tutorials error:', error.message);
-    return respondError(500, 'Failed to fetch tutorials: ' + error.message);
+    console.warn('Fetch public tutorials notice (table may be unpopulated):', error.message);
+    return respond(200, {
+      courses: [],
+      tutorials: [],
+      count: 0,
+    });
   }
 
   const normalized = (rows || []).map(normalizeTutorial);

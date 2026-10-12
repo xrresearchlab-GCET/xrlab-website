@@ -2631,9 +2631,14 @@
           <h1 class="admin-main-title">Tutorials &amp; Learning Hub</h1>
           <p class="admin-main-subtitle">DEV COMMUNITY TUTORIALS, GUIDES, KNOWLEDGE BASE &amp; SNIPPETS</p>
         </div>
-        <button class="admin-btn admin-btn-primary admin-btn-small" onclick="window.adminApp.loadCourseForm()">
-          + ADD TUTORIAL
-        </button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="admin-btn admin-btn-secondary admin-btn-small" onclick="window.adminApp.seedStarterTutorials()">
+            ⚡ SEED 3 STARTERS
+          </button>
+          <button class="admin-btn admin-btn-primary admin-btn-small" onclick="window.adminApp.loadCourseForm()">
+            + ADD TUTORIAL
+          </button>
+        </div>
       </div>
 
       <div class="admin-tabs" id="course-tabs">
@@ -2681,7 +2686,15 @@
       listEl.innerHTML = `
         <div class="admin-empty-state">
           <h3>No tutorials found</h3>
-          <p>Click "+ ADD TUTORIAL" to publish an Unreal Engine, Unity, or Spatial AI guide.</p>
+          <p>Click "+ ADD TUTORIAL" to publish an Unreal Engine, Unity, or Spatial AI guide, or seed initial tutorials.</p>
+          <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+            <button class="admin-btn admin-btn-primary admin-btn-small" onclick="window.adminApp.loadCourseForm()">
+              + ADD TUTORIAL
+            </button>
+            <button class="admin-btn admin-btn-secondary admin-btn-small" onclick="window.adminApp.seedStarterTutorials()">
+              ⚡ SEED 3 STARTER TUTORIALS
+            </button>
+          </div>
         </div>
       `;
       return;
@@ -3015,6 +3028,80 @@
       loadCourses();
     } catch (err) {
       alert('Error: ' + err.message);
+    }
+  }
+
+  async function seedStarterTutorials() {
+    if (!confirm('This will insert 3 starter tutorials (Unreal Engine 5, Unity XR, WebXR) into your database. Continue?')) return;
+    
+    const starters = [
+      {
+        title: 'Unreal Engine 5: OpenXR & VR Virtual Production Pipeline',
+        category: 'Unreal Engine 5',
+        content_type: 'Tutorial',
+        difficulty: 'Advanced',
+        estimated_duration: '45 min guide',
+        short_description: 'Master Nanite, Lumen dynamic illumination, Niagara particle physics, Blueprint visual scripting, and C++ gameplay systems tailored for high-fidelity VR.',
+        description: 'Comprehensive spatial computing tutorial covering high-fidelity virtual reality development with Epic Games Unreal Engine 5. Students learn to configure OpenXR runtimes, build real-time photorealistic volumetric environments, program gameplay mechanics using C++ and Blueprints, and deploy production-ready VR applications.',
+        tutorial_body: '## Getting Started with OpenXR in UE5\n\n1. Enable the OpenXR plugin in Edit -> Plugins.\n2. Configure default spatial input bindings for Meta Quest & Apple Vision Pro.\n3. Implement Niagara GPU particles optimized for stereoscopic rendering.\n4. Package and deploy to target headsets with automated profiling.',
+        author_name: 'XR Research Lab Core',
+        author_type: 'Lab Core',
+        author_role: 'Graphics & Engine Division',
+        technologies: ['Unreal Engine 5', 'OpenXR', 'C++', 'Lumen & Nanite'],
+        tags: ['UE5', 'Virtual Reality', 'Nanite', 'Lumen'],
+        featured: true,
+        display_order: 1,
+        status: 'published',
+        thumbnail_url: 'https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?w=800&auto=format&fit=crop&q=60'
+      },
+      {
+        title: 'Unity 6 & XR Interaction Toolkit (XRIT) Quickstart',
+        category: 'Unity 3D',
+        content_type: 'Tutorial',
+        difficulty: 'Intermediate',
+        estimated_duration: '30 min guide',
+        short_description: 'Build cross-platform AR/VR experiences targeting Meta Quest 3, Apple Vision Pro, and mobile AR with ARFoundation, spatial anchors, and hand-tracking.',
+        description: 'Hands-on laboratory tutorial focused on rapid cross-platform spatial app engineering using Unity 6 and XR Interaction Toolkit (XRIT). Covers spatial locomotion, direct interactor physics, hand tracking gestures, plane raycasting, and passthrough mixed reality.',
+        tutorial_body: '## Cross-Platform XR with Unity 6\n\n1. Install XR Interaction Toolkit via Package Manager.\n2. Set up XR Origin with Left/Right Direct and Ray Interactors.\n3. Configure Hand Tracking Subsystems for pinch and poke gestures.\n4. Integrate ARFoundation Passthrough on Meta Quest 3.',
+        author_name: 'XR Research Lab Core',
+        author_type: 'Lab Core',
+        author_role: 'Spatial Systems Division',
+        technologies: ['Unity 6', 'C#', 'XRIT', 'ARFoundation'],
+        tags: ['Unity', 'Quest 3', 'Hand Tracking'],
+        featured: true,
+        display_order: 2,
+        status: 'published',
+        thumbnail_url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=60'
+      },
+      {
+        title: 'WebXR & Three.js: Spatial Web Fundamentals',
+        category: 'WebXR',
+        content_type: 'Community Tutorial',
+        difficulty: 'Beginner',
+        estimated_duration: '20 min guide',
+        short_description: 'Create zero-install spatial experiences running directly in web browsers using WebGL, WebGPU, Three.js, GLTF pipelines, and WebXR device APIs.',
+        description: 'Discover the open spatial web. Learn to construct interactive 3D web environments with Three.js, configure immersive VR/AR sessions with WebXR device APIs, load and optimize GLTF models, and build accessible spatial user interfaces accessible directly from any browser without app installation.',
+        tutorial_body: '## Creating Zero-Install WebXR Scenes\n\n1. Initialize THREE.WebGLRenderer with xr.enabled = true.\n2. Append VRButton.createButton(renderer) to document body.\n3. Handle sessionstart and sessionend events.\n4. Implement controller raycasters for interactive 3D UI.',
+        author_name: 'Community & Students',
+        author_type: 'Community',
+        author_role: 'WebXR Student Group',
+        technologies: ['JavaScript', 'Three.js', 'WebXR', 'WebGL'],
+        tags: ['WebXR', 'Three.js', 'Browser 3D'],
+        featured: false,
+        display_order: 3,
+        status: 'published',
+        thumbnail_url: 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=800&auto=format&fit=crop&q=60'
+      }
+    ];
+
+    try {
+      for (const t of starters) {
+        await apiCall('admin-courses', 'POST', t);
+      }
+      alert('3 starter tutorials successfully added to database!');
+      loadCourses();
+    } catch (err) {
+      alert('Error adding starter tutorials: ' + err.message);
     }
   }
 
@@ -3607,6 +3694,7 @@
   window.adminApp.deleteLesson = deleteLesson;
   window.adminApp.toggleCoursePublish = toggleCoursePublish;
   window.adminApp.deleteCourse = deleteCourse;
+  window.adminApp.seedStarterTutorials = seedStarterTutorials;
 
   window.adminApp.loadResearchForm = loadResearchForm;
   window.adminApp.editResearch = async (id) => {
