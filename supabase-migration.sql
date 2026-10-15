@@ -775,7 +775,7 @@ CREATE TRIGGER trigger_members_updated_at
   EXECUTE FUNCTION update_updated_at();
 
 -- =============================================================================
--- 15. COURSES TABLE
+-- 15. COURSES & TUTORIALS TABLE (Epic Dev Community Architecture)
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS courses (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -783,15 +783,24 @@ CREATE TABLE IF NOT EXISTS courses (
   slug TEXT NOT NULL UNIQUE,
   short_description TEXT,
   description TEXT,
-  category TEXT NOT NULL DEFAULT 'Augmented Reality',
+  tutorial_body TEXT,
+  category TEXT NOT NULL DEFAULT 'Unreal Engine 5',
+  content_type TEXT NOT NULL DEFAULT 'Tutorial',
   difficulty TEXT NOT NULL DEFAULT 'Beginner'
     CHECK (difficulty IN ('Beginner', 'Intermediate', 'Advanced', 'Expert')),
+  author_name TEXT DEFAULT 'XR Research Lab',
+  author_role TEXT DEFAULT 'Lab Core',
+  author_type TEXT NOT NULL DEFAULT 'Lab Core',
+  author_avatar_url TEXT,
+  external_url TEXT,
   thumbnail_url TEXT,
   video_url TEXT,
   intro_video_url TEXT,
   instructor_name TEXT,
   instructor_role TEXT,
-  estimated_duration TEXT,
+  estimated_duration TEXT DEFAULT '15 min read',
+  views_count INTEGER DEFAULT 0,
+  likes_count INTEGER DEFAULT 0,
   lesson_count INTEGER DEFAULT 0,
   learning_objectives JSONB DEFAULT '[]'::jsonb,
   prerequisites JSONB DEFAULT '[]'::jsonb,
@@ -801,7 +810,7 @@ CREATE TABLE IF NOT EXISTS courses (
   certificate_available BOOLEAN DEFAULT FALSE,
   featured BOOLEAN DEFAULT FALSE,
   display_order INTEGER DEFAULT 0,
-  status TEXT NOT NULL DEFAULT 'draft'
+  status TEXT NOT NULL DEFAULT 'published'
     CHECK (status IN ('draft', 'published', 'archived')),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
@@ -809,10 +818,32 @@ CREATE TABLE IF NOT EXISTS courses (
   created_by TEXT DEFAULT 'admin'
 );
 
+-- Ensure all tutorial attributes exist even if courses table already existed previously
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS content_type TEXT DEFAULT 'Tutorial';
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS author_name TEXT;
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS author_role TEXT;
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS author_type TEXT DEFAULT 'Lab Core';
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS author_avatar_url TEXT;
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS external_url TEXT;
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS tutorial_body TEXT;
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS views_count INTEGER DEFAULT 0;
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS likes_count INTEGER DEFAULT 0;
+
+-- Backfill any existing rows
+UPDATE courses 
+SET 
+  content_type = COALESCE(content_type, 'Tutorial'),
+  author_name = COALESCE(author_name, instructor_name, 'XR Research Lab'),
+  author_role = COALESCE(author_role, instructor_role, 'Lab Core'),
+  author_type = COALESCE(author_type, 'Lab Core')
+WHERE author_name IS NULL OR content_type IS NULL;
+
 CREATE INDEX IF NOT EXISTS idx_courses_slug ON courses(slug);
 CREATE INDEX IF NOT EXISTS idx_courses_status ON courses(status);
 CREATE INDEX IF NOT EXISTS idx_courses_category ON courses(category);
 CREATE INDEX IF NOT EXISTS idx_courses_featured ON courses(featured) WHERE featured = TRUE;
+CREATE INDEX IF NOT EXISTS idx_courses_content_type ON courses(content_type);
+CREATE INDEX IF NOT EXISTS idx_courses_author_type ON courses(author_type);
 
 DROP TRIGGER IF EXISTS trigger_courses_updated_at ON courses;
 CREATE TRIGGER trigger_courses_updated_at
@@ -919,7 +950,7 @@ CREATE POLICY "Service role full access members" ON members FOR ALL USING (true)
 -- Courses RLS
 ALTER TABLE courses ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Public can read published courses" ON courses;
-CREATE POLICY "Public can read published courses" ON courses FOR SELECT USING (status = 'published');
+CREATE POLICY "Public can read published courses" ON courses FOR SELECT USING (status != 'archived');
 DROP POLICY IF EXISTS "Service role full access courses" ON courses;
 CREATE POLICY "Service role full access courses" ON courses FOR ALL USING (true) WITH CHECK (true);
 
@@ -938,13 +969,15 @@ DROP POLICY IF EXISTS "Service role full access research" ON research_items;
 CREATE POLICY "Service role full access research" ON research_items FOR ALL USING (true) WITH CHECK (true);
 
 -- =============================================================================
--- 19. INITIAL SEED DATA (CORE CURRICULA & RESEARCH PUBLICATIONS)
--- Idempotent: uses ON CONFLICT (slug) DO NOTHING so existing data is preserved.
+-- 19. INITIAL SEED DATA (CORE CURRICULA, TUTORIALS & RESEARCH PUBLICATIONS)
+-- Idempotent: uses ON CONFLICT (slug) DO UPDATE so existing data is preserved and updated.
 -- =============================================================================
 
--- Core Curricula (matches Learn platform tracks)
+-- Core Curricula & Tutorials (matches Learn platform tracks & Epic Dev Community hub)
 INSERT INTO courses (
   title, slug, short_description, description, category, difficulty,
+  content_type, author_name, author_role, author_type, tutorial_body, external_url,
+  views_count, likes_count,
   technologies, lesson_count, estimated_duration, featured, display_order, status, published_at
 ) VALUES 
 (
@@ -952,8 +985,16 @@ INSERT INTO courses (
   'unreal-engine-5-virtual-production',
   'Master Nanite, Lumen dynamic illumination, Niagara particle physics, Blueprint visual scripting, and C++ gameplay systems tailored for high-fidelity VR.',
   'Comprehensive spatial computing curriculum covering high-fidelity virtual reality development with Epic Games Unreal Engine 5. Students learn to configure OpenXR runtimes, build real-time photorealistic volumetric environments, program gameplay mechanics using C++ and Blueprints, and deploy production-ready VR applications.',
-  'Virtual Reality',
+  'Unreal Engine 5',
   'Advanced',
+  'Tutorial',
+  'MD Akif',
+  'Lab Head & Lead Researcher',
+  'Lab Core',
+  'Step-by-step masterclass covering high-fidelity spatial computing with Unreal Engine 5. Topics include Nanite geometry optimization for VR, Lumen real-time illumination, OpenXR input bindings, and Blueprint/C++ interaction systems.',
+  'https://github.com/xrresearchlab-GCET',
+  1420,
+  88,
   '["UE5", "C++", "Lumen & Nanite", "VR OpenXR"]'::jsonb,
   8,
   '12 Weeks',
@@ -967,8 +1008,16 @@ INSERT INTO courses (
   'unity-3d-xr-interaction-toolkit',
   'Build cross-platform AR/VR experiences targeting Meta Quest 3, Apple Vision Pro, and mobile AR with ARFoundation, spatial anchors, and hand-tracking.',
   'Hands-on laboratory track focused on rapid cross-platform spatial app engineering using Unity 6 and XR Interaction Toolkit (XRIT). Covers spatial locomotion, direct interactor physics, hand tracking gestures, plane raycasting, and passthrough mixed reality.',
-  'Mixed Reality',
+  'Unity 3D',
   'Intermediate',
+  'Tutorial',
+  'XR Research Lab',
+  'Lab Core',
+  'Lab Core',
+  'Complete architectural guide for cross-platform XR apps using Unity 6 and XRIT. Includes ray interactors, spatial teleportation, custom gesture recognition, and passthrough meshing for headsets.',
+  'https://github.com/xrresearchlab-GCET',
+  980,
+  64,
   '["Unity", "C#", "XRIT", "ARFoundation"]'::jsonb,
   6,
   '8 Weeks',
@@ -984,6 +1033,14 @@ INSERT INTO courses (
   'Discover the open spatial web. Learn to construct interactive 3D web environments with Three.js, configure immersive VR/AR sessions with WebXR device APIs, load and optimize GLTF models, and build accessible spatial user interfaces accessible directly from any browser without app installation.',
   'WebXR',
   'Beginner',
+  'Tutorial',
+  'XR Research Lab',
+  'Lab Core',
+  'Lab Core',
+  'A foundational curriculum in zero-install spatial web applications using Three.js and WebXR device APIs. Covers canvas setup, camera projection matrices, immersive-vr and immersive-ar sessions, and controller input mapping.',
+  'https://github.com/xrresearchlab-GCET',
+  1650,
+  112,
   '["JavaScript", "Three.js", "WebGL", "WebXR"]'::jsonb,
   5,
   '6 Weeks',
@@ -992,7 +1049,16 @@ INSERT INTO courses (
   'published',
   NOW()
 )
-ON CONFLICT (slug) DO NOTHING;
+ON CONFLICT (slug) DO UPDATE SET
+  content_type = COALESCE(courses.content_type, EXCLUDED.content_type),
+  author_name = COALESCE(courses.author_name, EXCLUDED.author_name),
+  author_role = COALESCE(courses.author_role, EXCLUDED.author_role),
+  author_type = COALESCE(courses.author_type, EXCLUDED.author_type),
+  tutorial_body = COALESCE(courses.tutorial_body, EXCLUDED.tutorial_body),
+  external_url = COALESCE(courses.external_url, EXCLUDED.external_url),
+  category = EXCLUDED.category,
+  views_count = GREATEST(COALESCE(courses.views_count, 0), EXCLUDED.views_count),
+  likes_count = GREATEST(COALESCE(courses.likes_count, 0), EXCLUDED.likes_count);
 
 -- Initial Research Publications (matches Research archive)
 INSERT INTO research_items (
@@ -1048,16 +1114,5 @@ SELECT
   0
 WHERE NOT EXISTS (
   SELECT 1 FROM members WHERE is_lead = TRUE
-);-- Unreal Engine Style Learning & Tutorials Schema Extension
-ALTER TABLE IF EXISTS courses ADD COLUMN IF NOT EXISTS content_type TEXT DEFAULT 'Tutorial';
-ALTER TABLE IF EXISTS courses ADD COLUMN IF NOT EXISTS author_name TEXT;
-ALTER TABLE IF EXISTS courses ADD COLUMN IF NOT EXISTS author_role TEXT;
-ALTER TABLE IF EXISTS courses ADD COLUMN IF NOT EXISTS author_type TEXT DEFAULT 'Lab Core';
-ALTER TABLE IF EXISTS courses ADD COLUMN IF NOT EXISTS author_avatar_url TEXT;
-ALTER TABLE IF EXISTS courses ADD COLUMN IF NOT EXISTS external_url TEXT;
-ALTER TABLE IF EXISTS courses ADD COLUMN IF NOT EXISTS tutorial_body TEXT;
-ALTER TABLE IF EXISTS courses ADD COLUMN IF NOT EXISTS views_count INTEGER DEFAULT 0;
-ALTER TABLE IF EXISTS courses ADD COLUMN IF NOT EXISTS likes_count INTEGER DEFAULT 0;
+);
 
-CREATE INDEX IF NOT EXISTS idx_courses_content_type ON courses(content_type);
-CREATE INDEX IF NOT EXISTS idx_courses_author_type ON courses(author_type);

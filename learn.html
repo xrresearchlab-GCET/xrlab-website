@@ -129,6 +129,9 @@
     </div>
   </div>
 
+  <!-- Mobile Sidebar Backdrop -->
+  <div class="epic-sidebar-backdrop" id="epic-sidebar-backdrop"></div>
+
   <!-- Epic Games / Unreal Engine Style Main Container -->
   <main class="epic-learn-wrapper">
     <!-- Breadcrumbs -->
@@ -142,28 +145,33 @@
       <span class="active">Learning</span>
     </div>
 
-    <!-- Header Section -->
-    <div class="epic-header-row">
-      <h1 class="epic-learn-title">Learn Spatial Computing</h1>
+    <!-- Header / Hero Section -->
+    <div class="epic-hero">
+      <div class="subpage-badge" style="margin-bottom: 14px;">
+        <span class="subpage-badge-dot"></span>
+        <span>XR DEV COMMUNITY &bull; LEARNING HUB</span>
+      </div>
+      <h1 class="epic-learn-title">Learn <span class="gradient-text">Spatial Computing</span></h1>
       <p class="epic-learn-subtitle">
-        From your first steps in WebXR to complete mastery of Unreal Engine 5, Unity XR, and Spatial AI, we've got you covered.
+        From foundational WebXR pipelines to production Unreal Engine 5 virtual production, Unity XR architectures, and Spatial AI systems.
       </p>
     </div>
 
     <!-- Toolbar: Search, Count, Filter Toggle, Sort, Layout Switchers -->
     <div class="epic-toolbar">
       <div class="epic-search-box">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <svg class="epic-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <circle cx="11" cy="11" r="8"/>
           <path d="M21 21l-4.35-4.35"/>
         </svg>
-        <input type="text" id="epic-search-input" class="epic-search-input" placeholder="Filter by keyword..." autocomplete="off">
+        <input type="text" id="epic-search-input" class="epic-search-input" placeholder="Filter by title, topic, engine, or author..." autocomplete="off">
+        <button type="button" id="epic-search-clear" class="epic-search-clear" aria-label="Clear search" title="Clear search">&times;</button>
       </div>
 
       <div class="epic-toolbar-actions">
-        <span class="epic-results-count"><strong id="epic-results-count" style="color:#fff">0</strong> results</span>
+        <span class="epic-results-count"><strong id="epic-results-count">0</strong> results</span>
 
-        <button class="epic-control-btn" id="epic-mobile-filter-btn" title="Toggle Filters">
+        <button class="epic-control-btn" id="epic-mobile-filter-btn" title="Toggle Filters" aria-label="Toggle Filters">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="4" y1="21" x2="4" y2="14"/>
             <line x1="4" y1="10" x2="4" y2="3"/>
@@ -180,7 +188,7 @@
 
         <select class="epic-sort-select" id="epic-sort-select" aria-label="Sort tutorials">
           <option value="trending">Trending</option>
-          <option value="newest">Newest</option>
+          <option value="newest">Newest First</option>
           <option value="popular">Most Popular</option>
         </select>
 
@@ -208,9 +216,10 @@
     <div class="epic-main-layout">
       <!-- Left Content: Tutorials Catalog -->
       <div id="tutorials-catalog-grid" class="epic-tutorials-grid">
-        <div style="grid-column:1/-1;text-align:center;padding:48px 24px;color:var(--cin-text-secondary)">
-          <div class="cin-spinner" style="margin:0 auto 16px;width:32px;height:32px;border:2px solid rgba(56,189,248,0.2);border-top-color:var(--cin-accent-bright);border-radius:50%;animation:cin-spin 0.8s linear infinite"></div>
-          <div style="font-family:var(--font-mono);font-size:12px;letter-spacing:0.1em">LOADING TUTORIALS...</div>
+        <div class="epic-state-box">
+          <div class="cin-spinner" style="margin:0 auto 16px;width:34px;height:34px;border:2px solid rgba(56,189,248,0.2);border-top-color:var(--cin-accent-bright);border-radius:50%;animation:cin-spin 0.8s linear infinite"></div>
+          <div class="epic-state-title" style="font-size:16px;">Loading Dev Community Tutorials...</div>
+          <div style="font-family:var(--font-mono);font-size:12px;color:var(--cin-text-dim);letter-spacing:0.08em">CONNECTING TO XR RESEARCH LAB ARCHIVE</div>
         </div>
       </div>
 
@@ -218,7 +227,10 @@
       <aside class="epic-sidebar-filters" id="epic-sidebar-filters">
         <div class="epic-sidebar-title">
           <span>Filters</span>
-          <button id="epic-clear-filters" style="background:none;border:none;color:var(--cin-accent-bright);font-size:11px;font-family:var(--font-mono);cursor:pointer;padding:0">Reset</button>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button id="epic-clear-filters" class="epic-filter-reset-btn" title="Reset all filters">Reset</button>
+            <button id="epic-sidebar-close" class="epic-sidebar-close-btn" aria-label="Close filters">&times;</button>
+          </div>
         </div>
 
         <!-- Authors Filter -->
@@ -229,14 +241,14 @@
               <input type="checkbox" name="author" value="Lab Core">
               Lab Core
             </span>
-            <span class="epic-filter-count" id="count-author-core"></span>
+            <span class="epic-filter-count" id="count-author-core">(0)</span>
           </label>
           <label class="epic-checkbox-item">
             <span class="epic-checkbox-label">
               <input type="checkbox" name="author" value="Community">
               Community &amp; Students
             </span>
-            <span class="epic-filter-count" id="count-author-community"></span>
+            <span class="epic-filter-count" id="count-author-community">(0)</span>
           </label>
         </div>
 
@@ -248,35 +260,35 @@
               <input type="checkbox" name="type" value="Tutorial">
               Tutorials
             </span>
-            <span class="epic-filter-count" id="count-type-tutorial"></span>
+            <span class="epic-filter-count" id="count-type-tutorial">(0)</span>
           </label>
           <label class="epic-checkbox-item">
             <span class="epic-checkbox-label">
               <input type="checkbox" name="type" value="Community Tutorial">
               Community Tutorials
             </span>
-            <span class="epic-filter-count" id="count-type-community"></span>
+            <span class="epic-filter-count" id="count-type-community">(0)</span>
           </label>
           <label class="epic-checkbox-item">
             <span class="epic-checkbox-label">
               <input type="checkbox" name="type" value="Knowledge Base">
               Knowledge Base
             </span>
-            <span class="epic-filter-count" id="count-type-kb"></span>
+            <span class="epic-filter-count" id="count-type-kb">(0)</span>
           </label>
           <label class="epic-checkbox-item">
             <span class="epic-checkbox-label">
               <input type="checkbox" name="type" value="Snippet">
               Snippets
             </span>
-            <span class="epic-filter-count" id="count-type-snippet"></span>
+            <span class="epic-filter-count" id="count-type-snippet">(0)</span>
           </label>
           <label class="epic-checkbox-item">
             <span class="epic-checkbox-label">
               <input type="checkbox" name="type" value="Livestream">
               Livestreams &amp; Talks
             </span>
-            <span class="epic-filter-count" id="count-type-live"></span>
+            <span class="epic-filter-count" id="count-type-live">(0)</span>
           </label>
         </div>
 
@@ -288,30 +300,35 @@
               <input type="checkbox" name="engine" value="Unreal Engine 5">
               Unreal Engine 5
             </span>
+            <span class="epic-filter-count" id="count-engine-ue">(0)</span>
           </label>
           <label class="epic-checkbox-item">
             <span class="epic-checkbox-label">
               <input type="checkbox" name="engine" value="Unity 3D">
               Unity 3D &amp; XRIT
             </span>
+            <span class="epic-filter-count" id="count-engine-unity">(0)</span>
           </label>
           <label class="epic-checkbox-item">
             <span class="epic-checkbox-label">
               <input type="checkbox" name="engine" value="WebXR">
               WebXR &amp; Three.js
             </span>
+            <span class="epic-filter-count" id="count-engine-webxr">(0)</span>
           </label>
           <label class="epic-checkbox-item">
             <span class="epic-checkbox-label">
               <input type="checkbox" name="engine" value="3D Modeling">
               Blender &amp; Shaders
             </span>
+            <span class="epic-filter-count" id="count-engine-3d">(0)</span>
           </label>
           <label class="epic-checkbox-item">
             <span class="epic-checkbox-label">
               <input type="checkbox" name="engine" value="Spatial AI">
               Spatial AI &amp; Vision
             </span>
+            <span class="epic-filter-count" id="count-engine-ai">(0)</span>
           </label>
         </div>
 
@@ -323,18 +340,21 @@
               <input type="checkbox" name="difficulty" value="Beginner">
               Beginner
             </span>
+            <span class="epic-filter-count" id="count-diff-beginner">(0)</span>
           </label>
           <label class="epic-checkbox-item">
             <span class="epic-checkbox-label">
               <input type="checkbox" name="difficulty" value="Intermediate">
               Intermediate
             </span>
+            <span class="epic-filter-count" id="count-diff-intermediate">(0)</span>
           </label>
           <label class="epic-checkbox-item">
             <span class="epic-checkbox-label">
               <input type="checkbox" name="difficulty" value="Advanced">
               Advanced
             </span>
+            <span class="epic-filter-count" id="count-diff-advanced">(0)</span>
           </label>
         </div>
       </aside>
@@ -435,14 +455,57 @@
         return `<span class="epic-pill-badge" style="background:${bg}">${escapeHtml(label)}</span>`;
       }
 
-      async function fetchTutorials() {
+      function renderLoadingState() {
         const grid = document.getElementById('tutorials-catalog-grid');
+        if (!grid) return;
+        grid.innerHTML = `
+          <div class="epic-state-box">
+            <div class="cin-spinner" style="margin:0 auto 16px;width:34px;height:34px;border:2px solid rgba(56,189,248,0.2);border-top-color:var(--cin-accent-bright);border-radius:50%;animation:cin-spin 0.8s linear infinite"></div>
+            <div class="epic-state-title" style="font-size:16px;">Loading Dev Community Tutorials...</div>
+            <div style="font-family:var(--font-mono);font-size:12px;color:var(--cin-text-dim);letter-spacing:0.08em">CONNECTING TO XR RESEARCH LAB ARCHIVE</div>
+          </div>
+        `;
+      }
+
+      function renderErrorState(errorMessage) {
+        const grid = document.getElementById('tutorials-catalog-grid');
+        if (!grid) return;
+        const countEl = document.getElementById('epic-results-count');
+        if (countEl) countEl.textContent = '0';
+        grid.innerHTML = `
+          <div class="epic-state-box epic-error-box">
+            <div class="epic-state-icon">⚠️</div>
+            <h3 class="epic-state-title">Unable to Load Tutorials</h3>
+            <p class="epic-state-desc">
+              ${escapeHtml(errorMessage || 'Failed to fetch tutorials from the lab database.')}
+            </p>
+            <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+              <button type="button" id="epic-retry-fetch-btn" class="epic-control-btn" style="background:var(--cin-accent);color:#fff;border-color:var(--cin-accent-bright)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                Try Again
+              </button>
+              <a href="project-space.html" class="epic-control-btn" style="text-decoration:none">Visit Project Space &rarr;</a>
+            </div>
+          </div>
+        `;
+        document.getElementById('epic-retry-fetch-btn')?.addEventListener('click', fetchTutorials);
+      }
+
+      async function fetchTutorials() {
+        renderLoadingState();
         try {
           let res = await fetch('/api/courses-public?t=' + Date.now(), { cache: 'no-store' });
           if (!res.ok) {
             res = await fetch('/.netlify/functions/courses-public?t=' + Date.now(), { cache: 'no-store' });
           }
-          if (!res.ok) throw new Error('API unreachable');
+          if (!res.ok) {
+            let errorMsg = `Server error (Status ${res.status})`;
+            try {
+              const errJson = await res.json();
+              if (errJson && errJson.error) errorMsg = errJson.error;
+            } catch (_) {}
+            throw new Error(errorMsg);
+          }
 
           const data = await res.json();
           allTutorials = data.tutorials || data.courses || [];
@@ -456,10 +519,65 @@
             const match = allTutorials.find(t => t.slug === slug);
             if (match) openTutorialModal(match);
           }
-        } catch (_) {
-          allTutorials = [];
-          applyFiltersAndRender();
+        } catch (err) {
+          console.error('Tutorials catalog fetch error:', err);
+          renderErrorState(err.message || 'Unable to connect to the tutorials database service.');
         }
+      }
+
+      function matchesEngine(t, engine) {
+        const text = [
+          t.category || '',
+          t.title || '',
+          t.short_description || '',
+          t.description || '',
+          ...(t.technologies || []),
+          ...(t.tags || [])
+        ].join(' ').toLowerCase();
+
+        const eng = (engine || '').toLowerCase();
+        if (eng.includes('unreal')) {
+          return text.includes('unreal') || text.includes('ue5') || text.includes('ue4') || text.includes('blueprint') || text.includes('virtual production');
+        }
+        if (eng.includes('unity')) {
+          return text.includes('unity') || text.includes('xrit') || text.includes('c#') || text.includes('csharp');
+        }
+        if (eng.includes('webxr')) {
+          return text.includes('webxr') || text.includes('three') || text.includes('babylon') || text.includes('a-frame') || text.includes('webgl');
+        }
+        if (eng.includes('3d') || eng.includes('model')) {
+          return text.includes('blender') || text.includes('shader') || text.includes('modeling') || text.includes('maya') || text.includes('3d') || text.includes('substance');
+        }
+        if (eng.includes('ai') || eng.includes('vision')) {
+          return text.includes('ai') || text.includes('vision') || text.includes('opencv') || text.includes('nerf') || text.includes('gaussian') || text.includes('slam') || text.includes('tracking');
+        }
+        return text.includes(eng);
+      }
+
+      function matchesAuthor(t, authorType) {
+        const aType = (t.author_type || '').toLowerCase();
+        const aName = (t.author_name || '').toLowerCase();
+        const aRole = (t.author_role || '').toLowerCase();
+        if (authorType === 'Lab Core') {
+          return aType.includes('core') || aName.includes('lab') || aRole.includes('lead') || aRole.includes('head') || aRole.includes('core') || aName.includes('akif');
+        }
+        if (authorType === 'Community') {
+          return aType.includes('community') || aRole.includes('student') || aRole.includes('community') || aRole.includes('member');
+        }
+        return true;
+      }
+
+      function matchesType(t, type) {
+        const cType = (t.content_type || 'Tutorial').toLowerCase();
+        const target = type.toLowerCase();
+        if (target === 'tutorial') {
+          return cType === 'tutorial' || cType.includes('ue tutorial');
+        }
+        return cType.includes(target) || target.includes(cType);
+      }
+
+      function matchesDifficulty(t, diff) {
+        return (t.difficulty || 'Beginner').toLowerCase() === diff.toLowerCase();
       }
 
       function updateSidebarCounts(items) {
@@ -467,13 +585,21 @@
           const el = document.getElementById(id);
           if (el) el.textContent = `(${count})`;
         };
-        setVal('count-author-core', items.filter(t => (t.author_type || '').toLowerCase().includes('core') || (t.author_name || '').toLowerCase().includes('lab')).length);
-        setVal('count-author-community', items.filter(t => (t.author_type || '').toLowerCase().includes('community')).length);
-        setVal('count-type-tutorial', items.filter(t => (t.content_type || '').toLowerCase() === 'tutorial').length);
-        setVal('count-type-community', items.filter(t => (t.content_type || '').toLowerCase().includes('community')).length);
-        setVal('count-type-kb', items.filter(t => (t.content_type || '').toLowerCase().includes('knowledge')).length);
-        setVal('count-type-snippet', items.filter(t => (t.content_type || '').toLowerCase().includes('snippet')).length);
-        setVal('count-type-live', items.filter(t => (t.content_type || '').toLowerCase().includes('live')).length);
+        setVal('count-author-core', items.filter(t => matchesAuthor(t, 'Lab Core')).length);
+        setVal('count-author-community', items.filter(t => matchesAuthor(t, 'Community')).length);
+        setVal('count-type-tutorial', items.filter(t => matchesType(t, 'Tutorial')).length);
+        setVal('count-type-community', items.filter(t => matchesType(t, 'Community Tutorial')).length);
+        setVal('count-type-kb', items.filter(t => matchesType(t, 'Knowledge Base')).length);
+        setVal('count-type-snippet', items.filter(t => matchesType(t, 'Snippet')).length);
+        setVal('count-type-live', items.filter(t => matchesType(t, 'Livestream')).length);
+        setVal('count-engine-ue', items.filter(t => matchesEngine(t, 'Unreal Engine 5')).length);
+        setVal('count-engine-unity', items.filter(t => matchesEngine(t, 'Unity 3D')).length);
+        setVal('count-engine-webxr', items.filter(t => matchesEngine(t, 'WebXR')).length);
+        setVal('count-engine-3d', items.filter(t => matchesEngine(t, '3D Modeling')).length);
+        setVal('count-engine-ai', items.filter(t => matchesEngine(t, 'Spatial AI')).length);
+        setVal('count-diff-beginner', items.filter(t => matchesDifficulty(t, 'Beginner')).length);
+        setVal('count-diff-intermediate', items.filter(t => matchesDifficulty(t, 'Intermediate')).length);
+        setVal('count-diff-advanced', items.filter(t => matchesDifficulty(t, 'Advanced')).length);
       }
 
       function applyFiltersAndRender() {
@@ -488,46 +614,50 @@
             (t.category || '').toLowerCase().includes(q) ||
             (t.author_name || '').toLowerCase().includes(q) ||
             (t.content_type || '').toLowerCase().includes(q) ||
-            (t.technologies || []).some(tech => tech.toLowerCase().includes(q))
+            (t.technologies || []).some(tech => (tech || '').toLowerCase().includes(q)) ||
+            (t.tags || []).some(tag => (tag || '').toLowerCase().includes(q))
           );
         }
 
         // Author filter
         if (selectedAuthors.size > 0) {
           filtered = filtered.filter(t => {
-            const aType = (t.author_type || '').toLowerCase();
-            const aName = (t.author_name || '').toLowerCase();
-            return (selectedAuthors.has('Lab Core') && (aType.includes('core') || aName.includes('lab') || aName.includes('akif'))) ||
-                   (selectedAuthors.has('Community') && aType.includes('community'));
+            return Array.from(selectedAuthors).some(authorType => matchesAuthor(t, authorType));
           });
         }
 
         // Type filter
         if (selectedTypes.size > 0) {
-          filtered = filtered.filter(t => selectedTypes.has(t.content_type));
+          filtered = filtered.filter(t => {
+            return Array.from(selectedTypes).some(type => matchesType(t, type));
+          });
         }
 
         // Engine filter
         if (selectedEngines.size > 0) {
           filtered = filtered.filter(t => {
-            const cat = (t.category || '').toLowerCase();
-            return Array.from(selectedEngines).some(e => cat.includes(e.toLowerCase().replace(' 3d', '')));
+            return Array.from(selectedEngines).some(engine => matchesEngine(t, engine));
           });
         }
 
         // Difficulty filter
         if (selectedDifficulties.size > 0) {
-          filtered = filtered.filter(t => selectedDifficulties.has(t.difficulty));
+          filtered = filtered.filter(t => {
+            return Array.from(selectedDifficulties).some(diff => matchesDifficulty(t, diff));
+          });
         }
 
-        // Sort
+        // Sorting
         if (currentSort === 'newest') {
           filtered.sort((a, b) => new Date(b.published_at || b.created_at) - new Date(a.published_at || a.created_at));
         } else if (currentSort === 'popular') {
           filtered.sort((a, b) => (b.views_count || 0) - (a.views_count || 0));
         } else {
           // Trending: featured first, then newest
-          filtered.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+          filtered.sort((a, b) => {
+            if (b.featured !== a.featured) return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+            return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+          });
         }
 
         // Update count
@@ -537,6 +667,20 @@
         renderTutorials(filtered);
       }
 
+      function resetAllFilters() {
+        selectedAuthors.clear();
+        selectedTypes.clear();
+        selectedEngines.clear();
+        selectedDifficulties.clear();
+        document.querySelectorAll('#epic-sidebar-filters input[type="checkbox"]').forEach(cb => cb.checked = false);
+        const searchInput = document.getElementById('epic-search-input');
+        if (searchInput) searchInput.value = '';
+        const clearBtn = document.getElementById('epic-search-clear');
+        if (clearBtn) clearBtn.classList.remove('visible');
+        searchQuery = '';
+        applyFiltersAndRender();
+      }
+
       function renderTutorials(items) {
         const grid = document.getElementById('tutorials-catalog-grid');
         if (!grid) return;
@@ -544,14 +688,14 @@
         if (!items || !items.length) {
           if (!allTutorials.length) {
             grid.innerHTML = `
-              <div style="grid-column:1/-1;text-align:center;padding:64px 24px;background:rgba(14,18,28,0.5);border:1px solid rgba(255,255,255,0.08);border-radius:14px;color:var(--cin-text-secondary)">
-                <div style="font-size:36px;margin-bottom:12px">📚</div>
-                <h3 style="font-family:var(--font-display);font-size:22px;color:#fff;margin:0 0 8px;font-weight:600">No Tutorials Published Yet</h3>
-                <p style="font-size:14px;margin:0 auto 20px;max-width:500px;line-height:1.6;color:var(--cin-text-dim)">
+              <div class="epic-state-box">
+                <div class="epic-state-icon">📚</div>
+                <h3 class="epic-state-title">No Tutorials Published Yet</h3>
+                <p class="epic-state-desc">
                   The Dev Community learning catalog is ready for guides, code snippets, and masterclasses. Instructors and researchers can add tutorials through the admin control panel.
                 </p>
                 <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-                  <a href="project-space.html" class="epic-control-btn" style="background:var(--cin-accent);color:#fff;border-color:var(--cin-accent-bright);text-decoration:none">EXPLORE PROJECT SPACE →</a>
+                  <a href="project-space.html" class="epic-control-btn" style="background:var(--cin-accent);color:#fff;border-color:var(--cin-accent-bright);text-decoration:none">EXPLORE PROJECT SPACE &rarr;</a>
                   <a href="admin.html" class="epic-control-btn" style="text-decoration:none">OPEN ADMIN CONTROL PANEL</a>
                 </div>
               </div>
@@ -560,17 +704,18 @@
           }
 
           grid.innerHTML = `
-            <div style="grid-column:1/-1;text-align:center;padding:56px 24px;background:rgba(14,18,28,0.4);border:1px solid rgba(255,255,255,0.08);border-radius:14px;color:var(--cin-text-secondary)">
-              <div style="font-size:32px;margin-bottom:12px">🔍</div>
-              <p style="font-size:15px;color:#fff;margin:0 0 6px;font-weight:600">No tutorials found matching your filters</p>
-              <p style="font-size:13px;margin:0 0 16px;color:var(--cin-text-dim)">Adjust your search keyword or reset filters to explore all community guides.</p>
-              <button onclick="document.getElementById('epic-clear-filters').click()" class="epic-control-btn" style="background:var(--cin-accent);color:#fff;border-color:var(--cin-accent-bright)">Reset All Filters</button>
+            <div class="epic-state-box">
+              <div class="epic-state-icon">🔍</div>
+              <h3 class="epic-state-title">No Tutorials Match Your Filters</h3>
+              <p class="epic-state-desc">Adjust your search keyword or reset filters to explore all community guides and masterclasses.</p>
+              <button type="button" id="epic-reset-empty-btn" class="epic-control-btn" style="background:var(--cin-accent);color:#fff;border-color:var(--cin-accent-bright)">Reset All Filters</button>
             </div>
           `;
+          document.getElementById('epic-reset-empty-btn')?.addEventListener('click', resetAllFilters);
           return;
         }
 
-        grid.innerHTML = items.map((t, idx) => {
+        grid.innerHTML = items.map((t) => {
           const thumbSrc = t.thumbnail_url 
             ? resolveMediaUrl(t.thumbnail_url) 
             : `https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?w=800&auto=format&fit=crop&q=60`;
@@ -742,31 +887,36 @@
         });
       });
 
-      // Clear Filters
-      document.getElementById('epic-clear-filters')?.addEventListener('click', () => {
-        selectedAuthors.clear();
-        selectedTypes.clear();
-        selectedEngines.clear();
-        selectedDifficulties.clear();
-        document.querySelectorAll('#epic-sidebar-filters input[type="checkbox"]').forEach(cb => cb.checked = false);
-        const searchInput = document.getElementById('epic-search-input');
-        if (searchInput) searchInput.value = '';
-        searchQuery = '';
-        applyFiltersAndRender();
-      });
+      // Clear / Reset Filters
+      document.getElementById('epic-clear-filters')?.addEventListener('click', resetAllFilters);
 
-      // Search Input
+      // Search Input & Clear Button
       let searchTimeout;
       const searchInput = document.getElementById('epic-search-input');
+      const searchClearBtn = document.getElementById('epic-search-clear');
+
       if (searchInput) {
         searchInput.addEventListener('input', (e) => {
+          const val = e.target.value;
+          if (searchClearBtn) {
+            if (val.trim()) searchClearBtn.classList.add('visible');
+            else searchClearBtn.classList.remove('visible');
+          }
           clearTimeout(searchTimeout);
           searchTimeout = setTimeout(() => {
-            searchQuery = e.target.value.trim();
+            searchQuery = val.trim();
             applyFiltersAndRender();
-          }, 250);
+          }, 200);
         });
       }
+
+      searchClearBtn?.addEventListener('click', () => {
+        if (searchInput) searchInput.value = '';
+        searchClearBtn.classList.remove('visible');
+        searchQuery = '';
+        applyFiltersAndRender();
+        searchInput?.focus();
+      });
 
       // Sort Select
       document.getElementById('epic-sort-select')?.addEventListener('change', (e) => {
@@ -793,11 +943,27 @@
         container.classList.add('epic-tutorials-list');
       });
 
-      // Mobile filter toggle
-      document.getElementById('epic-mobile-filter-btn')?.addEventListener('click', () => {
-        const sidebar = document.getElementById('epic-sidebar-filters');
-        sidebar?.classList.toggle('mobile-open');
-      });
+      // Mobile filter drawer controls
+      const mobileFilterBtn = document.getElementById('epic-mobile-filter-btn');
+      const sidebar = document.getElementById('epic-sidebar-filters');
+      const backdrop = document.getElementById('epic-sidebar-backdrop');
+      const sidebarCloseBtn = document.getElementById('epic-sidebar-close');
+
+      function openMobileSidebar() {
+        sidebar?.classList.add('mobile-open');
+        backdrop?.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeMobileSidebar() {
+        sidebar?.classList.remove('mobile-open');
+        backdrop?.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      mobileFilterBtn?.addEventListener('click', openMobileSidebar);
+      sidebarCloseBtn?.addEventListener('click', closeMobileSidebar);
+      backdrop?.addEventListener('click', closeMobileSidebar);
 
       document.addEventListener('DOMContentLoaded', fetchTutorials);
     })();

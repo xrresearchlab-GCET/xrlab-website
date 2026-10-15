@@ -1156,6 +1156,22 @@ button {
    8. RESPONSIVE — MOBILE
    ========================================================================== */
 
+@media (max-width: 1040px) {
+  :root {
+    --cin-nav-height: 64px;
+  }
+
+  /* Show hamburger */
+  .cin-hamburger {
+    display: flex;
+  }
+
+  /* Hide desktop nav links on tablet and mobile to prevent overlapping */
+  .cin-nav-links {
+    display: none;
+  }
+}
+
 @media (max-width: 768px) {
   :root {
     --cin-nav-height: 60px;

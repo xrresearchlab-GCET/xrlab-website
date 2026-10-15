@@ -1,7 +1,8 @@
 -- =============================================================================
 -- XR Research Lab — Unreal Engine Style Tutorials & Learning Migration
--- Run this script in the Supabase SQL Editor to support Epic Dev Community
--- style tutorial attributes on the learning catalog.
+-- NOTE: This migration is now UNIFIED directly inside supabase-migration.sql!
+-- You can execute supabase-migration.sql as a single master script in Supabase.
+-- This standalone file is preserved as an optional delta patch for existing databases.
 -- 100% idempotent and backward compatible with existing courses.
 -- =============================================================================
 

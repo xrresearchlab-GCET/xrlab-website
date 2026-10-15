@@ -15,10 +15,14 @@ const cookie = require('cookie');
 let _supabase = null;
 function getSupabase() {
   if (!_supabase) {
-    _supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
-    );
+    const url = process.env.SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+    if (!url || !key) {
+      throw new Error('Supabase environment variables missing: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY or SUPABASE_ANON_KEY must be configured');
+    }
+    _supabase = createClient(url, key, {
+      auth: { persistSession: false },
+    });
   }
   return _supabase;
 }
